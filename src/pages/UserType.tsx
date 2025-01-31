@@ -11,12 +11,17 @@ import {
 const UserType = () => {
   const navigate = useNavigate();
 
+  const handleNewUser = () => {
+    localStorage.clear(); // Clear any existing data
+    navigate("/personal-info");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
       <div className="max-w-2xl mx-auto pt-12">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl">Welcome Back!</CardTitle>
+            <CardTitle className="text-3xl">Welcome!</CardTitle>
             <CardDescription className="text-lg">
               Are you a new or returning user?
             </CardDescription>
@@ -24,7 +29,7 @@ const UserType = () => {
           <CardContent className="space-y-6">
             <div className="flex flex-col gap-4">
               <Button
-                onClick={() => navigate("/personal-info")}
+                onClick={handleNewUser}
                 className="py-8 text-lg"
               >
                 I'm New Here

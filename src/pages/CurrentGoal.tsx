@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,7 +14,14 @@ import { toast } from "sonner";
 const CurrentGoal = () => {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
-  const [goal, setGoal] = useState("Become a Senior Software Engineer within 2 years");
+  const [goal, setGoal] = useState("");
+
+  useEffect(() => {
+    const savedGoal = localStorage.getItem("currentGoal");
+    if (savedGoal) {
+      setGoal(savedGoal);
+    }
+  }, []);
 
   const handleSave = () => {
     if (!goal.trim()) {
@@ -23,7 +30,6 @@ const CurrentGoal = () => {
     }
     
     try {
-      // Save to localStorage for now (this would typically go to a backend)
       localStorage.setItem("currentGoal", goal);
       toast.success("Goal updated successfully!");
       navigate("/next-steps");
@@ -34,7 +40,10 @@ const CurrentGoal = () => {
   };
 
   const handleContinue = () => {
-    // Save current goal to localStorage before navigating
+    if (!goal.trim()) {
+      toast.error("Please enter a goal before continuing");
+      return;
+    }
     localStorage.setItem("currentGoal", goal);
     navigate("/next-steps");
   };
@@ -46,12 +55,14 @@ const CurrentGoal = () => {
           <CardHeader>
             <CardTitle>Your Current Career Goal</CardTitle>
             <CardDescription>
-              Review and update your career goal if needed
+              {isEditing
+                ? "Edit your career goal below:"
+                : "Review your current career goal:"}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
             {isEditing ? (
-              <>
+              <div className="space-y-4">
                 <Textarea
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
@@ -60,20 +71,22 @@ const CurrentGoal = () => {
                 />
                 <div className="flex gap-4">
                   <Button onClick={handleSave} className="flex-1">
-                    Save Changes
+                    Save Goal
                   </Button>
                   <Button
-                    variant="outline"
                     onClick={() => setIsEditing(false)}
+                    variant="outline"
                     className="flex-1"
                   >
                     Cancel
                   </Button>
                 </div>
-              </>
+              </div>
             ) : (
-              <>
-                <p className="text-lg p-4 bg-muted rounded-md">{goal}</p>
+              <div className="space-y-4">
+                <div className="min-h-[100px] p-4 bg-gray-50 rounded-md">
+                  {goal || "No goal set yet"}
+                </div>
                 <div className="flex gap-4">
                   <Button
                     onClick={() => setIsEditing(true)}
@@ -89,7 +102,7 @@ const CurrentGoal = () => {
                     Continue to Next Steps
                   </Button>
                 </div>
-              </>
+              </div>
             )}
           </CardContent>
         </Card>

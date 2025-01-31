@@ -7,9 +7,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { toast } from "sonner";
 
 const ReturningUserOptions = () => {
   const navigate = useNavigate();
+
+  const handleStartFresh = () => {
+    localStorage.clear(); // Clear all existing data
+    navigate("/personal-info");
+  };
+
+  const handleReviewPlan = () => {
+    const currentGoal = localStorage.getItem("currentGoal");
+    if (!currentGoal) {
+      toast.error("No existing plan found. Please start fresh.");
+      handleStartFresh();
+      return;
+    }
+    navigate("/current-goal");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
@@ -23,7 +39,7 @@ const ReturningUserOptions = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <Button
-              onClick={() => navigate("/current-goal")}
+              onClick={handleReviewPlan}
               className="w-full py-6 text-lg"
             >
               Review My Current Plan
@@ -36,7 +52,7 @@ const ReturningUserOptions = () => {
               Update My Next Steps
             </Button>
             <Button
-              onClick={() => navigate("/personal-info")}
+              onClick={handleStartFresh}
               variant="outline"
               className="w-full py-6 text-lg"
             >
