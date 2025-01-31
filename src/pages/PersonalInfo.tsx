@@ -34,7 +34,7 @@ const PersonalInfo = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.age || !formData.occupation || !formData.experience) {
+    if (!formData.age || !formData.industry || !formData.occupation || !formData.experience) {
       toast.error("Please fill in all fields");
       return;
     }
@@ -69,7 +69,7 @@ const PersonalInfo = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Age
+                Age <span className="text-red-500">*</span>
               </label>
               <Input
                 type="number"
@@ -77,16 +77,18 @@ const PersonalInfo = () => {
                 onChange={(e) => setFormData({ ...formData, age: e.target.value })}
                 placeholder="Enter your age"
                 className="w-full"
+                required
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Industry
+                Industry <span className="text-red-500">*</span>
               </label>
               <Select
                 value={formData.industry}
                 onValueChange={(value) => setFormData({ ...formData, industry: value })}
+                required
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select your industry" />
@@ -107,6 +109,7 @@ const PersonalInfo = () => {
                     onChange={(e) => setFormData({ ...formData, customIndustry: e.target.value })}
                     placeholder="Please specify your industry"
                     className="w-full"
+                    required
                   />
                 </div>
               )}
@@ -114,7 +117,7 @@ const PersonalInfo = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Occupation
+                Occupation <span className="text-red-500">*</span>
               </label>
               <Input
                 type="text"
@@ -122,12 +125,13 @@ const PersonalInfo = () => {
                 onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
                 placeholder="Enter your current occupation"
                 className="w-full"
+                required
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Years of Experience
+                Years of Experience <span className="text-red-500">*</span>
               </label>
               <Input
                 type="number"
@@ -135,6 +139,7 @@ const PersonalInfo = () => {
                 onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
                 placeholder="Years of experience"
                 className="w-full"
+                required
               />
             </div>
 

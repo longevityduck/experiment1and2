@@ -36,13 +36,14 @@ const CareerGoals = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                What are your career goals?
+                What are your career goals? <span className="text-red-500">*</span>
               </label>
               <Textarea
                 value={goals}
                 onChange={(e) => setGoals(e.target.value)}
                 placeholder="Describe your career goals and aspirations..."
                 className="min-h-[150px]"
+                required
               />
             </div>
 
