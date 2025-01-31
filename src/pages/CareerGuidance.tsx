@@ -1,17 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { QuestionItem } from "@/components/career-guidance/QuestionItem";
+import { storage } from "@/utils/storage";
+import { GuidanceQuestion } from "@/types/career";
 
-interface Question {
-  id: number;
-  text: string;
-  options: string[];
-}
-
-const questions: Question[] = [
+const questions: GuidanceQuestion[] = [
   {
     id: 1,
     text: "How satisfied are you with your current career path?",
@@ -51,7 +46,7 @@ const CareerGuidance = () => {
       return;
     }
 
-    localStorage.setItem("careerGuidanceAnswers", JSON.stringify(answers));
+    storage.saveCareerInfo({ guidanceAnswers: answers });
     navigate("/career-clarification");
   };
 
@@ -63,24 +58,14 @@ const CareerGuidance = () => {
           
           <form onSubmit={handleSubmit} className="space-y-8">
             {questions.map((question) => (
-              <div key={question.id} className="space-y-4">
-                <h2 className="text-lg font-medium">{question.text}</h2>
-                <RadioGroup
-                  value={answers[question.id] || ""}
-                  onValueChange={(value) => 
-                    setAnswers((prev) => ({ ...prev, [question.id]: value }))
-                  }
-                >
-                  <div className="space-y-2">
-                    {question.options.map((option) => (
-                      <div key={option} className="flex items-center space-x-2">
-                        <RadioGroupItem value={option} id={`${question.id}-${option}`} />
-                        <Label htmlFor={`${question.id}-${option}`}>{option}</Label>
-                      </div>
-                    ))}
-                  </div>
-                </RadioGroup>
-              </div>
+              <QuestionItem
+                key={question.id}
+                question={question}
+                value={answers[question.id] || ""}
+                onChange={(value) => 
+                  setAnswers((prev) => ({ ...prev, [question.id]: value }))
+                }
+              />
             ))}
 
             <div className="flex gap-4">

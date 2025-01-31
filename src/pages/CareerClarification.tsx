@@ -3,38 +3,35 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { storage } from "@/utils/storage";
+import { ClarifyingQuestion } from "@/types/career";
 
-interface ClarifyingQuestion {
-  id: string;
-  text: string;
-}
+const questions: ClarifyingQuestion[] = [
+  {
+    id: "skills-strengths",
+    text: "What are your top skills and strengths? Include both technical and soft skills."
+  },
+  {
+    id: "interests",
+    text: "What topics, activities, or types of work do you find most engaging and enjoyable?"
+  },
+  {
+    id: "values",
+    text: "What are your core values in relation to work? (e.g., creativity, stability, independence)"
+  },
+  {
+    id: "constraints",
+    text: "Are there any constraints or requirements for your next career move? (e.g., location, salary, work-life balance)"
+  },
+  {
+    id: "ideal-environment",
+    text: "Describe your ideal work environment and culture."
+  }
+];
 
 const CareerClarification = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState<Record<string, string>>({});
-
-  const questions: ClarifyingQuestion[] = [
-    {
-      id: "skills-strengths",
-      text: "What are your top skills and strengths? Include both technical and soft skills."
-    },
-    {
-      id: "interests",
-      text: "What topics, activities, or types of work do you find most engaging and enjoyable?"
-    },
-    {
-      id: "values",
-      text: "What are your core values in relation to work? (e.g., creativity, stability, independence)"
-    },
-    {
-      id: "constraints",
-      text: "Are there any constraints or requirements for your next career move? (e.g., location, salary, work-life balance)"
-    },
-    {
-      id: "ideal-environment",
-      text: "Describe your ideal work environment and culture."
-    }
-  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +41,7 @@ const CareerClarification = () => {
       return;
     }
 
-    localStorage.setItem("careerClarificationAnswers", JSON.stringify(answers));
+    storage.saveCareerInfo({ clarificationAnswers: answers });
     navigate("/career-goal-suggestion");
   };
 
