@@ -10,6 +10,7 @@ import CareerClarification from "./pages/CareerClarification";
 import CareerGoalSuggestion from "./pages/CareerGoalSuggestion";
 import SkillsAssessment from "./pages/SkillsAssessment";
 import NextSteps from "./pages/NextSteps";
+import PhoneCommitment from "./pages/PhoneCommitment";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/career-goal-suggestion" element={<CareerGoalSuggestion />} />
           <Route path="/skills-assessment" element={<SkillsAssessment />} />
           <Route path="/next-steps" element={<NextSteps />} />
+          <Route path="/phone-commitment" element={<PhoneCommitment />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

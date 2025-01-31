@@ -142,6 +142,10 @@ const NextSteps = () => {
     navigate("/");
   };
 
+  const handleCommit = () => {
+    navigate("/phone-commitment");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
       <div className="max-w-2xl mx-auto">
@@ -227,13 +231,21 @@ const NextSteps = () => {
                   ))}
                 </div>
 
-                <Button
-                  onClick={handleReset}
-                  className="w-full mt-6"
-                  variant="outline"
-                >
-                  Start Over
-                </Button>
+                <div className="flex gap-4">
+                  <Button
+                    onClick={handleReset}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    Start Over
+                  </Button>
+                  <Button
+                    onClick={handleCommit}
+                    className="w-full"
+                  >
+                    Commit to These Steps
+                  </Button>
+                </div>
               </>
             )}
           </CardContent>
