@@ -1,5 +1,7 @@
 import { useToast } from "@/hooks/use-toast";
 import StepCard from "./StepCard";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 interface Step {
   id: number;
@@ -95,23 +97,67 @@ const StepsList = ({
     setEditingTimeframe("");
   };
 
+  const handleInsertStep = (index: number) => {
+    if (steps.length >= 9) {
+      toast({
+        title: "Maximum Steps Reached",
+        description: "You cannot add more than 9 steps",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newStep: Step = {
+      id: Math.max(...steps.map((s) => s.id)) + 1,
+      content: "",
+      timeframe: "1 months",
+      isEditing: true,
+      isOriginal: false,
+    };
+
+    const newSteps = [...steps];
+    newSteps.splice(index, 0, newStep);
+    setSteps(newSteps);
+    setEditingContent("");
+    setEditingTimeframe("1 months");
+  };
+
   return (
-    <div className="space-y-4 mb-6">
-      {steps.map((step) => (
-        <div
-          key={step.id}
-          className="flex flex-col p-4 bg-white rounded-lg border border-gray-200 shadow-sm"
-        >
-          <StepCard
-            step={step}
-            editingContent={editingContent}
-            editingTimeframe={editingTimeframe}
-            onEdit={handleEdit}
-            onSave={handleSave}
-            onCancel={handleCancel}
-            setEditingContent={setEditingContent}
-            setEditingTimeframe={setEditingTimeframe}
-          />
+    <div className="space-y-2 mb-6">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="w-full border border-dashed border-gray-300 hover:border-gray-400"
+        onClick={() => handleInsertStep(0)}
+      >
+        <Plus className="h-4 w-4 mr-2" />
+        Insert Step Here
+      </Button>
+      
+      {steps.map((step, index) => (
+        <div key={step.id}>
+          <div className="flex flex-col p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+            <StepCard
+              step={step}
+              editingContent={editingContent}
+              editingTimeframe={editingTimeframe}
+              onEdit={handleEdit}
+              onSave={handleSave}
+              onCancel={handleCancel}
+              setEditingContent={setEditingContent}
+              setEditingTimeframe={setEditingTimeframe}
+            />
+          </div>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full border border-dashed border-gray-300 hover:border-gray-400 mt-2"
+            onClick={() => handleInsertStep(index + 1)}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Insert Step Here
+          </Button>
         </div>
       ))}
     </div>
