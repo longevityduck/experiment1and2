@@ -17,6 +17,8 @@ interface Step {
   content: string;
   timeframe: string;
   isEditing: boolean;
+  explanation?: string;
+  isOriginal?: boolean;
 }
 
 const NextSteps = () => {
@@ -38,32 +40,43 @@ const NextSteps = () => {
         const mockSteps = [
           {
             content: `Research advanced certifications in ${careerInfo.industry}`,
-            timeframe: "1-3 months"
+            timeframe: "1-3 months",
+            explanation: "Professional certifications demonstrate your commitment to growth and validate your expertise to potential employers. They can significantly increase your marketability and open doors to advanced positions.",
+            isOriginal: true
           },
           {
             content: `Build a portfolio showcasing your ${skills[0]} skills`,
-            timeframe: "2-4 months"
+            timeframe: "2-4 months",
+            explanation: "A well-curated portfolio provides tangible evidence of your capabilities and helps you stand out in competitive job markets. It's your personal brand showcase that speaks louder than any resume.",
+            isOriginal: true
           },
           {
             content: `Network with professionals in ${careerInfo.occupation} roles`,
-            timeframe: "1-2 months"
+            timeframe: "1-2 months",
+            explanation: "Professional networking is crucial for career advancement. It provides insider industry knowledge, mentorship opportunities, and often leads to job opportunities before they're publicly posted.",
+            isOriginal: true
           },
           {
             content: "Attend industry conferences and workshops",
-            timeframe: "3-6 months"
+            timeframe: "3-6 months",
+            explanation: "Industry events keep you updated with the latest trends and technologies while providing valuable face-to-face networking opportunities. They're essential for staying relevant in your field.",
+            isOriginal: true
           },
           {
             content: "Seek mentorship opportunities",
-            timeframe: "1-3 months"
+            timeframe: "1-3 months",
+            explanation: "Mentors can provide invaluable guidance, share their experiences, and help you avoid common career pitfalls. Their insights can accelerate your professional growth significantly.",
+            isOriginal: true
           },
           {
             content: "Create a detailed timeline for career progression",
-            timeframe: "1-2 months"
+            timeframe: "1-2 months",
+            explanation: "A structured timeline helps you stay focused and accountable to your goals. It transforms abstract aspirations into concrete, actionable milestones.",
+            isOriginal: true
           }
         ].map((step, id) => ({
           id,
-          content: step.content,
-          timeframe: step.timeframe,
+          ...step,
           isEditing: false
         }));
 
@@ -117,7 +130,8 @@ const NextSteps = () => {
             ...s, 
             content: editingContent.trim(), 
             timeframe: editingTimeframe.trim(),
-            isEditing: false 
+            isEditing: false,
+            isOriginal: false // Remove original status when edited
           }
         : s
     ));
@@ -177,7 +191,7 @@ const NextSteps = () => {
                   {steps.map((step) => (
                     <div
                       key={step.id}
-                      className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 shadow-sm"
+                      className="flex flex-col p-4 bg-white rounded-lg border border-gray-200 shadow-sm"
                     >
                       {step.isEditing ? (
                         <div className="flex-1 space-y-2">
@@ -212,19 +226,26 @@ const NextSteps = () => {
                         </div>
                       ) : (
                         <>
-                          <div className="flex-1">
-                            <span className="text-gray-700">{step.content}</span>
-                            <span className="ml-2 text-sm text-gray-500">
-                              ({step.timeframe})
-                            </span>
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="flex-1">
+                              <span className="text-gray-700">{step.content}</span>
+                              <span className="ml-2 text-sm text-gray-500">
+                                ({step.timeframe})
+                              </span>
+                            </div>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => handleEdit(step)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
                           </div>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => handleEdit(step)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
+                          {step.isOriginal && step.explanation && (
+                            <p className="text-sm text-gray-600 mt-2 bg-gray-50 p-3 rounded">
+                              {step.explanation}
+                            </p>
+                          )}
                         </>
                       )}
                     </div>
