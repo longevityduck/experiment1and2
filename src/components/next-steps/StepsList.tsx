@@ -29,6 +29,17 @@ const StepsList = ({
 }: StepsListProps) => {
   const { toast } = useToast();
 
+  const validateTimeframe = (timeframe: string) => {
+    const parts = timeframe.trim().split(' ');
+    if (parts.length !== 2) return false;
+    
+    const [number, unit] = parts;
+    if (isNaN(Number(number))) return false;
+    
+    const validUnits = ['week', 'weeks', 'month', 'months'];
+    return validUnits.includes(unit.toLowerCase());
+  };
+
   const handleEdit = (step: Step) => {
     setSteps(
       steps.map((s) => ({
@@ -54,6 +65,15 @@ const StepsList = ({
       toast({
         title: "Error",
         description: "Timeframe cannot be empty",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!validateTimeframe(editingTimeframe)) {
+      toast({
+        title: "Error",
+        description: "Timeframe must be in the format: [number] weeks/months (e.g., '2 weeks' or '3 months')",
         variant: "destructive",
       });
       return;
