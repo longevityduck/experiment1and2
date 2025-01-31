@@ -29,8 +29,17 @@ const NextSteps = () => {
   const [editingTimeframe, setEditingTimeframe] = useState("");
 
   useEffect(() => {
-    const generateSteps = async () => {
+    const loadSteps = async () => {
       try {
+        // First try to load saved steps
+        const savedSteps = localStorage.getItem("userSteps");
+        if (savedSteps) {
+          setSteps(JSON.parse(savedSteps));
+          setLoading(false);
+          return;
+        }
+
+        // If no saved steps, generate new ones
         const careerInfo = JSON.parse(localStorage.getItem("careerInfo") || "{}");
         const skills = JSON.parse(localStorage.getItem("skills") || "[]");
 
@@ -84,6 +93,8 @@ const NextSteps = () => {
         }));
 
         setSteps(mockSteps);
+        // Save the initial steps
+        localStorage.setItem("userSteps", JSON.stringify(mockSteps));
         setLoading(false);
       } catch (error) {
         console.error("Error generating steps:", error);
@@ -96,8 +107,15 @@ const NextSteps = () => {
       }
     };
 
-    generateSteps();
+    loadSteps();
   }, [toast]);
+
+  // Save steps whenever they change
+  useEffect(() => {
+    if (!loading && steps.length > 0) {
+      localStorage.setItem("userSteps", JSON.stringify(steps));
+    }
+  }, [steps, loading]);
 
   const handleReset = () => {
     localStorage.removeItem("careerInfo");
