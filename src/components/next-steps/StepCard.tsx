@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pencil, Save, X } from "lucide-react";
+import { GripVertical, Pencil, Save, X } from "lucide-react";
 
 interface Step {
   id: number;
@@ -75,9 +75,12 @@ const StepCard = ({
   return (
     <>
       <div className="flex justify-between items-start mb-2">
-        <div className="flex-1">
-          <span className="text-gray-700">{step.content}</span>
-          <span className="ml-2 text-sm text-gray-500">({step.timeframe})</span>
+        <div className="flex items-center gap-2">
+          <GripVertical className="h-5 w-5 text-gray-400" />
+          <div className="flex-1">
+            <span className="text-gray-700">{step.content}</span>
+            <span className="ml-2 text-sm text-gray-500">({step.timeframe})</span>
+          </div>
         </div>
         <Button size="icon" variant="ghost" onClick={() => onEdit(step)}>
           <Pencil className="h-4 w-4" />
