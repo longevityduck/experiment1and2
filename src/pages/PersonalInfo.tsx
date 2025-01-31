@@ -26,6 +26,7 @@ const PersonalInfo = () => {
   const [formData, setFormData] = useState({
     age: "",
     industry: "",
+    customIndustry: "",
     occupation: "",
     experience: "",
   });
@@ -33,12 +34,22 @@ const PersonalInfo = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.age || !formData.industry || !formData.occupation || !formData.experience) {
+    if (!formData.age || !formData.occupation || !formData.experience) {
       toast.error("Please fill in all fields");
       return;
     }
 
-    localStorage.setItem("careerInfo", JSON.stringify(formData));
+    if (formData.industry === "Other" && !formData.customIndustry) {
+      toast.error("Please specify your industry");
+      return;
+    }
+
+    const dataToStore = {
+      ...formData,
+      industry: formData.industry === "Other" ? formData.customIndustry : formData.industry,
+    };
+
+    localStorage.setItem("careerInfo", JSON.stringify(dataToStore));
     navigate("/career-goals");
   };
 
@@ -88,6 +99,17 @@ const PersonalInfo = () => {
                   ))}
                 </SelectContent>
               </Select>
+              {formData.industry === "Other" && (
+                <div className="mt-2">
+                  <Input
+                    type="text"
+                    value={formData.customIndustry}
+                    onChange={(e) => setFormData({ ...formData, customIndustry: e.target.value })}
+                    placeholder="Please specify your industry"
+                    className="w-full"
+                  />
+                </div>
+              )}
             </div>
 
             <div>
