@@ -2,15 +2,23 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 const CareerGoals = () => {
   const navigate = useNavigate();
   const [goals, setGoals] = useState("");
+  const [isUnsure, setIsUnsure] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (isUnsure) {
+      navigate("/career-guidance");
+      return;
+    }
+
     if (!goals.trim()) {
       toast.error("Please enter your career goals");
       return;
@@ -34,18 +42,35 @@ const CareerGoals = () => {
           <h1 className="text-2xl font-bold text-gray-800 mb-6">Career Goals</h1>
           
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                What are your career goals? <span className="text-red-500">*</span>
-              </label>
-              <Textarea
-                value={goals}
-                onChange={(e) => setGoals(e.target.value)}
-                placeholder="Describe your career goals and aspirations..."
-                className="min-h-[150px]"
-                required
-              />
-            </div>
+            <RadioGroup
+              value={isUnsure ? "unsure" : "know"}
+              onValueChange={(value) => setIsUnsure(value === "unsure")}
+              className="space-y-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="know" id="know" />
+                <Label htmlFor="know">I know my career goals</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="unsure" id="unsure" />
+                <Label htmlFor="unsure">I'm not sure about my career goals</Label>
+              </div>
+            </RadioGroup>
+
+            {!isUnsure && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  What are your career goals? <span className="text-red-500">*</span>
+                </label>
+                <Textarea
+                  value={goals}
+                  onChange={(e) => setGoals(e.target.value)}
+                  placeholder="Describe your career goals and aspirations..."
+                  className="min-h-[150px]"
+                  required
+                />
+              </div>
+            )}
 
             <div className="flex gap-4">
               <Button
