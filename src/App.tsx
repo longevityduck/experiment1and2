@@ -4,6 +4,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Introduction from "./pages/Introduction";
+import UserType from "./pages/UserType";
+import Login from "./pages/Login";
+import ReturningUserOptions from "./pages/ReturningUserOptions";
+import CurrentGoal from "./pages/CurrentGoal";
 import PersonalInfo from "./pages/PersonalInfo";
 import CareerGoals from "./pages/CareerGoals";
 import CareerGuidance from "./pages/CareerGuidance";
@@ -33,6 +37,10 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Navigate to="/introduction" replace />} />
           <Route path="/introduction" element={<Introduction />} />
+          <Route path="/user-type" element={<UserType />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/returning-user-options" element={<ReturningUserOptions />} />
+          <Route path="/current-goal" element={<CurrentGoal />} />
           <Route path="/personal-info" element={<PersonalInfo />} />
           <Route path="/career-goals" element={<CareerGoals />} />
           <Route path="/career-guidance" element={<CareerGuidance />} />

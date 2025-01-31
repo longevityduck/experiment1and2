@@ -43,7 +43,7 @@ const Introduction = () => {
 
           <div className="mt-8">
             <Button 
-              onClick={() => navigate("/personal-info")}
+              onClick={() => navigate("/user-type")}
               className="px-8 py-6 text-lg"
             >
               Start Your Career Planning Journey
