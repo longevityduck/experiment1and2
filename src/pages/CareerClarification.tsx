@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,39 +12,33 @@ interface ClarifyingQuestion {
 const CareerClarification = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [questions, setQuestions] = useState<ClarifyingQuestion[]>([]);
 
-  useEffect(() => {
-    const guidanceAnswers = JSON.parse(localStorage.getItem("careerGuidanceAnswers") || "{}");
-    
-    // Determine clarifying questions based on previous answers
-    const determineQuestions = () => {
-      const qs: ClarifyingQuestion[] = [];
-      
-      // Example logic to determine questions based on previous answers
-      if (guidanceAnswers[3] === "Own business") {
-        qs.push(
-          { id: "business-type", text: "What type of business are you interested in starting?" },
-          { id: "business-timeline", text: "When do you plan to start this business?" }
-        );
-      } else if (guidanceAnswers[1] === "Higher income") {
-        qs.push(
-          { id: "income-goal", text: "What is your target income?" },
-          { id: "skills-gap", text: "What skills do you need to achieve this income goal?" }
-        );
-      }
-      
-      // Add default questions
-      qs.push(
-        { id: "immediate-next", text: "What immediate steps can you take towards your career goals?" },
-        { id: "obstacles", text: "What obstacles do you anticipate in achieving these goals?" }
-      );
-      
-      return qs;
-    };
-
-    setQuestions(determineQuestions());
-  }, []);
+  const questions: ClarifyingQuestion[] = [
+    {
+      id: "current-role",
+      text: "What is your current role and how long have you been in it?"
+    },
+    {
+      id: "skills-strengths",
+      text: "What are your top skills and strengths? Include both technical and soft skills."
+    },
+    {
+      id: "interests",
+      text: "What topics, activities, or types of work do you find most engaging and enjoyable?"
+    },
+    {
+      id: "values",
+      text: "What are your core values in relation to work? (e.g., creativity, stability, independence)"
+    },
+    {
+      id: "constraints",
+      text: "Are there any constraints or requirements for your next career move? (e.g., location, salary, work-life balance)"
+    },
+    {
+      id: "ideal-environment",
+      text: "Describe your ideal work environment and culture."
+    }
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,20 +49,14 @@ const CareerClarification = () => {
     }
 
     localStorage.setItem("careerClarificationAnswers", JSON.stringify(answers));
-    
-    // Generate career goals based on all answers
-    const goalsSummary = "Based on your responses, you should focus on: " + 
-      Object.values(answers).join(". ");
-    
-    localStorage.setItem("careerGoals", goalsSummary);
-    navigate("/skills-assessment");
+    navigate("/career-goal-suggestion");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">Clarifying Questions</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-6">Career Clarification</h1>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             {questions.map((question) => (
@@ -98,7 +86,7 @@ const CareerClarification = () => {
                 Back
               </Button>
               <Button type="submit" className="w-full">
-                Next
+                Get AI Career Suggestion
               </Button>
             </div>
           </form>

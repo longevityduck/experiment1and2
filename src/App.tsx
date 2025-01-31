@@ -7,6 +7,7 @@ import PersonalInfo from "./pages/PersonalInfo";
 import CareerGoals from "./pages/CareerGoals";
 import CareerGuidance from "./pages/CareerGuidance";
 import CareerClarification from "./pages/CareerClarification";
+import CareerGoalSuggestion from "./pages/CareerGoalSuggestion";
 import SkillsAssessment from "./pages/SkillsAssessment";
 import NextSteps from "./pages/NextSteps";
 import NotFound from "./pages/NotFound";
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/career-goals" element={<CareerGoals />} />
           <Route path="/career-guidance" element={<CareerGuidance />} />
           <Route path="/career-clarification" element={<CareerClarification />} />
+          <Route path="/career-goal-suggestion" element={<CareerGoalSuggestion />} />
           <Route path="/skills-assessment" element={<SkillsAssessment />} />
           <Route path="/next-steps" element={<NextSteps />} />
           <Route path="*" element={<NotFound />} />
