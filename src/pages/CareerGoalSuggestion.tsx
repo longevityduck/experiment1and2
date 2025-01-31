@@ -49,39 +49,33 @@ const CareerGoalSuggestion = () => {
           <Card className="mb-6">
             <CardContent className="pt-6">
               <h2 className="text-lg font-semibold mb-2">Suggested Career Goal:</h2>
-              <p className="text-gray-700 whitespace-pre-line">{suggestedGoal}</p>
+              {isEditing ? (
+                <Textarea
+                  value={editedGoal}
+                  onChange={(e) => setEditedGoal(e.target.value)}
+                  className="min-h-[150px]"
+                />
+              ) : (
+                <p className="text-gray-700 whitespace-pre-line">{suggestedGoal}</p>
+              )}
             </CardContent>
           </Card>
 
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {isEditing ? "Edit Your Career Goal:" : "Your Career Goal:"}
-              </label>
-              <Textarea
-                value={editedGoal}
-                onChange={(e) => setEditedGoal(e.target.value)}
-                className="min-h-[150px]"
-                disabled={!isEditing}
-              />
-            </div>
-
-            <div className="flex gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={() => setIsEditing(!isEditing)}
-              >
-                {isEditing ? "Done Editing" : "Edit Goal"}
-              </Button>
-              <Button 
-                onClick={handleSubmit}
-                className="w-full"
-              >
-                Continue to Skills Assessment
-              </Button>
-            </div>
+          <div className="flex gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={() => setIsEditing(!isEditing)}
+            >
+              {isEditing ? "Done Editing" : "Edit Goal"}
+            </Button>
+            <Button 
+              onClick={handleSubmit}
+              className="w-full"
+            >
+              Continue to Skills Assessment
+            </Button>
           </div>
         </div>
       </div>
