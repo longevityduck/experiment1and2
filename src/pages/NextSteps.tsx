@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 interface Step {
   id: number;
   content: string;
+  timeframe: string;
   isEditing: boolean;
 }
 
@@ -24,6 +25,7 @@ const NextSteps = () => {
   const [loading, setLoading] = useState(true);
   const [steps, setSteps] = useState<Step[]>([]);
   const [editingContent, setEditingContent] = useState("");
+  const [editingTimeframe, setEditingTimeframe] = useState("");
 
   useEffect(() => {
     const generateSteps = async () => {
@@ -34,15 +36,34 @@ const NextSteps = () => {
 
         // This is a mock AI response - in a real app, you'd call an AI API here
         const mockSteps = [
-          `Research advanced certifications in ${careerInfo.industry}`,
-          `Build a portfolio showcasing your ${skills[0]} skills`,
-          `Network with professionals in ${careerInfo.occupation} roles`,
-          "Attend industry conferences and workshops",
-          "Seek mentorship opportunities",
-          "Create a detailed timeline for career progression"
-        ].map((content, id) => ({
+          {
+            content: `Research advanced certifications in ${careerInfo.industry}`,
+            timeframe: "1-3 months"
+          },
+          {
+            content: `Build a portfolio showcasing your ${skills[0]} skills`,
+            timeframe: "2-4 months"
+          },
+          {
+            content: `Network with professionals in ${careerInfo.occupation} roles`,
+            timeframe: "1-2 months"
+          },
+          {
+            content: "Attend industry conferences and workshops",
+            timeframe: "3-6 months"
+          },
+          {
+            content: "Seek mentorship opportunities",
+            timeframe: "1-3 months"
+          },
+          {
+            content: "Create a detailed timeline for career progression",
+            timeframe: "1-2 months"
+          }
+        ].map((step, id) => ({
           id,
-          content,
+          content: step.content,
+          timeframe: step.timeframe,
           isEditing: false
         }));
 
@@ -68,6 +89,7 @@ const NextSteps = () => {
       isEditing: s.id === step.id ? true : false
     })));
     setEditingContent(step.content);
+    setEditingTimeframe(step.timeframe);
   };
 
   const handleSave = (step: Step) => {
@@ -80,12 +102,27 @@ const NextSteps = () => {
       return;
     }
 
+    if (!editingTimeframe.trim()) {
+      toast({
+        title: "Error",
+        description: "Timeframe cannot be empty",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSteps(steps.map(s => 
       s.id === step.id 
-        ? { ...s, content: editingContent.trim(), isEditing: false }
+        ? { 
+            ...s, 
+            content: editingContent.trim(), 
+            timeframe: editingTimeframe.trim(),
+            isEditing: false 
+          }
         : s
     ));
     setEditingContent("");
+    setEditingTimeframe("");
   };
 
   const handleCancel = (step: Step) => {
@@ -95,6 +132,7 @@ const NextSteps = () => {
         : s
     ));
     setEditingContent("");
+    setEditingTimeframe("");
   };
 
   const handleReset = () => {
@@ -118,8 +156,8 @@ const NextSteps = () => {
           <CardHeader>
             <CardTitle>Your Next Steps</CardTitle>
             <CardDescription>
-              Based on your career goals and skills, here are the recommended next steps.
-              You can edit these steps to make them more personalized.
+              Based on your career goals and skills, here are the recommended next steps with estimated timeframes.
+              You can edit these steps and timeframes to make them more personalized.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -138,31 +176,44 @@ const NextSteps = () => {
                       className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 shadow-sm"
                     >
                       {step.isEditing ? (
-                        <div className="flex-1 flex items-center gap-2">
-                          <Input
-                            value={editingContent}
-                            onChange={(e) => setEditingContent(e.target.value)}
-                            className="flex-1"
-                            placeholder="Enter step description"
-                          />
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => handleSave(step)}
-                          >
-                            <Save className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => handleCancel(step)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
+                        <div className="flex-1 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Input
+                              value={editingContent}
+                              onChange={(e) => setEditingContent(e.target.value)}
+                              className="flex-1"
+                              placeholder="Enter step description"
+                            />
+                            <Input
+                              value={editingTimeframe}
+                              onChange={(e) => setEditingTimeframe(e.target.value)}
+                              className="w-32"
+                              placeholder="e.g. 1-3 months"
+                            />
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => handleSave(step)}
+                            >
+                              <Save className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => handleCancel(step)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       ) : (
                         <>
-                          <span className="flex-1 text-gray-700">{step.content}</span>
+                          <div className="flex-1">
+                            <span className="text-gray-700">{step.content}</span>
+                            <span className="ml-2 text-sm text-gray-500">
+                              ({step.timeframe})
+                            </span>
+                          </div>
                           <Button
                             size="icon"
                             variant="ghost"
