@@ -32,6 +32,17 @@ const StepCard = ({
   setEditingContent,
   setEditingTimeframe,
 }: StepCardProps) => {
+  const handleTimeframeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Only allow numbers
+    const numericValue = value.replace(/[^0-9]/g, '');
+    if (numericValue) {
+      setEditingTimeframe(`${numericValue} months`);
+    } else {
+      setEditingTimeframe('');
+    }
+  };
+
   if (step.isEditing) {
     return (
       <div className="flex-1 space-y-2">
@@ -43,10 +54,12 @@ const StepCard = ({
             placeholder="Enter step description"
           />
           <Input
-            value={editingTimeframe}
-            onChange={(e) => setEditingTimeframe(e.target.value)}
+            value={editingTimeframe.replace(' months', '')}
+            onChange={handleTimeframeChange}
             className="w-32"
-            placeholder="e.g. 1-3 months"
+            placeholder="e.g. 3"
+            type="number"
+            min="1"
           />
           <Button size="icon" variant="ghost" onClick={() => onSave(step)}>
             <Save className="h-4 w-4" />

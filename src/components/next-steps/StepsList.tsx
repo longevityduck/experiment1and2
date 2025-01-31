@@ -59,13 +59,24 @@ const StepsList = ({
       return;
     }
 
+    // Validate timeframe format
+    const timeframeNumber = parseInt(editingTimeframe.replace(' months', ''));
+    if (isNaN(timeframeNumber) || timeframeNumber < 1) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid number of months",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSteps(
       steps.map((s) =>
         s.id === step.id
           ? {
               ...s,
               content: editingContent.trim(),
-              timeframe: editingTimeframe.trim(),
+              timeframe: `${timeframeNumber} months`,
               isEditing: false,
               isOriginal: false,
             }
