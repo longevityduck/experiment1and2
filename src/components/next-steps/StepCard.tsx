@@ -57,7 +57,7 @@ const StepCard = ({
             value={editingTimeframe.replace(' months', '')}
             onChange={handleTimeframeChange}
             className="w-32"
-            placeholder="e.g. 3"
+            placeholder="e.g. 3 (months)"
             type="number"
             min="1"
           />
