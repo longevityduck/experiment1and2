@@ -100,10 +100,12 @@ const SkillsAssessment = () => {
 
   const handleConfirm = () => {
     setIsConfirmed(true);
+    localStorage.setItem("skills", JSON.stringify(skills));
     toast({
       title: "Success",
       description: "Skills confirmed successfully!",
     });
+    navigate("/next-steps");
   };
 
   return (
