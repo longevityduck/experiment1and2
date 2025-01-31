@@ -98,6 +98,14 @@ const StepsList = ({
     setEditingTimeframe("");
   };
 
+  const handleDelete = (step: Step) => {
+    setSteps(steps.filter((s) => s.id !== step.id));
+    toast({
+      title: "Step Deleted",
+      description: "The step has been successfully deleted.",
+    });
+  };
+
   const handleAddStep = () => {
     if (steps.length >= 9) {
       toast({
@@ -116,7 +124,7 @@ const StepsList = ({
       isOriginal: false,
     };
 
-    setSteps([...steps, newStep]);
+    setSteps([newStep, ...steps]);
     setEditingContent("");
     setEditingTimeframe("1 months");
   };
@@ -168,6 +176,7 @@ const StepsList = ({
                           onEdit={handleEdit}
                           onSave={handleSave}
                           onCancel={handleCancel}
+                          onDelete={handleDelete}
                           setEditingContent={setEditingContent}
                           setEditingTimeframe={setEditingTimeframe}
                         />
