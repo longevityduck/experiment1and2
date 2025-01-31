@@ -38,7 +38,7 @@ const PhoneCommitment = () => {
     });
     
     setIsSubmitting(false);
-    navigate("/");
+    navigate("/success");
   };
 
   return (
