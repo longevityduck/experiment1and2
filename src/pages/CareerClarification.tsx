@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { FormContainer } from "@/components/career-guidance/FormContainer";
+import { NavigationButtons } from "@/components/career-guidance/NavigationButtons";
+import { ClarificationQuestionItem } from "@/components/career-guidance/ClarificationQuestionItem";
 import { storage } from "@/utils/storage";
 import { ClarifyingQuestion } from "@/types/career";
 
@@ -46,46 +47,26 @@ const CareerClarification = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">Career Clarification</h1>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {questions.map((question) => (
-              <div key={question.id}>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {question.text} <span className="text-red-500">*</span>
-                </label>
-                <Textarea
-                  value={answers[question.id] || ""}
-                  onChange={(e) => 
-                    setAnswers((prev) => ({ ...prev, [question.id]: e.target.value }))
-                  }
-                  placeholder="Your answer..."
-                  className="min-h-[100px]"
-                  required
-                />
-              </div>
-            ))}
+    <FormContainer title="Career Clarification">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {questions.map((question) => (
+          <ClarificationQuestionItem
+            key={question.id}
+            question={question}
+            value={answers[question.id] || ""}
+            onChange={(value) => 
+              setAnswers((prev) => ({ ...prev, [question.id]: value }))
+            }
+          />
+        ))}
 
-            <div className="flex gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={() => navigate(-1)}
-              >
-                Back
-              </Button>
-              <Button type="submit" className="w-full">
-                Get AI Career Suggestion
-              </Button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+        <NavigationButtons
+          onBack={() => navigate(-1)}
+          onNext={() => {}}
+          nextButtonText="Get AI Career Suggestion"
+        />
+      </form>
+    </FormContainer>
   );
 };
 
