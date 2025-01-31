@@ -15,10 +15,6 @@ const CareerClarification = () => {
 
   const questions: ClarifyingQuestion[] = [
     {
-      id: "current-role",
-      text: "What is your current role and how long have you been in it?"
-    },
-    {
       id: "skills-strengths",
       text: "What are your top skills and strengths? Include both technical and soft skills."
     },
