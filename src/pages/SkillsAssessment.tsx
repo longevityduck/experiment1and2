@@ -8,9 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { X } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { SkillInput } from "@/components/skills/SkillInput";
+import { SkillsList } from "@/components/skills/SkillsList";
 
 interface CareerInfo {
   age: string;
@@ -22,19 +21,14 @@ interface CareerInfo {
 
 const SkillsAssessment = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [skills, setSkills] = useState<string[]>([]);
-  const [newSkill, setNewSkill] = useState("");
   const [isConfirmed, setIsConfirmed] = useState(false);
 
   useEffect(() => {
     const generateSkills = async () => {
       try {
         const careerInfo = JSON.parse(localStorage.getItem("careerInfo") || "{}") as CareerInfo;
-        const careerGoals = localStorage.getItem("careerGoals") || "";
-
-        // This is a mock AI response - in a real app, you'd call an AI API here
         const industryDisplay = careerInfo.customIndustry || careerInfo.industry;
         const mockSkills = [
           `${industryDisplay} Industry Knowledge`,
@@ -60,36 +54,8 @@ const SkillsAssessment = () => {
     setSkills(skills.filter((_, index) => index !== indexToDelete));
   };
 
-  const handleAddSkill = () => {
-    if (!newSkill.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a skill",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (skills.length >= 14) {
-      toast({
-        title: "Error",
-        description: "Maximum 14 skills allowed",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (skills.includes(newSkill.trim())) {
-      toast({
-        title: "Error",
-        description: "This skill already exists",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setSkills([...skills, newSkill.trim()]);
-    setNewSkill("");
+  const handleAddSkill = (newSkill: string) => {
+    setSkills([...skills, newSkill]);
   };
 
   const handleReset = () => {
@@ -132,39 +98,18 @@ const SkillsAssessment = () => {
               </div>
             ) : (
               <>
-                <div className="space-y-4 mb-6">
-                  {skills.map((skill, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-3 bg-blue-50 rounded-lg text-blue-800 font-medium"
-                    >
-                      {skill}
-                      {!isConfirmed && (
-                        <button
-                          onClick={() => handleDeleteSkill(index)}
-                          className="text-blue-600 hover:text-blue-800"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                <SkillsList 
+                  skills={skills} 
+                  isConfirmed={isConfirmed} 
+                  onDeleteSkill={handleDeleteSkill}
+                />
 
                 {!isConfirmed && (
                   <div className="space-y-4">
-                    <div className="flex gap-2">
-                      <Input
-                        type="text"
-                        placeholder="Add a new skill"
-                        value={newSkill}
-                        onChange={(e) => setNewSkill(e.target.value)}
-                        maxLength={50}
-                      />
-                      <Button onClick={handleAddSkill} className="whitespace-nowrap">
-                        Add Skill
-                      </Button>
-                    </div>
+                    <SkillInput 
+                      onAddSkill={handleAddSkill}
+                      existingSkills={skills}
+                    />
                     
                     <Button
                       onClick={handleConfirm}
