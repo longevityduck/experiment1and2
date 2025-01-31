@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +31,15 @@ const PersonalInfo = () => {
     experience: "",
   });
 
+  // Load existing data when component mounts
+  useEffect(() => {
+    const savedInfo = localStorage.getItem("personalInfo");
+    if (savedInfo) {
+      const parsedInfo = JSON.parse(savedInfo);
+      setFormData(parsedInfo);
+    }
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -49,7 +58,9 @@ const PersonalInfo = () => {
       industry: formData.industry === "Other" ? formData.customIndustry : formData.industry,
     };
 
+    // Store in both careerInfo (for backward compatibility) and personalInfo
     localStorage.setItem("careerInfo", JSON.stringify(dataToStore));
+    localStorage.setItem("personalInfo", JSON.stringify(formData));
     navigate("/career-goals");
   };
 

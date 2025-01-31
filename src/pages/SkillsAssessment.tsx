@@ -26,8 +26,17 @@ const SkillsAssessment = () => {
   const [isConfirmed, setIsConfirmed] = useState(false);
 
   useEffect(() => {
-    const generateSkills = async () => {
+    const loadOrGenerateSkills = async () => {
       try {
+        // First try to load saved skills
+        const savedSkills = localStorage.getItem("userSkills");
+        if (savedSkills) {
+          setSkills(JSON.parse(savedSkills));
+          setLoading(false);
+          return;
+        }
+
+        // If no saved skills, generate default ones based on career info
         const careerInfo = JSON.parse(localStorage.getItem("careerInfo") || "{}") as CareerInfo;
         const industryDisplay = careerInfo.customIndustry || careerInfo.industry;
         const mockSkills = [
@@ -40,15 +49,26 @@ const SkillsAssessment = () => {
         ];
 
         setSkills(mockSkills);
+        // Save the initial skills
+        localStorage.setItem("userSkills", JSON.stringify(mockSkills));
         setLoading(false);
       } catch (error) {
-        console.error("Error generating skills:", error);
+        console.error("Error loading/generating skills:", error);
         setLoading(false);
       }
     };
 
-    generateSkills();
+    loadOrGenerateSkills();
   }, []);
+
+  // Save skills whenever they change
+  useEffect(() => {
+    if (!loading && skills.length > 0) {
+      localStorage.setItem("userSkills", JSON.stringify(skills));
+      // Also save to skills key for backward compatibility
+      localStorage.setItem("skills", JSON.stringify(skills));
+    }
+  }, [skills, loading]);
 
   const handleDeleteSkill = (indexToDelete: number) => {
     setSkills(skills.filter((_, index) => index !== indexToDelete));
@@ -61,12 +81,14 @@ const SkillsAssessment = () => {
   const handleReset = () => {
     localStorage.removeItem("careerInfo");
     localStorage.removeItem("careerGoals");
+    localStorage.removeItem("skills");
+    localStorage.removeItem("userSkills");
+    localStorage.removeItem("personalInfo");
     navigate("/");
   };
 
   const handleConfirm = () => {
     setIsConfirmed(true);
-    localStorage.setItem("skills", JSON.stringify(skills));
     navigate("/next-steps");
   };
 
