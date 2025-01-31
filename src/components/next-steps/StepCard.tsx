@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { Pencil, Save, X } from "lucide-react";
 
 interface Step {
@@ -33,25 +32,6 @@ const StepCard = ({
   setEditingContent,
   setEditingTimeframe,
 }: StepCardProps) => {
-  const formatTimeframe = (value: string) => {
-    const number = value.split(' ')[0];
-    const unit = value.split(' ')[1]?.toLowerCase();
-    
-    if (!number || !unit) return '';
-    if (isNaN(Number(number))) return '';
-    if (!['week', 'weeks', 'month', 'months'].includes(unit)) return '';
-    
-    return `${number} ${Number(number) === 1 ? unit.replace('s', '') : unit}`;
-  };
-
-  const handleTimeframeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const formattedValue = formatTimeframe(value);
-    if (formattedValue || value === '') {
-      setEditingTimeframe(value);
-    }
-  };
-
   if (step.isEditing) {
     return (
       <div className="flex-1 space-y-2">
@@ -64,9 +44,9 @@ const StepCard = ({
           />
           <Input
             value={editingTimeframe}
-            onChange={handleTimeframeChange}
+            onChange={(e) => setEditingTimeframe(e.target.value)}
             className="w-32"
-            placeholder="e.g. 2 weeks"
+            placeholder="e.g. 1-3 months"
           />
           <Button size="icon" variant="ghost" onClick={() => onSave(step)}>
             <Save className="h-4 w-4" />
@@ -75,9 +55,6 @@ const StepCard = ({
             <X className="h-4 w-4" />
           </Button>
         </div>
-        <p className="text-xs text-gray-500">
-          Format: [number] weeks/months (e.g., "2 weeks" or "3 months")
-        </p>
       </div>
     );
   }
