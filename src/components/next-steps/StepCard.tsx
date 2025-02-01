@@ -66,14 +66,19 @@ const StepCard = ({
             className="flex-1"
             placeholder="Enter step description"
           />
-          <Input
-            value={editingTimeframe.replace(' months', '')}
-            onChange={handleTimeframeChange}
-            className="w-32"
-            placeholder="e.g. 3 (months)"
-            type="number"
-            min="1"
-          />
+          <div className="relative w-32">
+            <Input
+              value={editingTimeframe.replace(' months', '')}
+              onChange={handleTimeframeChange}
+              className="pr-16"
+              placeholder="e.g. 3"
+              type="number"
+              min="1"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+              months
+            </span>
+          </div>
           <Button size="icon" variant="ghost" onClick={() => onSave(step)}>
             <Save className="h-4 w-4" />
           </Button>
