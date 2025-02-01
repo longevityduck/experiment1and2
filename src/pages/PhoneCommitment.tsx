@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { Phone } from "lucide-react";
 
 const PhoneCommitment = () => {
   const navigate = useNavigate();
@@ -58,17 +59,24 @@ const PhoneCommitment = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="relative">
+                <label htmlFor="phone" className="block text-lg font-semibold text-gray-700 mb-2">
                   Phone Number
                 </label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="Enter your phone number"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                />
+                <div className="relative group">
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-primary transition-colors" />
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="Enter your phone number"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="pl-12 h-14 text-lg border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 hover:border-primary/50"
+                  />
+                </div>
+                <p className="mt-1.5 text-sm text-muted-foreground">
+                  We'll use this to send you important updates about your career journey
+                </p>
               </div>
               <div className="flex gap-4">
                 <Button
