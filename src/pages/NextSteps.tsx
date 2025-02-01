@@ -140,7 +140,7 @@ const NextSteps = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Your Next Steps</CardTitle>
+            <CardTitle>Your Career Plan</CardTitle>
             <CardDescription>
               Based on your career goals and skills, here are the recommended next
               steps with estimated timeframes. You can edit these steps and
