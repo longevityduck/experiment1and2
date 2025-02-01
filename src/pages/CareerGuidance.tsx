@@ -52,7 +52,7 @@ const CareerGuidance = () => {
   };
 
   return (
-    <FormContainer title="Career Guidance Questions">
+    <FormContainer title="About You">
       <form onSubmit={handleSubmit} className="space-y-8">
         {questions.map((question) => (
           <QuestionItem

@@ -47,7 +47,7 @@ const CareerClarification = () => {
   };
 
   return (
-    <FormContainer title="Career Clarification">
+    <FormContainer title="More About You">
       <form onSubmit={handleSubmit} className="space-y-6">
         {questions.map((question) => (
           <ClarificationQuestionItem
