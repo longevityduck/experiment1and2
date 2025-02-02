@@ -9,7 +9,7 @@ const EntrepreneurshipResources = () => {
     <FormContainer title="Entrepreneurship Resources">
       <div className="space-y-6">
         <p className="text-gray-700">
-          We noticed that your goal is to start and run your own business. While our career guidance tool might not be specifically designed for entrepreneurship, you have two options:
+          We noticed that your goal is to start and run your own business. North Star might not be specifically designed for entrepreneurship.
         </p>
 
         <div className="space-y-4">
