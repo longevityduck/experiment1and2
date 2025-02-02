@@ -22,11 +22,12 @@ export const ProgressIndicator = () => {
   if (!currentRoute) return null;
   
   const progress = (currentRoute.step / routes.length) * 100;
+  const progressPercentage = Math.round(progress);
 
   return (
     <div className="w-full max-w-2xl mx-auto mb-8">
       <div className="flex justify-between items-center mb-2">
-        <span className="text-sm text-gray-600">Step {currentRoute.step} of {routes.length}</span>
+        <span className="text-sm text-gray-600">{progressPercentage}% Complete</span>
         <span className="text-sm text-gray-600">{currentRoute.label}</span>
       </div>
       <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
