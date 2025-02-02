@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { FormContainer } from "@/components/career-guidance/FormContainer";
@@ -29,6 +29,14 @@ const questions: ClarifyingQuestion[] = [
 const CareerClarification = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    // Load previously saved answers
+    const savedInfo = storage.getCareerInfo();
+    if (savedInfo.clarificationAnswers) {
+      setAnswers(savedInfo.clarificationAnswers);
+    }
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

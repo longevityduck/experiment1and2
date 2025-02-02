@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { QuestionItem } from "@/components/career-guidance/QuestionItem";
@@ -38,6 +38,14 @@ const questions: GuidanceQuestion[] = [
 const CareerGuidance = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState<Record<number, string>>({});
+
+  useEffect(() => {
+    // Load previously saved answers
+    const savedInfo = storage.getCareerInfo();
+    if (savedInfo.guidanceAnswers) {
+      setAnswers(savedInfo.guidanceAnswers);
+    }
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

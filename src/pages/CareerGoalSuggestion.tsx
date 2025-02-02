@@ -51,7 +51,7 @@ const CareerGoalSuggestion = () => {
               onClick={() => navigate("/career-guidance")}
               className="text-sm"
             >
-              Back to Career Guidance
+              Revise My Responses
             </Button>
           </div>
 
