@@ -14,14 +14,21 @@ const PhoneCommitment = () => {
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, ''); // Remove non-digits
-    setPhoneNumber(value);
+    if (value.length <= 8) { // Limit to 8 digits
+      setPhoneNumber(value);
+    }
+  };
+
+  const validatePhoneNumber = (number: string) => {
+    const phoneRegex = /^[89]\d{7}$/; // Must start with 8 or 9 and have exactly 8 digits
+    return phoneRegex.test(number);
   };
 
   const handleSubmit = async () => {
-    if (!phoneNumber.trim()) {
+    if (!validatePhoneNumber(phoneNumber)) {
       toast({
-        title: "Error",
-        description: "Please enter your phone number",
+        title: "Invalid Phone Number",
+        description: "Please enter a valid 8-digit phone number starting with 8 or 9",
         variant: "destructive",
       });
       return;
@@ -52,15 +59,15 @@ const PhoneCommitment = () => {
             <Input
               id="phone"
               type="tel"
-              placeholder="Enter your phone number"
+              placeholder="Enter your 8-digit phone number"
               value={phoneNumber}
               onChange={handlePhoneChange}
               className="pl-12 h-14 text-lg border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 hover:border-primary/50"
-              maxLength={15}
+              maxLength={8}
             />
           </div>
           <p className="mt-1.5 text-sm text-muted-foreground">
-            We'll use this to send you important updates about your career journey
+            Please enter an 8-digit phone number starting with 8 or 9
           </p>
         </div>
         <div className="flex gap-4">
