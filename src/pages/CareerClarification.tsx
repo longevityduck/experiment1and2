@@ -67,7 +67,7 @@ const CareerClarification = () => {
         <NavigationButtons
           onBack={() => navigate(-1)}
           onNext={() => {}}
-          nextButtonText="Get AI Career Suggestion"
+          nextButtonText="Generate Career Goal"
         />
       </form>
     </FormContainer>
