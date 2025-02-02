@@ -18,7 +18,7 @@ const UserType = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6 relative">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
       <div className="max-w-2xl mx-auto pt-12">
         <Card>
           <CardHeader className="text-center">
@@ -50,9 +50,6 @@ const UserType = () => {
             Terms of Use
           </Link>
         </div>
-      </div>
-      <div className="absolute bottom-4 left-4 text-sm text-gray-500">
-        © 2025 Jon Huang
       </div>
     </div>
   );
