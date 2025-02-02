@@ -43,6 +43,20 @@ const PersonalInfo = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validate age
+    const age = Number(formData.age);
+    if (age < 13) {
+      toast.error("You must be at least 13 years old to use this application");
+      return;
+    }
+
+    // Validate years of experience
+    const experience = Number(formData.experience);
+    if (experience < 0) {
+      toast.error("Years of experience cannot be negative");
+      return;
+    }
+
     if (!formData.age || !formData.industry || !formData.occupation || !formData.experience) {
       toast.error("Please fill in all fields");
       return;
@@ -88,6 +102,7 @@ const PersonalInfo = () => {
                 onChange={(e) => setFormData({ ...formData, age: e.target.value })}
                 placeholder="Enter your age"
                 className="w-full"
+                min="13"
                 required
               />
             </div>
@@ -150,6 +165,7 @@ const PersonalInfo = () => {
                 onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
                 placeholder="Years of experience"
                 className="w-full"
+                min="0"
                 required
               />
             </div>
