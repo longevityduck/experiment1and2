@@ -10,16 +10,8 @@ import {
 } from "@/components/ui/card";
 import { SkillInput } from "@/components/skills/SkillInput";
 import { SkillsList } from "@/components/skills/SkillsList";
-import { Loader2, ListChecks, Lightbulb } from "lucide-react";
+import { Loader2, ListChecks } from "lucide-react";
 import { toast } from "sonner";
-
-const suggestedSkills = [
-  "Communication",
-  "Problem Solving",
-  "Team Leadership",
-  "Project Management",
-  "Time Management",
-];
 
 const SkillsAssessment = () => {
   const navigate = useNavigate();
@@ -72,19 +64,6 @@ const SkillsAssessment = () => {
     navigate("/next-steps");
   };
 
-  const handleAddSuggestedSkill = (skill: string) => {
-    if (skills.includes(skill)) {
-      toast.error("This skill is already in your list");
-      return;
-    }
-    if (skills.length >= 14) {
-      toast.error("Maximum 14 skills allowed");
-      return;
-    }
-    setSkills([...skills, skill]);
-    toast.success("Skill added successfully");
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
       <div className="max-w-2xl mx-auto">
@@ -123,36 +102,13 @@ const SkillsAssessment = () => {
                   />
 
                   {!isConfirmed && (
-                    <>
-                      <SkillInput 
-                        onAddSkill={(skill) => {
-                          setSkills([...skills, skill]);
-                          toast.success("Skill added successfully");
-                        }}
-                        existingSkills={skills}
-                      />
-
-                      <div className="mt-6">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Lightbulb className="h-5 w-5 text-yellow-500" />
-                          <h3 className="font-semibold text-gray-700">Suggested Skills</h3>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {suggestedSkills.map((skill) => (
-                            <Button
-                              key={skill}
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleAddSuggestedSkill(skill)}
-                              className="animate-fade-in"
-                              disabled={skills.includes(skill)}
-                            >
-                              + {skill}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                    </>
+                    <SkillInput 
+                      onAddSkill={(skill) => {
+                        setSkills([...skills, skill]);
+                        toast.success("Skill added successfully");
+                      }}
+                      existingSkills={skills}
+                    />
                   )}
                 </div>
 
