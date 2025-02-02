@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,14 +10,16 @@ import {
 } from "@/components/ui/card";
 import { SkillInput } from "@/components/skills/SkillInput";
 import { SkillsList } from "@/components/skills/SkillsList";
+import { Loader2, ListChecks, Lightbulb } from "lucide-react";
+import { toast } from "sonner";
 
-interface CareerInfo {
-  age: string;
-  industry: string;
-  customIndustry?: string;
-  occupation: string;
-  experience: string;
-}
+const suggestedSkills = [
+  "Communication",
+  "Problem Solving",
+  "Team Leadership",
+  "Project Management",
+  "Time Management",
+];
 
 const SkillsAssessment = () => {
   const navigate = useNavigate();
@@ -28,7 +30,6 @@ const SkillsAssessment = () => {
   useEffect(() => {
     const loadOrGenerateSkills = async () => {
       try {
-        // First try to load saved skills
         const savedSkills = localStorage.getItem("userSkills");
         if (savedSkills) {
           setSkills(JSON.parse(savedSkills));
@@ -36,103 +37,133 @@ const SkillsAssessment = () => {
           return;
         }
 
-        // If no saved skills, generate default ones based on career info
-        const careerInfo = JSON.parse(localStorage.getItem("careerInfo") || "{}") as CareerInfo;
-        const industryDisplay = careerInfo.customIndustry || careerInfo.industry;
+        const careerInfo = JSON.parse(localStorage.getItem("careerInfo") || "{}");
         const mockSkills = [
-          `${industryDisplay} Industry Knowledge`,
-          `${careerInfo.occupation} Expertise`,
+          `${careerInfo.industry || 'Industry'} Knowledge`,
+          `${careerInfo.occupation || 'Professional'} Expertise`,
           "Project Management",
           "Communication",
           "Leadership",
-          `${industryDisplay} Tools and Technologies`,
         ];
 
         setSkills(mockSkills);
-        // Save the initial skills
         localStorage.setItem("userSkills", JSON.stringify(mockSkills));
+        localStorage.setItem("skills", JSON.stringify(mockSkills));
         setLoading(false);
       } catch (error) {
         console.error("Error loading/generating skills:", error);
         setLoading(false);
+        toast.error("Failed to load skills. Please try again.");
       }
     };
 
     loadOrGenerateSkills();
   }, []);
 
-  // Save skills whenever they change
   useEffect(() => {
     if (!loading && skills.length > 0) {
       localStorage.setItem("userSkills", JSON.stringify(skills));
-      // Also save to skills key for backward compatibility
       localStorage.setItem("skills", JSON.stringify(skills));
     }
   }, [skills, loading]);
-
-  const handleDeleteSkill = (indexToDelete: number) => {
-    setSkills(skills.filter((_, index) => index !== indexToDelete));
-  };
-
-  const handleAddSkill = (newSkill: string) => {
-    setSkills([...skills, newSkill]);
-  };
 
   const handleConfirm = () => {
     setIsConfirmed(true);
     navigate("/next-steps");
   };
 
+  const handleAddSuggestedSkill = (skill: string) => {
+    if (skills.includes(skill)) {
+      toast.error("This skill is already in your list");
+      return;
+    }
+    if (skills.length >= 14) {
+      toast.error("Maximum 14 skills allowed");
+      return;
+    }
+    setSkills([...skills, skill]);
+    toast.success("Skill added successfully");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
-      <div className="max-w-md mx-auto">
+      <div className="max-w-2xl mx-auto">
         <div className="mb-8">
           <div className="h-2 bg-gray-200 rounded">
-            <div className="h-2 bg-blue-600 rounded w-full"></div>
+            <div className="h-2 bg-blue-600 rounded w-full transition-all duration-500"></div>
           </div>
-          <div className="mt-2 text-sm text-gray-500 text-center">Step 3 of 3</div>
+          <div className="mt-2 text-sm text-gray-500 text-center">Final Step</div>
         </div>
 
-        <Card>
+        <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Your Skills Assessment</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <ListChecks className="h-6 w-6" />
+              Your Skills Assessment
+            </CardTitle>
             <CardDescription>
-              {isConfirmed 
-                ? "Here are your confirmed skills:"
-                : "Based on your experience and industry, here are your likely key skills. Please review and customize them:"}
+              Review and customize your skills below. These will help shape your career development plan.
             </CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="space-y-4">
-                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+              <div className="flex items-center justify-center p-8">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
               </div>
             ) : (
-              <>
-                <SkillsList 
-                  skills={skills} 
-                  isConfirmed={isConfirmed} 
-                  onDeleteSkill={handleDeleteSkill}
-                />
+              <div className="space-y-6">
+                <div className="animate-fade-in">
+                  <SkillsList 
+                    skills={skills} 
+                    isConfirmed={isConfirmed} 
+                    onDeleteSkill={(index) => {
+                      setSkills(skills.filter((_, i) => i !== index));
+                      toast.success("Skill removed successfully");
+                    }}
+                  />
 
-                {!isConfirmed && (
-                  <div className="space-y-4">
-                    <SkillInput 
-                      onAddSkill={handleAddSkill}
-                      existingSkills={skills}
-                    />
-                    
-                    <Button
-                      onClick={handleConfirm}
-                      className="w-full"
-                    >
-                      Confirm Skills
-                    </Button>
-                  </div>
-                )}
-              </>
+                  {!isConfirmed && (
+                    <>
+                      <SkillInput 
+                        onAddSkill={(skill) => {
+                          setSkills([...skills, skill]);
+                          toast.success("Skill added successfully");
+                        }}
+                        existingSkills={skills}
+                      />
+
+                      <div className="mt-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Lightbulb className="h-5 w-5 text-yellow-500" />
+                          <h3 className="font-semibold text-gray-700">Suggested Skills</h3>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {suggestedSkills.map((skill) => (
+                            <Button
+                              key={skill}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleAddSuggestedSkill(skill)}
+                              className="animate-fade-in"
+                              disabled={skills.includes(skill)}
+                            >
+                              + {skill}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <Button
+                  onClick={handleConfirm}
+                  className="w-full"
+                  disabled={skills.length === 0}
+                >
+                  Continue to Next Steps
+                </Button>
+              </div>
             )}
           </CardContent>
         </Card>
