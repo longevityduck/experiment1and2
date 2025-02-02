@@ -1,19 +1,30 @@
-import { ProgressIndicator } from "./ProgressIndicator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Header from "@/components/Header";
 
 interface FormContainerProps {
-  title: string;
   children: React.ReactNode;
+  title: string;
+  description?: string;
 }
 
-export const FormContainer = ({ title, children }: FormContainerProps) => {
+export const FormContainer = ({
+  children,
+  title,
+  description,
+}: FormContainerProps) => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
-      <div className="max-w-2xl mx-auto">
-        <ProgressIndicator />
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">{title}</h1>
-          {children}
-        </div>
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6 relative">
+      <Header />
+      <div className="max-w-2xl mx-auto pt-12">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">{title}</CardTitle>
+            {description && (
+              <p className="text-muted-foreground text-center">{description}</p>
+            )}
+          </CardHeader>
+          <CardContent>{children}</CardContent>
+        </Card>
       </div>
     </div>
   );
