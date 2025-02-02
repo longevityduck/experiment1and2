@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 
 const UserType = () => {
   const navigate = useNavigate();
@@ -44,6 +45,11 @@ const UserType = () => {
             </div>
           </CardContent>
         </Card>
+        <div className="text-center mt-4">
+          <Link to="/terms-of-use" className="text-primary hover:underline">
+            Terms of Use
+          </Link>
+        </div>
       </div>
     </div>
   );

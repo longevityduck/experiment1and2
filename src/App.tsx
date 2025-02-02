@@ -20,6 +20,7 @@ import PhoneCommitment from "./pages/PhoneCommitment";
 import Success from "./pages/Success";
 import NotFound from "./pages/NotFound";
 import EntrepreneurshipResources from "./pages/EntrepreneurshipResources";
+import TermsOfUse from "./pages/TermsOfUse";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,6 +55,7 @@ const App = () => (
           <Route path="/phone-commitment" element={<PhoneCommitment />} />
           <Route path="/success" element={<Success />} />
           <Route path="/entrepreneurship-resources" element={<EntrepreneurshipResources />} />
+          <Route path="/terms-of-use" element={<TermsOfUse />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
