@@ -1,15 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import StepsList from "@/components/next-steps/StepsList";
 import ActionButtons from "@/components/next-steps/ActionButtons";
+import { FormContainer } from "@/components/career-guidance/FormContainer";
 
 interface Step {
   id: number;
@@ -129,48 +123,27 @@ const NextSteps = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-8">
-          <div className="h-2 bg-gray-200 rounded">
-            <div className="h-2 bg-blue-600 rounded w-full"></div>
-          </div>
-          <div className="mt-2 text-sm text-gray-500 text-center">Final Step</div>
+    <FormContainer title="Your Career Plan">
+      {loading ? (
+        <div className="space-y-4">
+          <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+          <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+          <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
         </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Career Plan</CardTitle>
-            <CardDescription>
-              Based on your career goals and skills, here are the recommended next
-              steps with estimated timeframes. You can edit these steps and
-              timeframes to make them more personalized.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="space-y-4">
-                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-              </div>
-            ) : (
-              <>
-                <StepsList
-                  steps={steps}
-                  setSteps={setSteps}
-                  editingContent={editingContent}
-                  editingTimeframe={editingTimeframe}
-                  setEditingContent={setEditingContent}
-                  setEditingTimeframe={setEditingTimeframe}
-                />
-                <ActionButtons onReset={handleReset} onCommit={handleCommit} />
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+      ) : (
+        <>
+          <StepsList
+            steps={steps}
+            setSteps={setSteps}
+            editingContent={editingContent}
+            editingTimeframe={editingTimeframe}
+            setEditingContent={setEditingContent}
+            setEditingTimeframe={setEditingTimeframe}
+          />
+          <ActionButtons onReset={handleReset} onCommit={handleCommit} />
+        </>
+      )}
+    </FormContainer>
   );
 };
 
