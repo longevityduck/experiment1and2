@@ -53,7 +53,7 @@ const EntrepreneurshipResources = () => {
         <NavigationButtons
           onBack={() => navigate(-1)}
           onNext={() => navigate("/career-clarification")}
-          nextButtonText="Continue with Career Guidance"
+          nextButtonText="Continue with North Star"
         />
       </div>
     </FormContainer>
