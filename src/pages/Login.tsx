@@ -83,7 +83,7 @@ const Login = () => {
                     type="tel"
                     value={phone}
                     onChange={handlePhoneChange}
-                    placeholder="Enter your 8-digit phone number"
+                    placeholder="Enter your handphone number"
                     maxLength={8}
                     required
                   />

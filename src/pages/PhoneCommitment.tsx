@@ -59,7 +59,7 @@ const PhoneCommitment = () => {
             <Input
               id="phone"
               type="tel"
-              placeholder="Enter your 8-digit phone number"
+              placeholder="Enter your handphone number"
               value={phoneNumber}
               onChange={handlePhoneChange}
               className="pl-12 h-14 text-lg border-2 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 hover:border-primary/50"
