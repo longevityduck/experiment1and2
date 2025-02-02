@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,19 @@ const Login = () => {
   const [verificationCode, setVerificationCode] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+
+  useEffect(() => {
+    let timer: number;
+    if (countdown > 0) {
+      timer = window.setInterval(() => {
+        setCountdown((current) => current - 1);
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [countdown]);
 
   const validatePhoneNumber = (number: string) => {
     const phoneRegex = /^[89]\d{7}$/; // Must start with 8 or 9 and have exactly 8 digits
@@ -45,6 +58,7 @@ const Login = () => {
     setTimeout(() => {
       setIsVerifying(true);
       setIsSubmitting(false);
+      setCountdown(60); // Start the countdown
       toast.success("Verification code sent!");
     }, 1000);
   };
@@ -68,9 +82,6 @@ const Login = () => {
         <Card>
           <CardHeader>
             <CardTitle>Welcome Back</CardTitle>
-            <CardDescription>
-              Please verify your phone number to continue
-            </CardDescription>
           </CardHeader>
           <CardContent>
             {!isVerifying ? (
@@ -106,9 +117,26 @@ const Login = () => {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Verifying..." : "Verify"}
-                </Button>
+                <div className="space-y-2">
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? "Verifying..." : "Verify"}
+                  </Button>
+                  {countdown > 0 ? (
+                    <p className="text-sm text-center text-gray-500">
+                      Resend code in {countdown}s
+                    </p>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="w-full"
+                      onClick={handleSendCode}
+                      disabled={isSubmitting}
+                    >
+                      Resend Code
+                    </Button>
+                  )}
+                </div>
               </form>
             )}
           </CardContent>
