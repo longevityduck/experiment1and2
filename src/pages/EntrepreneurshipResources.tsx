@@ -45,7 +45,7 @@ const EntrepreneurshipResources = () => {
           <div className="bg-gray-50 p-4 rounded-lg">
             <h2 className="font-semibold mb-2">Continue with Career Guidance</h2>
             <p className="text-gray-700">
-              You can still continue with our career guidance tool to explore additional insights and perspectives that might be valuable for your entrepreneurial journey.
+              You can still continue with North Star to explore additional insights and perspectives that might be valuable for your entrepreneurial journey.
             </p>
           </div>
         </div>
