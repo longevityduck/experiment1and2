@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
 
 const CareerGoals = () => {
   const navigate = useNavigate();
@@ -31,13 +32,8 @@ const CareerGoals = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
       <div className="max-w-md mx-auto">
-        <div className="mb-8">
-          <div className="h-2 bg-gray-200 rounded">
-            <div className="h-2 bg-blue-600 rounded w-2/3"></div>
-          </div>
-          <div className="mt-2 text-sm text-gray-500 text-center">Step 2 of 3</div>
-        </div>
-
+        <ProgressIndicator />
+        
         <div className="bg-white rounded-lg shadow-lg p-6">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">Career Goals</h1>
           
