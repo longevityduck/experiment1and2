@@ -78,15 +78,6 @@ const SkillsAssessment = () => {
     setSkills([...skills, newSkill]);
   };
 
-  const handleReset = () => {
-    localStorage.removeItem("careerInfo");
-    localStorage.removeItem("careerGoals");
-    localStorage.removeItem("skills");
-    localStorage.removeItem("userSkills");
-    localStorage.removeItem("personalInfo");
-    navigate("/");
-  };
-
   const handleConfirm = () => {
     setIsConfirmed(true);
     navigate("/next-steps");
@@ -141,14 +132,6 @@ const SkillsAssessment = () => {
                     </Button>
                   </div>
                 )}
-
-                <Button
-                  onClick={handleReset}
-                  className="w-full mt-6"
-                  variant="outline"
-                >
-                  Start Over
-                </Button>
               </>
             )}
           </CardContent>
