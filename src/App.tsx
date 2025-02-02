@@ -11,6 +11,7 @@ import CurrentGoal from "./pages/CurrentGoal";
 import PersonalInfo from "./pages/PersonalInfo";
 import CareerGoals from "./pages/CareerGoals";
 import CareerGuidance from "./pages/CareerGuidance";
+import WhatRole from "./pages/WhatRole";
 import CareerClarification from "./pages/CareerClarification";
 import CareerGoalSuggestion from "./pages/CareerGoalSuggestion";
 import SkillsAssessment from "./pages/SkillsAssessment";
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="/personal-info" element={<PersonalInfo />} />
           <Route path="/career-goals" element={<CareerGoals />} />
           <Route path="/career-guidance" element={<CareerGuidance />} />
+          <Route path="/what-role" element={<WhatRole />} />
           <Route path="/career-clarification" element={<CareerClarification />} />
           <Route path="/career-goal-suggestion" element={<CareerGoalSuggestion />} />
           <Route path="/skills-assessment" element={<SkillsAssessment />} />

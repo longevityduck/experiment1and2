@@ -47,7 +47,6 @@ const CareerGuidance = () => {
   const [answers, setAnswers] = useState<Record<number, string>>({});
 
   useEffect(() => {
-    // Load previously saved answers
     const savedInfo = storage.getCareerInfo();
     if (savedInfo.guidanceAnswers) {
       setAnswers(savedInfo.guidanceAnswers);
@@ -63,7 +62,14 @@ const CareerGuidance = () => {
     }
 
     storage.saveCareerInfo({ guidanceAnswers: answers });
-    navigate("/career-clarification");
+
+    // Check if user selected options that require role input
+    const fiveYearPlan = answers[3];
+    if (fiveYearPlan === "Different role, same industry" || fiveYearPlan === "Different industry and role") {
+      navigate("/what-role");
+    } else {
+      navigate("/career-clarification");
+    }
   };
 
   return (
