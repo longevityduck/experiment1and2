@@ -22,6 +22,9 @@ const NotFound = () => {
           Return to Home
         </a>
       </div>
+      <div className="absolute bottom-4 left-4 text-sm text-gray-500">
+        © 2025 Jon Huang
+      </div>
     </div>
   );
 };
