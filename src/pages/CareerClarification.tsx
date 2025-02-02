@@ -10,23 +10,19 @@ import { ClarifyingQuestion } from "@/types/career";
 const questions: ClarifyingQuestion[] = [
   {
     id: "skills-strengths",
-    text: "What are your top skills and strengths? Include both technical and soft skills."
+    text: "What are your skills and strengths? Consider what tasks energize you, what skills others compliment you on, and what problems you enjoy solving."
   },
   {
-    id: "interests",
-    text: "What topics, activities, or types of work do you find most engaging and enjoyable?"
+    id: "work-environment",
+    text: "What kind of work environment or lifestyle do you want? Think about whether you prefer working alone or in teams, structured routines or flexibility, and your ideal work-life balance."
   },
   {
-    id: "values",
-    text: "What are your core values in relation to work? (e.g., creativity, stability, independence)"
+    id: "fields-industries",
+    text: "What fields or industries excite you? Consider which topics naturally interest you, what problems or trends excite you, and whether you prefer high-demand industries or passion-driven niches."
   },
   {
-    id: "constraints",
-    text: "Are there any constraints or requirements for your next career move? (e.g., location, salary, work-life balance)"
-  },
-  {
-    id: "ideal-environment",
-    text: "Describe your ideal work environment and culture."
+    id: "career-exploration",
+    text: "How will you test and explore your career path? Think about potential side projects, networking opportunities, or small steps you can take in the next month to explore your chosen direction."
   }
 ];
 
