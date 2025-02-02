@@ -18,8 +18,26 @@ const Login = () => {
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const validatePhoneNumber = (number: string) => {
+    const phoneRegex = /^[89]\d{7}$/; // Must start with 8 or 9 and have exactly 8 digits
+    return phoneRegex.test(number);
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+    if (value.length <= 8) { // Limit to 8 digits
+      setPhone(value);
+    }
+  };
+
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validatePhoneNumber(phone)) {
+      toast.error("Please enter a valid 8-digit phone number starting with 8 or 9");
+      return;
+    }
+
     setIsSubmitting(true);
     
     // TODO: Implement SMS verification logic here
@@ -64,8 +82,9 @@ const Login = () => {
                   <Input
                     type="tel"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Enter your phone number"
+                    onChange={handlePhoneChange}
+                    placeholder="Enter your 8-digit phone number"
+                    maxLength={8}
                     required
                   />
                 </div>

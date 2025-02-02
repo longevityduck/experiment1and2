@@ -66,9 +66,6 @@ const PhoneCommitment = () => {
               maxLength={8}
             />
           </div>
-          <p className="mt-1.5 text-sm text-muted-foreground">
-            Please enter an 8-digit phone number starting with 8 or 9
-          </p>
         </div>
         <div className="flex gap-4">
           <Button
