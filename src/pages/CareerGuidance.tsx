@@ -21,7 +21,14 @@ const questions: GuidanceQuestion[] = [
   {
     id: 3,
     text: "Where do you see yourself in the next 5 years?",
-    options: ["Same role, more senior", "Different role, same industry", "Different industry", "Own business", "Semi-retired"]
+    options: [
+      "Same role, more senior",
+      "Different role, same industry",
+      "Different industry, same role",
+      "Different industry and role",
+      "Own business",
+      "Semi-retired"
+    ]
   },
   {
     id: 4,
