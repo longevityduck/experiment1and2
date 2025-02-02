@@ -26,7 +26,7 @@ const questions: GuidanceQuestion[] = [
       "Different role, same industry",
       "Different industry, same role",
       "Different industry and role",
-      "Own business",
+      "Running my own business",
       "Semi-retired"
     ]
   },
