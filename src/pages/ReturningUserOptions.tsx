@@ -18,13 +18,13 @@ const ReturningUserOptions = () => {
   };
 
   const handleReviewPlan = () => {
-    const currentGoal = localStorage.getItem("currentGoal");
-    if (!currentGoal) {
+    const careerGoals = localStorage.getItem("careerGoals");
+    if (!careerGoals) {
       toast.error("No existing plan found. Please start fresh.");
       handleStartFresh();
       return;
     }
-    navigate("/current-goal");
+    navigate("/career-goals");
   };
 
   return (
