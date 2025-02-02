@@ -45,7 +45,7 @@ const CareerGoalSuggestion = () => {
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">AI Career Goal Suggestion</h1>
+            <h1 className="text-2xl font-bold text-gray-800">Career Goal Suggestion</h1>
             <Button
               variant="outline"
               onClick={() => navigate("/career-guidance")}
