@@ -16,4 +16,5 @@ export interface CareerInfo {
   careerGoals?: string;
   guidanceAnswers?: Record<number, string>;
   clarificationAnswers?: Record<string, string>;
+  desiredRole?: string;
 }
