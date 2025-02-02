@@ -8,8 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 const CareerGoalSuggestion = () => {
   const navigate = useNavigate();
   const [suggestedGoal, setSuggestedGoal] = useState("");
-  const [editedGoal, setEditedGoal] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     // Mock AI suggestion - in a real app, this would call an AI API
@@ -24,19 +22,18 @@ const CareerGoalSuggestion = () => {
         in environments that are ${clarificationAnswers["ideal-environment"] || "collaborative and growth-oriented"}.`;
       
       setSuggestedGoal(suggestion);
-      setEditedGoal(suggestion);
     };
 
     generateSuggestion();
   }, []);
 
   const handleSubmit = () => {
-    if (!editedGoal.trim()) {
+    if (!suggestedGoal.trim()) {
       toast.error("Please provide a career goal");
       return;
     }
 
-    localStorage.setItem("careerGoals", editedGoal);
+    localStorage.setItem("careerGoals", suggestedGoal);
     navigate("/skills-assessment");
   };
 
@@ -58,34 +55,20 @@ const CareerGoalSuggestion = () => {
           <Card className="mb-6">
             <CardContent className="pt-6">
               <h2 className="text-lg font-semibold mb-2">Suggested Career Goal:</h2>
-              {isEditing ? (
-                <Textarea
-                  value={editedGoal}
-                  onChange={(e) => setEditedGoal(e.target.value)}
-                  className="min-h-[150px]"
-                />
-              ) : (
-                <p className="text-gray-700 whitespace-pre-line">{suggestedGoal}</p>
-              )}
+              <Textarea
+                value={suggestedGoal}
+                onChange={(e) => setSuggestedGoal(e.target.value)}
+                className="min-h-[150px]"
+              />
             </CardContent>
           </Card>
 
-          <div className="flex gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={() => setIsEditing(!isEditing)}
-            >
-              {isEditing ? "Done Editing" : "Edit Goal"}
-            </Button>
-            <Button 
-              onClick={handleSubmit}
-              className="w-full"
-            >
-              Continue to Skills Assessment
-            </Button>
-          </div>
+          <Button 
+            onClick={handleSubmit}
+            className="w-full"
+          >
+            Continue to Skills Assessment
+          </Button>
         </div>
       </div>
     </div>
