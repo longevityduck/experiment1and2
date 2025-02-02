@@ -63,9 +63,12 @@ const CareerGuidance = () => {
 
     storage.saveCareerInfo({ guidanceAnswers: answers });
 
-    // Check if user selected options that require role input
+    // Check user's 5-year plan (question with id 3)
     const fiveYearPlan = answers[3];
-    if (fiveYearPlan === "Different role, same industry" || fiveYearPlan === "Different industry and role") {
+    
+    if (fiveYearPlan === "Running my own business") {
+      navigate("/entrepreneurship-resources");
+    } else if (fiveYearPlan === "Different role, same industry" || fiveYearPlan === "Different industry and role") {
       navigate("/what-role");
     } else {
       navigate("/career-clarification");

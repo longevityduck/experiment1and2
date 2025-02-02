@@ -19,6 +19,7 @@ import NextSteps from "./pages/NextSteps";
 import PhoneCommitment from "./pages/PhoneCommitment";
 import Success from "./pages/Success";
 import NotFound from "./pages/NotFound";
+import EntrepreneurshipResources from "./pages/EntrepreneurshipResources";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/next-steps" element={<NextSteps />} />
           <Route path="/phone-commitment" element={<PhoneCommitment />} />
           <Route path="/success" element={<Success />} />
+          <Route path="/entrepreneurship-resources" element={<EntrepreneurshipResources />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
