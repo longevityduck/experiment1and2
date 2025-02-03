@@ -14,6 +14,11 @@ export const FormContainer = ({
 }: FormContainerProps) => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6 relative">
+      {/* Extract the ProgressIndicator from children and render it first */}
+      {Array.isArray(children) && children.find(child => 
+        typeof child === 'object' && 
+        child?.type?.name === 'ProgressIndicator'
+      )}
       <Header />
       <div className="max-w-2xl mx-auto pt-12">
         <Card>
@@ -23,7 +28,15 @@ export const FormContainer = ({
               <p className="text-muted-foreground text-center">{description}</p>
             )}
           </CardHeader>
-          <CardContent>{children}</CardContent>
+          <CardContent>
+            {/* Render all children except ProgressIndicator */}
+            {Array.isArray(children) 
+              ? children.filter(child => 
+                  typeof child !== 'object' || 
+                  child?.type?.name !== 'ProgressIndicator'
+                )
+              : children}
+          </CardContent>
         </Card>
       </div>
     </div>
