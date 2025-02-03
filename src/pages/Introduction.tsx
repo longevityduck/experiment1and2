@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import Header from "@/components/Header";
 
 const Introduction = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4 sm:p-6">
+      <Header />
       <div className="max-w-2xl mx-auto pt-8 sm:pt-12">
         <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 text-center space-y-4 sm:space-y-6">
           <div className="mb-6 sm:mb-8">

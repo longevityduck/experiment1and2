@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import Header from "@/components/Header";
 
 const UserType = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const UserType = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
+      <Header />
       <div className="max-w-2xl mx-auto pt-12">
         <Card>
           <CardHeader className="text-center">

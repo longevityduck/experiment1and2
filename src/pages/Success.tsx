@@ -8,12 +8,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
+import Header from "@/components/Header";
 
 const Success = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
+      <Header />
       <div className="max-w-2xl mx-auto">
         <Card>
           <CardHeader className="text-center">

@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
+import Header from "@/components/Header";
 
 const ReturningUserOptions = () => {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ const ReturningUserOptions = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
+      <Header />
       <div className="max-w-2xl mx-auto pt-12">
         <Card>
           <CardHeader className="text-center">
