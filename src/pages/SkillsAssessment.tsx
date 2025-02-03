@@ -60,13 +60,15 @@ const SkillsAssessment = () => {
   };
 
   return (
-    <FormContainer title="Your Skills Assessment">
-      <ProgressIndicator />
-      {loading ? (
-        <div className="flex items-center justify-center p-8">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-        </div>
-      ) : (
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
+      <div className="max-w-2xl mx-auto">
+        <ProgressIndicator />
+        <FormContainer title="Your Skills Assessment">
+          {loading ? (
+            <div className="flex items-center justify-center p-8">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            </div>
+          ) : (
         <div className="space-y-6">
           <div className="animate-fade-in">
             <SkillsList 
@@ -97,8 +99,10 @@ const SkillsAssessment = () => {
             Continue to Next Steps
           </Button>
         </div>
-      )}
-    </FormContainer>
+          )}
+        </FormContainer>
+      </div>
+    </div>
   );
 };
 

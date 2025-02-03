@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import StepsList from "@/components/next-steps/StepsList";
 import ActionButtons from "@/components/next-steps/ActionButtons";
 import { FormContainer } from "@/components/career-guidance/FormContainer";
+import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
 
 interface Step {
   id: number;
@@ -124,6 +125,7 @@ const NextSteps = () => {
 
   return (
     <FormContainer title="Your Career Plan">
+      <ProgressIndicator />
       {loading ? (
         <div className="space-y-4">
           <div className="h-4 bg-gray-200 rounded animate-pulse"></div>

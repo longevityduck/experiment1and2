@@ -7,12 +7,14 @@ const routes = [
   { path: "/personal-info", step: 4, label: "Personal Info" },
   { path: "/career-goals", step: 5, label: "Career Goals" },
   { path: "/career-guidance", step: 6, label: "Career Guidance" },
-  { path: "/career-clarification", step: 7, label: "Career Clarification" },
-  { path: "/career-goal-suggestion", step: 8, label: "Goal Suggestion" },
-  { path: "/skills-assessment", step: 9, label: "Skills" },
-  { path: "/next-steps", step: 10, label: "Next Steps" },
-  { path: "/phone-commitment", step: 11, label: "Commitment" },
-  { path: "/success", step: 12, label: "Success" },
+  { path: "/what-role", step: 7, label: "Role Selection" },
+  { path: "/career-clarification", step: 8, label: "Career Clarification" },
+  { path: "/career-goal-suggestion", step: 9, label: "Goal Suggestion" },
+  { path: "/entrepreneurship-resources", step: 10, label: "Resources" },
+  { path: "/skills-assessment", step: 11, label: "Skills" },
+  { path: "/next-steps", step: 12, label: "Next Steps" },
+  { path: "/phone-commitment", step: 13, label: "Commitment" },
+  { path: "/success", step: 14, label: "Success" },
 ];
 
 export const ProgressIndicator = () => {

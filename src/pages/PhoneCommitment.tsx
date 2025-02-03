@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Phone } from "lucide-react";
 import { FormContainer } from "@/components/career-guidance/FormContainer";
+import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
 
 const PhoneCommitment = () => {
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ const PhoneCommitment = () => {
 
   return (
     <FormContainer title="Stay Connected with your Career Plan">
+      <ProgressIndicator />
       <div className="space-y-6">
         <div className="relative">
           <label htmlFor="phone" className="block text-lg font-semibold text-gray-700 mb-2">

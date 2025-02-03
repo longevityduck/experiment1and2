@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
 
 const industries = [
   "Technology",
@@ -81,6 +82,7 @@ const PersonalInfo = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
       <div className="max-w-md mx-auto">
+        <ProgressIndicator />
         <div className="mb-8">
           <div className="h-2 bg-gray-200 rounded">
             <div className="h-2 bg-blue-600 rounded w-1/3"></div>

@@ -1,12 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { FormContainer } from "@/components/career-guidance/FormContainer";
 import { NavigationButtons } from "@/components/career-guidance/NavigationButtons";
+import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
 
 const EntrepreneurshipResources = () => {
   const navigate = useNavigate();
 
   return (
     <FormContainer title="Entrepreneurship Resources">
+      <ProgressIndicator />
       <div className="space-y-6">
         <p className="text-gray-700">
           We noticed that your goal is to start and run your own business. North Star might not be specifically designed for entrepreneurship.

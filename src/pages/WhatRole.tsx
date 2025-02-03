@@ -5,6 +5,7 @@ import { FormContainer } from "@/components/career-guidance/FormContainer";
 import { NavigationButtons } from "@/components/career-guidance/NavigationButtons";
 import { Input } from "@/components/ui/input";
 import { storage } from "@/utils/storage";
+import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
 
 const WhatRole = () => {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ const WhatRole = () => {
 
   return (
     <FormContainer title="What Role Are You Considering?">
+      <ProgressIndicator />
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-4">
           <Input
