@@ -101,7 +101,7 @@ const SkillsAssessment = () => {
                 className="w-full"
                 disabled={skills.length === 0}
               >
-                Continue to Next Steps
+                Continue to Career Plan
               </Button>
             </div>
           )}
