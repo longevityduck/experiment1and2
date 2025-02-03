@@ -69,36 +69,41 @@ const SkillsAssessment = () => {
               <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
             </div>
           ) : (
-        <div className="space-y-6">
-          <div className="animate-fade-in">
-            <SkillsList 
-              skills={skills} 
-              isConfirmed={isConfirmed} 
-              onDeleteSkill={(index) => {
-                setSkills(skills.filter((_, i) => i !== index));
-                toast.success("Skill removed successfully");
-              }}
-            />
+            <div className="space-y-6">
+              <div className="text-sm text-gray-600 space-y-2">
+                <p>Based on the information you've shared with us, we've compiled a list of skills that align with your career path.</p>
+                <p>Please review and edit this list to accurately reflect your current skillset. Understanding your skills helps us better guide your next career steps.</p>
+              </div>
 
-            {!isConfirmed && (
-              <SkillInput 
-                onAddSkill={(skill) => {
-                  setSkills([...skills, skill]);
-                  toast.success("Skill added successfully");
-                }}
-                existingSkills={skills}
-              />
-            )}
-          </div>
+              <div className="animate-fade-in">
+                <SkillsList 
+                  skills={skills} 
+                  isConfirmed={isConfirmed} 
+                  onDeleteSkill={(index) => {
+                    setSkills(skills.filter((_, i) => i !== index));
+                    toast.success("Skill removed successfully");
+                  }}
+                />
 
-          <Button
-            onClick={handleConfirm}
-            className="w-full"
-            disabled={skills.length === 0}
-          >
-            Continue to Next Steps
-          </Button>
-        </div>
+                {!isConfirmed && (
+                  <SkillInput 
+                    onAddSkill={(skill) => {
+                      setSkills([...skills, skill]);
+                      toast.success("Skill added successfully");
+                    }}
+                    existingSkills={skills}
+                  />
+                )}
+              </div>
+
+              <Button
+                onClick={handleConfirm}
+                className="w-full"
+                disabled={skills.length === 0}
+              >
+                Continue to Next Steps
+              </Button>
+            </div>
           )}
         </FormContainer>
       </div>
