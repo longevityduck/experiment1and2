@@ -6,7 +6,6 @@ import { NavigationButtons } from "@/components/career-guidance/NavigationButton
 import { ClarificationQuestionItem } from "@/components/career-guidance/ClarificationQuestionItem";
 import { storage } from "@/utils/storage";
 import { ClarifyingQuestion } from "@/types/career";
-import Header from "@/components/Header";
 
 const questions: ClarifyingQuestion[] = [
   {
@@ -32,6 +31,7 @@ const CareerClarification = () => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    // Load previously saved answers
     const savedInfo = storage.getCareerInfo();
     if (savedInfo.clarificationAnswers) {
       setAnswers(savedInfo.clarificationAnswers);
@@ -51,29 +51,26 @@ const CareerClarification = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <Header />
-      <FormContainer title="More About You">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {questions.map((question) => (
-            <ClarificationQuestionItem
-              key={question.id}
-              question={question}
-              value={answers[question.id] || ""}
-              onChange={(value) => 
-                setAnswers((prev) => ({ ...prev, [question.id]: value }))
-              }
-            />
-          ))}
-
-          <NavigationButtons
-            onBack={() => navigate(-1)}
-            onNext={() => {}}
-            nextButtonText="Generate Career Goal"
+    <FormContainer title="More About You">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {questions.map((question) => (
+          <ClarificationQuestionItem
+            key={question.id}
+            question={question}
+            value={answers[question.id] || ""}
+            onChange={(value) => 
+              setAnswers((prev) => ({ ...prev, [question.id]: value }))
+            }
           />
-        </form>
-      </FormContainer>
-    </div>
+        ))}
+
+        <NavigationButtons
+          onBack={() => navigate(-1)}
+          onNext={() => {}}
+          nextButtonText="Generate Career Goal"
+        />
+      </form>
+    </FormContainer>
   );
 };
 
