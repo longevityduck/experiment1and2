@@ -83,13 +83,6 @@ const PersonalInfo = () => {
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
       <div className="max-w-md mx-auto">
         <ProgressIndicator />
-        <div className="mb-8">
-          <div className="h-2 bg-gray-200 rounded">
-            <div className="h-2 bg-blue-600 rounded w-1/3"></div>
-          </div>
-          <div className="mt-2 text-sm text-gray-500 text-center">Step 1 of 3</div>
-        </div>
-
         <div className="bg-white rounded-lg shadow-lg p-6">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">Personal Information</h1>
           
