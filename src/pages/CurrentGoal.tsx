@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
+import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
 
 const CurrentGoal = () => {
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ const CurrentGoal = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
       <div className="max-w-2xl mx-auto pt-12">
+        <ProgressIndicator />
         <Card>
           <CardHeader>
             <CardTitle>Your Current Career Goal</CardTitle>

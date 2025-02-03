@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
+import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
 
 const CareerGoalSuggestion = () => {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ const CareerGoalSuggestion = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
       <div className="max-w-2xl mx-auto">
+        <ProgressIndicator />
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-800">Career Goal Suggestion</h1>

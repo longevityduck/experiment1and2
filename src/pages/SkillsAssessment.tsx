@@ -6,6 +6,7 @@ import { SkillsList } from "@/components/skills/SkillsList";
 import { Loader2, ListChecks } from "lucide-react";
 import { toast } from "sonner";
 import { FormContainer } from "@/components/career-guidance/FormContainer";
+import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
 
 const SkillsAssessment = () => {
   const navigate = useNavigate();
@@ -60,6 +61,7 @@ const SkillsAssessment = () => {
 
   return (
     <FormContainer title="Your Skills Assessment">
+      <ProgressIndicator />
       {loading ? (
         <div className="flex items-center justify-center p-8">
           <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
