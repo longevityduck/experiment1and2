@@ -44,14 +44,14 @@ const ReturningUserOptions = () => {
               onClick={handleReviewPlan}
               className="w-full py-6 text-lg"
             >
-              Review My Current Plan
+              Review My Career Goal
             </Button>
             <Button
               onClick={() => navigate("/next-steps")}
               variant="outline"
               className="w-full py-6 text-lg"
             >
-              Update My Next Steps
+              Update My Career Plan
             </Button>
             <Button
               onClick={handleStartFresh}
