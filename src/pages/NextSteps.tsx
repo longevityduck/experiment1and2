@@ -137,7 +137,7 @@ const NextSteps = () => {
           <>
             <div className="text-sm text-gray-600 space-y-2 mb-6">
               <p>Based on your responses, we've created a personalized career plan that we think will help you achieve your goals.</p>
-              <p>Feel free to modify these steps to better align with your preferences and circumstances. You can add, edit, or remove steps to make this plan truly yours.</p>
+              <p>Feel free to modify these steps to better align with your preferences and circumstances. You can add, edit, reorganize, or remove steps to make this plan truly yours.</p>
             </div>
             <StepsList
               steps={steps}
