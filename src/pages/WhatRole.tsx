@@ -38,7 +38,7 @@ const WhatRole = () => {
           <div className="space-y-4">
             <div className="text-sm text-gray-600 mb-2">
               <p>Please be as specific as possible when describing your desired role.</p>
-              <p>For example, instead of just "Manager", specify "Finance Manager" or "Marketing Manager".</p>
+              <p>For example, instead of just "Manager", try "Finance Manager" or "Marketing Manager".</p>
             </div>
             
             <Input
