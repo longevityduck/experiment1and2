@@ -28,12 +28,6 @@ const Introduction = () => {
               Your journey to career success starts here. North Star is your personal
               guide to effective career planning and goal achievement.
             </p>
-            
-            <p>
-              We believe that successful careers don't happen by chance - they're
-              built through intentional planning, consistent effort, and the right
-              guidance.
-            </p>
 
             <div className="py-4">
               <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
