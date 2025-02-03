@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { QuestionItem } from "@/components/career-guidance/QuestionItem";
 import { FormContainer } from "@/components/career-guidance/FormContainer";
 import { NavigationButtons } from "@/components/career-guidance/NavigationButtons";
+import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
 import { storage } from "@/utils/storage";
 import { GuidanceQuestion } from "@/types/career";
 
@@ -76,25 +77,28 @@ const CareerGuidance = () => {
   };
 
   return (
-    <FormContainer title="About You">
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {questions.map((question) => (
-          <QuestionItem
-            key={question.id}
-            question={question}
-            value={answers[question.id] || ""}
-            onChange={(value) => 
-              setAnswers((prev) => ({ ...prev, [question.id]: value }))
-            }
-          />
-        ))}
+    <>
+      <ProgressIndicator />
+      <FormContainer title="About You">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {questions.map((question) => (
+            <QuestionItem
+              key={question.id}
+              question={question}
+              value={answers[question.id] || ""}
+              onChange={(value) => 
+                setAnswers((prev) => ({ ...prev, [question.id]: value }))
+              }
+            />
+          ))}
 
-        <NavigationButtons
-          onBack={() => navigate(-1)}
-          onNext={() => {}}
-        />
-      </form>
-    </FormContainer>
+          <NavigationButtons
+            onBack={() => navigate(-1)}
+            onNext={() => {}}
+          />
+        </form>
+      </FormContainer>
+    </>
   );
 };
 
