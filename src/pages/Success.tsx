@@ -43,9 +43,15 @@ const Success = () => {
                 </ul>
               </div>
             </div>
-            <div className="flex justify-center pt-4">
+            <div className="flex flex-col gap-3 justify-center pt-4">
               <Button onClick={() => navigate("/")}>
                 Return to Homepage
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => window.open("https://www.careergrit.sg", "_blank")}
+              >
+                More Career Resources
               </Button>
             </div>
           </CardContent>
