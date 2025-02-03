@@ -36,6 +36,11 @@ const WhatRole = () => {
       <FormContainer title="What Role Are You Considering?">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
+            <div className="text-sm text-gray-600 mb-2">
+              <p>Please be as specific as possible when describing your desired role.</p>
+              <p>For example, instead of just "Manager", specify "Finance Manager" or "Marketing Manager".</p>
+            </div>
+            
             <Input
               type="text"
               placeholder="Enter your desired role"
