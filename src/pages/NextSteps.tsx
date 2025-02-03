@@ -124,28 +124,30 @@ const NextSteps = () => {
   };
 
   return (
-    <FormContainer title="Your Career Plan">
+    <>
       <ProgressIndicator />
-      {loading ? (
-        <div className="space-y-4">
-          <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-          <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-          <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-        </div>
-      ) : (
-        <>
-          <StepsList
-            steps={steps}
-            setSteps={setSteps}
-            editingContent={editingContent}
-            editingTimeframe={editingTimeframe}
-            setEditingContent={setEditingContent}
-            setEditingTimeframe={setEditingTimeframe}
-          />
-          <ActionButtons onReset={handleReset} onCommit={handleCommit} />
-        </>
-      )}
-    </FormContainer>
+      <FormContainer title="Your Career Plan">
+        {loading ? (
+          <div className="space-y-4">
+            <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+        ) : (
+          <>
+            <StepsList
+              steps={steps}
+              setSteps={setSteps}
+              editingContent={editingContent}
+              editingTimeframe={editingTimeframe}
+              setEditingContent={setEditingContent}
+              setEditingTimeframe={setEditingTimeframe}
+            />
+            <ActionButtons onReset={handleReset} onCommit={handleCommit} />
+          </>
+        )}
+      </FormContainer>
+    </>
   );
 };
 
