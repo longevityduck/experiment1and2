@@ -52,6 +52,10 @@ const PhoneCommitment = () => {
     <FormContainer title="Stay Connected with your Career Plan">
       <ProgressIndicator />
       <div className="space-y-6">
+        <div className="text-sm text-gray-600 space-y-3 mb-4">
+          <p>By providing your phone number, you'll receive personalized career tips and updates through WhatsApp, carefully curated to match your unique career path and goals.</p>
+          <p>We'll send you relevant insights, opportunities, and guidance to help you progress in your career journey.</p>
+        </div>
         <div className="relative">
           <label htmlFor="phone" className="block text-lg font-semibold text-gray-700 mb-2">
             Phone Number
