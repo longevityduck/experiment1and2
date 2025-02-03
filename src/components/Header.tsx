@@ -2,7 +2,7 @@ import Logo from "./Logo";
 
 const Header = () => {
   return (
-    <div className="absolute top-4 left-1/2 transform -translate-x-1/2">
+    <div className="absolute top-4 right-4">
       <Logo />
     </div>
   );
