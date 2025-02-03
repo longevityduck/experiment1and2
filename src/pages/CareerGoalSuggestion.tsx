@@ -52,6 +52,15 @@ const CareerGoalSuggestion = () => {
             </Button>
           </div>
 
+          <div className="mb-6 text-gray-600 space-y-4">
+            <p>
+              Based on your previous responses, we've generated a personalized career goal using established career coaching theories and AI assistance. This suggestion takes into account your skills, interests, and aspirations.
+            </p>
+            <p>
+              While this suggestion serves as a starting point, we encourage you to review and modify it to better align with your personal vision and career aspirations. Your unique perspective and understanding of your goals are invaluable in crafting the perfect career objective.
+            </p>
+          </div>
+
           <Card className="mb-6">
             <CardContent className="pt-6">
               <h2 className="text-lg font-semibold mb-2">Suggested Career Goal:</h2>
