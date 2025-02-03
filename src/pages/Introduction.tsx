@@ -18,10 +18,6 @@ const Introduction = () => {
               Get a clear career roadmap in 5 minutes
             </p>
           </div>
-
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">
-            Welcome to North Star
-          </h1>
           
           <div className="space-y-4 text-base sm:text-lg text-gray-600">
             <p>
