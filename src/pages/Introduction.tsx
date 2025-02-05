@@ -26,8 +26,8 @@ const Introduction = () => {
           
           <div className="space-y-4 text-base sm:text-lg text-gray-600">
             <p>
-              Your journey to career success starts here. North Star is your personal
-              guide to effective career planning and goal achievement.
+              North Star is your personal career guide, designed to support your reflection, 
+              clarify your path, and help you achieve your goals.
             </p>
 
             <div className="bg-blue-50 p-4 rounded-lg my-6">
