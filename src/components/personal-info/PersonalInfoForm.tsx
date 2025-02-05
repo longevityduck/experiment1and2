@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { storage } from "@/utils/storage";
+import { CareerInfo } from "@/types/career";
 
 const industries = [
   "Technology",
@@ -53,6 +54,7 @@ export const PersonalInfoForm = () => {
       const age = Number(formData.age);
       if (age < 13) {
         toast.error("You must be at least 13 years old to use this application");
+        setLoading(false);
         return;
       }
 
@@ -60,31 +62,46 @@ export const PersonalInfoForm = () => {
       const experience = Number(formData.experience);
       if (experience < 0) {
         toast.error("Years of experience cannot be negative");
+        setLoading(false);
         return;
       }
 
       if (!formData.age || !formData.industry || !formData.occupation || !formData.experience) {
-        toast.error("Please fill in all fields");
+        toast.error("Please fill in all required fields");
+        setLoading(false);
         return;
       }
 
       if (formData.industry === "Other" && !formData.customIndustry) {
         toast.error("Please specify your industry");
+        setLoading(false);
         return;
       }
 
-      const dataToStore = {
-        ...formData,
-        industry: formData.industry === "Other" ? formData.customIndustry : formData.industry,
+      const finalIndustry = formData.industry === "Other" ? formData.customIndustry : formData.industry;
+
+      const personalInfo = {
+        age: formData.age,
+        industry: finalIndustry,
+        occupation: formData.occupation,
+        experience: formData.experience,
       };
 
-      localStorage.setItem("personalInfo", JSON.stringify(formData));
-      storage.saveCareerInfo({ personalInfo: dataToStore });
+      // Save to localStorage
+      localStorage.setItem("personalInfo", JSON.stringify(personalInfo));
+
+      // Save to career info
+      const careerInfo: Partial<CareerInfo> = {
+        personalInfo: personalInfo
+      };
       
+      await storage.saveCareerInfo(careerInfo);
+      
+      toast.success("Personal information saved successfully");
       navigate("/career-goals");
     } catch (error) {
       console.error('Error during form submission:', error);
-      toast.error("An error occurred while processing your information");
+      toast.error("An error occurred while saving your information");
     } finally {
       setLoading(false);
     }
