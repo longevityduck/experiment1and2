@@ -1,9 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+// Initialize Supabase client
+const supabaseUrl = 'https://f8e3e121-a955-4a54-8ef8-c23568a65571.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImY4ZTNlMTIxLWE5NTUtNGE1NC04ZWY4LWMyMzU2OGE2NTU3MSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzA5NjE5MjAwLCJleHAiOjIwMjUxOTUyMDB9.ZB94RLQGXZdJFHS3mXUVqXYPHwQxqF_PIx5y47HZxkY';
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const getOpenAIKey = async () => {
   const { data, error } = await supabase
