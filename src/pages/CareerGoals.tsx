@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
 import { supabase } from "@/integrations/supabase/client";
+import { storage } from "@/utils/storage";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -67,14 +68,14 @@ const CareerGoals = () => {
 
     const isValid = await validateCareerGoal();
     if (isValid) {
-      localStorage.setItem("careerGoals", goals);
+      storage.saveCareerInfo({ careerGoals: goals });
       navigate("/skills-assessment");
     }
   };
 
   const handleContinueAnyway = () => {
     setShowValidationDialog(false);
-    localStorage.setItem("careerGoals", goals);
+    storage.saveCareerInfo({ careerGoals: goals });
     navigate("/skills-assessment");
   };
 
