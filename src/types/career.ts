@@ -1,3 +1,4 @@
+
 export interface ClarifyingQuestion {
   id: string;
   text: string;
@@ -17,4 +18,5 @@ export interface CareerInfo {
   guidanceAnswers?: Record<number, string>;
   clarificationAnswers?: Record<string, string>;
   desiredRole?: string;
+  aiAdvice?: string;
 }
