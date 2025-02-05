@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,18 @@ const CareerGoals = () => {
         <div className="bg-white rounded-lg shadow-lg p-6">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">Career Goals</h1>
           
+          <div className="mb-6 space-y-4">
+            <p className="text-gray-600">
+              Career goals provide direction and motivation, helping you grow, stay focused, and achieve professional success.
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <span className="font-medium">Example of a career goal:</span><br />
+                "I want to earn a promotion in the next 2 years by developing leadership skills and taking on more responsibilities."
+              </p>
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <RadioGroup
               value={isUnsure ? "unsure" : "know"}
