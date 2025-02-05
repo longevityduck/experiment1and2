@@ -27,7 +27,6 @@ const NextSteps = () => {
   useEffect(() => {
     const loadSteps = async () => {
       try {
-        // First try to load saved steps
         const savedSteps = localStorage.getItem("userSteps");
         if (savedSteps) {
           setSteps(JSON.parse(savedSteps));
@@ -35,13 +34,11 @@ const NextSteps = () => {
           return;
         }
 
-        // If no saved steps, generate new ones using AI
         const personalInfo = JSON.parse(localStorage.getItem("careerInfo") || "{}");
         const guidanceAnswers = JSON.parse(localStorage.getItem("guidanceAnswers") || "{}");
         const clarificationAnswers = JSON.parse(localStorage.getItem("clarificationAnswers") || "{}");
         const careerGoals = localStorage.getItem("careerGoals") || "";
 
-        // Call the AI function to generate personalized steps
         const { data, error } = await supabase.functions.invoke('career-advice', {
           body: {
             type: 'career-goal',
@@ -58,36 +55,52 @@ const NextSteps = () => {
         }
 
         // Parse the AI response and format it into steps
-        const aiSteps = data.advice.split('\n')
-          .filter((step: string) => step.trim().length > 0)
-          .map((step: string, index: number) => {
-            // Remove "Step X:" prefix if it exists
-            const cleanStep = step.replace(/^Step \d+:\s*/i, '');
-            
-            const timeframeMatch = cleanStep.match(/\((\d+(?:-\d+)?\s*months?)\)/i);
-            const timeframe = timeframeMatch ? timeframeMatch[1] : "1-3 months";
-            const content = cleanStep.replace(/\(\d+(?:-\d+)?\s*months?\)/i, '').trim();
-            
-            // Filter out career goal and action plan steps
-            if (content.toLowerCase().includes("career goal:") || 
-                content.toLowerCase().includes("action plan")) {
-              return null;
+        const aiResponse = data.advice;
+        const steps = [];
+        let currentStep: Partial<Step> = {};
+        
+        // Skip the career goal part and process only the steps
+        const stepLines = aiResponse.split('\n').filter(line => line.trim().length > 0);
+        let processingSteps = false;
+        
+        for (const line of stepLines) {
+          if (line.toLowerCase().includes('career goal:')) {
+            continue;
+          }
+          
+          if (line.toLowerCase().startsWith('step:')) {
+            if (Object.keys(currentStep).length > 0) {
+              steps.push(currentStep);
             }
-            
-            return {
-              id: index,
-              content,
-              timeframe,
+            currentStep = {
+              id: steps.length,
+              content: line.replace(/^step:\s*/i, '').trim(),
               isEditing: false,
-              explanation: "This step was generated based on your career goals and preferences.",
-              isOriginal: true,
+              isOriginal: true
             };
-          })
-          .filter(Boolean); // Remove null entries
+            processingSteps = true;
+          } else if (processingSteps && line.toLowerCase().startsWith('timeframe:')) {
+            currentStep.timeframe = line.replace(/^timeframe:\s*/i, '').trim();
+          } else if (processingSteps && line.toLowerCase().startsWith('explanation:')) {
+            currentStep.explanation = line.replace(/^explanation:\s*/i, '').trim();
+          }
+        }
+        
+        if (Object.keys(currentStep).length > 0) {
+          steps.push(currentStep);
+        }
 
-        setSteps(aiSteps);
-        // Save the initial steps
-        localStorage.setItem("userSteps", JSON.stringify(aiSteps));
+        const formattedSteps = steps.map((step, index) => ({
+          id: index,
+          content: step.content || '',
+          timeframe: step.timeframe || '1-3 months',
+          explanation: step.explanation || 'This step was generated based on your career goals and preferences.',
+          isEditing: false,
+          isOriginal: true,
+        }));
+
+        setSteps(formattedSteps);
+        localStorage.setItem("userSteps", JSON.stringify(formattedSteps));
         setLoading(false);
       } catch (error) {
         console.error("Error generating steps:", error);
