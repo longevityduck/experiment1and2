@@ -1,50 +1,38 @@
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { CheckCircle } from "lucide-react";
-import Header from "@/components/Header";
 
 const Success = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
-      <Header />
-      <div className="max-w-2xl mx-auto">
-        <Card>
-          <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <CheckCircle className="h-16 w-16 text-green-500" />
-            </div>
-            <CardTitle className="text-3xl">Congratulations!</CardTitle>
-            <CardDescription className="text-lg mt-2">
-              You've taken the first step towards achieving your career goals
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="text-center space-y-4">
-              <p className="text-muted-foreground">
-                We'll keep you updated with personalized insights and opportunities
-                to help you reach your goals. Feel free to return anytime to update
-                your plan or track your progress.
+    <div className="container max-w-2xl mx-auto py-8 px-4">
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-center space-y-6">
+            <h1 className="text-2xl font-bold">Thank You!</h1>
+            <div className="space-y-4">
+              <p>
+                Your career guidance session is complete. Here's what happens next:
               </p>
-              <div className="space-y-2">
-                <p className="font-medium">What happens next?</p>
-                <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• You'll receive updates via text message</li>
-                  <li>• We'll share relevant resources and opportunities</li>
-                  <li>• You can return anytime to update your plan</li>
+              <div className="text-left">
+                <ul className="list-disc list-inside space-y-2">
+                  <li>
+                    We'll review your responses and prepare personalized
+                    recommendations
+                  </li>
+                  <li>
+                    You'll receive an email with detailed next steps and resources
+                  </li>
+                  <li>
+                    A career coach will contact you within 2 business days to
+                    schedule your consultation
+                  </li>
                 </ul>
               </div>
             </div>
             <div className="flex flex-col gap-3 justify-center pt-4">
-              <Button onClick={() => navigate("/")}>
+              <Button onClick={() => navigate("/introduction")}>
                 Return to Homepage
               </Button>
               <Button 
@@ -54,9 +42,9 @@ const Success = () => {
                 More Career Resources
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
