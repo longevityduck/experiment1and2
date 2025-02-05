@@ -16,7 +16,7 @@ const Introduction = () => {
               Stop feeling lost
             </h2>
             <p className="text-xl sm:text-2xl text-gray-700">
-              Get a clear career roadmap in 5 minutes
+              Get a clear career roadmap in 15 minutes
             </p>
           </div>
 
