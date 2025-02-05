@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
@@ -24,7 +25,7 @@ serve(async (req) => {
     if (requestData.type === 'career-goal') {
       const { personalInfo, guidanceAnswers, clarificationAnswers, careerGoals } = requestData;
       
-      const prompt = `Based on the following information, create a personalized career development plan:
+      const prompt = `Based on the following information, create a personalized career development plan following SMART goal principles (Specific, Measurable, Achievable, Relevant, Time-bound):
 
 Personal Information:
 ${Object.entries(personalInfo || {}).map(([key, value]) => `${key}: ${value}`).join('\n')}
@@ -38,22 +39,25 @@ ${Object.entries(clarificationAnswers || {}).map(([key, value]) => `${key}: ${va
 Career Goals:
 ${careerGoals}
 
-First, provide a single career goal statement that is specific, measurable, and time-bound.
+First, provide a single career goal statement that follows SMART principles (specific, measurable, achievable, relevant, and time-bound).
 Format: "Career Goal: [Your goal statement here]"
 
 Then, provide 5-7 actionable steps to achieve this goal. For each step:
-1. Describe the action clearly and concisely
-2. Include a realistic timeframe in months (e.g., "3 months")
-3. Provide a detailed explanation of why this step is important for their specific situation
+1. Make each action step specific and clearly defined
+2. Include measurable criteria to track progress
+3. Ensure the step is achievable within the given timeframe
+4. Make it relevant to their career goal
+5. Include a realistic timeframe in months
 
 Format each step exactly as follows (maintain exact formatting):
-Step: [Action step]
+Step: [Specific, measurable action step]
 Timeframe: [X] months
-Explanation: [2-3 sentences explaining why this step is important for their specific situation]
+Explanation: [2-3 sentences explaining why this step is important, how it's achievable, and how it connects to the larger goal]
 
 Make sure each step is separated by a blank line.
 Make timeframes realistic and varied between steps.
-Ensure explanations are personalized and specific to the user's situation.`;
+Ensure explanations are personalized and specific to the user's situation.
+Do not explicitly label SMART components in the output.`;
 
       console.log('Sending prompt to OpenAI:', prompt);
 
@@ -68,7 +72,7 @@ Ensure explanations are personalized and specific to the user's situation.`;
           messages: [
             {
               role: 'system',
-              content: 'You are a career development expert who creates personalized, actionable career plans. Your advice should be specific, practical, and tailored to the individual\'s situation.'
+              content: 'You are a career development expert who creates personalized, actionable career plans. Your advice should follow SMART goal principles while maintaining a natural, conversational tone.'
             },
             { role: 'user', content: prompt }
           ],
@@ -176,3 +180,4 @@ Provide brief career advice focusing on potential growth opportunities and skill
     );
   }
 });
+
