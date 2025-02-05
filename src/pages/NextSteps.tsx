@@ -5,6 +5,7 @@ import StepsList from "@/components/next-steps/StepsList";
 import ActionButtons from "@/components/next-steps/ActionButtons";
 import { FormContainer } from "@/components/career-guidance/FormContainer";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
+import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Step {
@@ -192,10 +193,9 @@ const NextSteps = () => {
       <ProgressIndicator />
       <FormContainer title="Your Career Plan">
         {loading ? (
-          <div className="space-y-4">
-            <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+          <div className="flex flex-col items-center justify-center space-y-4 min-h-[300px]">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-gray-600">Generating your personalized career plan...</p>
           </div>
         ) : (
           <>
