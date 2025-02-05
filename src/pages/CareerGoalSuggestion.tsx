@@ -9,7 +9,13 @@ import { Loader2 } from "lucide-react";
 import { storage } from "@/utils/storage";
 import { supabase } from "@/integrations/supabase/client";
 
-const FALLBACK_GOAL = `Based on your responses, consider setting a goal to advance your career through continuous learning and skill development. Focus on identifying specific skills that align with your interests and industry demands, then create a structured plan to acquire those skills through courses, certifications, or hands-on projects.`;
+const FALLBACK_GOAL = `Career Goal: To advance to a senior software developer position within the next three years by mastering advanced technical skills and taking on leadership responsibilities in project teams.
+
+Step 1: Complete an advanced programming certification course (3 months)
+Step 2: Take on additional responsibilities in current role (2 months)
+Step 3: Lead a small team project (6 months)
+Step 4: Mentor junior developers (ongoing)
+Step 5: Build a portfolio of successful projects (12 months)`;
 
 const CareerGoalSuggestion = () => {
   const navigate = useNavigate();
@@ -35,14 +41,12 @@ const CareerGoalSuggestion = () => {
         if (error) {
           console.error('Error generating career goal:', error);
           
-          // Handle quota exceeded error (429)
           if (error.status === 429) {
             toast.error("Our AI service is temporarily unavailable. We've provided a general suggestion instead.");
             setSuggestedGoal(FALLBACK_GOAL);
             return;
           }
           
-          // Handle other errors
           toast.error("Failed to generate career goal. Using a general suggestion instead.");
           setSuggestedGoal(FALLBACK_GOAL);
           return;
@@ -71,13 +75,25 @@ const CareerGoalSuggestion = () => {
     navigate("/skills-assessment");
   };
 
+  const formatGoalAndSteps = (text: string) => {
+    const parts = text.split('\n\n');
+    if (parts.length < 2) return { goal: text, steps: [] };
+    
+    const goal = parts[0].replace('Career Goal: ', '');
+    const steps = parts.slice(1).join('\n').split('\n').filter(step => step.trim());
+    
+    return { goal, steps };
+  };
+
+  const { goal, steps } = formatGoalAndSteps(suggestedGoal);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
       <div className="max-w-2xl mx-auto">
         <ProgressIndicator />
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">Career Goal Suggestion</h1>
+            <h1 className="text-2xl font-bold text-gray-800">Career Goal & Action Plan</h1>
             <Button
               variant="outline"
               onClick={() => navigate("/career-guidance")}
@@ -89,36 +105,49 @@ const CareerGoalSuggestion = () => {
 
           <div className="mb-6 text-gray-600 space-y-4">
             <p>
-              Based on your previous responses, we've generated a personalized career goal using AI assistance. 
-              This suggestion takes into account your background, skills, interests, and aspirations.
+              Based on your responses, we've generated a personalized career goal and action plan 
+              using AI assistance. This takes into account your background, skills, interests, and aspirations.
             </p>
             <p>
-              While this suggestion serves as a starting point, we encourage you to review and modify it to better 
-              align with your personal vision and career aspirations.
+              Feel free to review and modify these to better align with your vision.
             </p>
           </div>
 
-          <Card className="mb-6">
-            <CardContent className="pt-6">
-              <h2 className="text-lg font-semibold mb-2">Suggested Career Goal:</h2>
-              {isLoading ? (
-                <div className="flex items-center justify-center p-8">
-                  <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-                </div>
-              ) : (
-                <Textarea
-                  value={suggestedGoal}
-                  onChange={(e) => setSuggestedGoal(e.target.value)}
-                  className="min-h-[150px]"
-                  placeholder="Your career goal will appear here..."
-                />
-              )}
-            </CardContent>
-          </Card>
+          {isLoading ? (
+            <div className="flex items-center justify-center p-8">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <Card>
+                <CardContent className="pt-6">
+                  <h2 className="text-lg font-semibold mb-2">Your Career Goal:</h2>
+                  <Textarea
+                    value={goal}
+                    onChange={(e) => setSuggestedGoal(`Career Goal: ${e.target.value}\n\n${steps.join('\n')}`)}
+                    className="min-h-[100px]"
+                    placeholder="Your career goal will appear here..."
+                  />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6">
+                  <h2 className="text-lg font-semibold mb-2">Action Plan:</h2>
+                  <Textarea
+                    value={steps.join('\n')}
+                    onChange={(e) => setSuggestedGoal(`Career Goal: ${goal}\n\n${e.target.value}`)}
+                    className="min-h-[200px]"
+                    placeholder="Your action plan steps will appear here..."
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
           <Button 
             onClick={handleSubmit}
-            className="w-full"
+            className="w-full mt-6"
             disabled={isLoading}
           >
             Continue to Skills Assessment

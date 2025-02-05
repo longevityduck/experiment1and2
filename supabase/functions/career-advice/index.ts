@@ -14,85 +14,13 @@ serve(async (req) => {
   }
 
   try {
-    if (!openAIApiKey) {
-      console.error('OpenAI API key not configured');
-      throw new Error('OpenAI API key not configured');
-    }
-
     const requestData = await req.json();
     console.log('Received request:', requestData);
 
-    if (requestData.occupation) {
-      const prompt = `Based on the occupation "${requestData.occupation}", suggest 5 relevant industries that this person might work in. Format the response as a simple list, one industry per line.`;
-      console.log('Generating industry suggestions for:', requestData.occupation);
-
-      try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${openAIApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'gpt-4o-mini',
-            messages: [
-              { role: 'system', content: 'You are a career advisor helping to suggest relevant industries for different occupations.' },
-              { role: 'user', content: prompt }
-            ],
-          }),
-        });
-
-        if (!response.ok) {
-          const error = await response.json();
-          console.error('OpenAI API error:', error);
-          
-          // Check for quota exceeded error
-          if (error.error?.message?.includes('exceeded your current quota')) {
-            return new Response(
-              JSON.stringify({ 
-                error: 'OpenAI API quota exceeded',
-                message: 'AI service temporarily unavailable',
-                type: 'QUOTA_EXCEEDED'
-              }),
-              { 
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 429 // Using 429 for quota exceeded
-              }
-            );
-          }
-          
-          throw new Error(`OpenAI API error: ${error.error?.message || 'Unknown error'}`);
-        }
-
-        const data = await response.json();
-        console.log('OpenAI response for industry suggestions:', data);
-
-        return new Response(
-          JSON.stringify({ advice: data.choices[0].message.content }),
-          { 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 200
-          }
-        );
-      } catch (error) {
-        console.error('Error generating industry suggestions:', error);
-        return new Response(
-          JSON.stringify({ 
-            error: 'Failed to generate industry suggestions',
-            details: error.toString()
-          }),
-          { 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 500
-          }
-        );
-      }
-    }
-
     if (requestData.type === 'career-goal') {
-      const { personalInfo, guidanceAnswers, clarificationAnswers, careerGoals } = requestData;
+      const { personalInfo, guidanceAnswers, clarificationAnswers } = requestData;
       
-      const prompt = `As a career advisor, analyze the following information and create a detailed, step-by-step career development plan. Break down the main goals into smaller, actionable steps, each with its own specific timeline.
+      const prompt = `As a career advisor, analyze the following information and create a clear, aspirational career goal statement, followed by a detailed action plan.
 
 Personal Information:
 ${Object.entries(personalInfo || {}).map(([key, value]) => `${key}: ${value}`).join('\n')}
@@ -103,19 +31,25 @@ ${Object.entries(guidanceAnswers || {}).map(([key, value]) => `Question ${key}: 
 Career Clarification Responses:
 ${Object.entries(clarificationAnswers || {}).map(([key, value]) => `${key}: ${value}`).join('\n')}
 
-Career Goals:
-${careerGoals || ''}
+First, provide a single, clear career goal statement that:
+1. Specifies a concrete target position or achievement
+2. Includes a general timeline (e.g., "within 3-5 years")
+3. Mentions key skills or qualifications to be developed
+4. Is specific and measurable
+5. Is realistic but ambitious
 
-Please provide a detailed action plan with the following requirements:
-1. Break down the career goals into 5-7 specific, actionable steps
+Format the goal as: "Career Goal: [Your goal statement here]"
+
+Then, provide a detailed action plan with:
+1. 5-7 specific, actionable steps to achieve this goal
 2. Each step should be clear and achievable
-3. Assign a realistic timeline for each step (in months)
-4. Format each step as: "Action step (X months)" where X is the number of months
+3. Include a timeline for each step (in months)
+4. Format each step as: "Step X: [Action step] (X months)"
 5. Make steps progressive, building upon each other
 6. Include both short-term (1-3 months) and longer-term (6+ months) steps
 7. Focus on practical, measurable outcomes
 
-Format the response as a list, with one step per line, including the timeline in parentheses at the end of each step.`;
+Format the response with the career goal first, followed by two line breaks, then the action steps.`;
 
       try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -129,7 +63,7 @@ Format the response as a list, with one step per line, including the timeline in
             messages: [
               {
                 role: 'system',
-                content: 'You are a career development expert who creates detailed, actionable career plans. Your advice is specific, measurable, and time-bound.'
+                content: 'You are a career development expert who creates clear, actionable career goals and plans. Your advice is specific, measurable, and time-bound.'
               },
               { role: 'user', content: prompt }
             ],
