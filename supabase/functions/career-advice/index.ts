@@ -9,12 +9,18 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { type, personalInfo, guidanceAnswers, clarificationAnswers } = await req.json();
+    console.log('Received request:', { type, personalInfo, guidanceAnswers, clarificationAnswers });
+
+    if (!openAIApiKey) {
+      throw new Error('OpenAI API key not configured');
+    }
 
     let prompt = '';
     let systemRole = '';
@@ -27,10 +33,7 @@ serve(async (req) => {
       prompt = `Create a personalized career goal based on this information:
 
       Personal Information:
-      - Age: ${personalInfo?.age || 'Not provided'}
-      - Current Industry: ${personalInfo?.industry || 'Not provided'}
-      - Current Occupation: ${personalInfo?.occupation || 'Not provided'}
-      - Years of Experience: ${personalInfo?.experience || 'Not provided'}
+      ${Object.entries(personalInfo || {}).map(([key, value]) => `- ${key}: ${value}`).join('\n')}
 
       Career Guidance Responses:
       ${Object.entries(guidanceAnswers || {}).map(([key, value]) => `- Question ${key}: ${value}`).join('\n')}
@@ -40,9 +43,7 @@ serve(async (req) => {
 
       Generate a SMART career goal that takes into account their background, aspirations, and current situation.`;
     } else {
-      const { occupation } = await req.json();
-      prompt = `Suggest industries related to the occupation: ${occupation}`;
-      systemRole = `You are a career advisor providing industry suggestions based on user occupation.`;
+      throw new Error('Invalid request type');
     }
 
     console.log('Sending prompt to OpenAI:', prompt);
@@ -62,6 +63,12 @@ serve(async (req) => {
       }),
     });
 
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('OpenAI API error:', error);
+      throw new Error('Failed to generate career advice');
+    }
+
     const data = await response.json();
     console.log('OpenAI response:', data);
 
@@ -72,7 +79,9 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error('Error in career-advice function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ 
+      error: error.message || 'An unexpected error occurred' 
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
