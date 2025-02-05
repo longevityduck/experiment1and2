@@ -1,3 +1,4 @@
+
 import React from "react";
 
 const Logo = () => {
@@ -23,7 +24,7 @@ const Logo = () => {
           </div>
         </div>
       </div>
-      <span className="text-2xl font-bold text-primary">Own Goal</span>
+      <span className="text-2xl font-bold text-primary">North Star</span>
     </div>
   );
 };

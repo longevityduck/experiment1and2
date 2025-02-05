@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -20,19 +21,19 @@ const Introduction = () => {
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">
-            Welcome to Own Goal
+            Welcome to North Star
           </h1>
           
           <div className="space-y-4 text-base sm:text-lg text-gray-600">
             <p>
-              Your journey to career success starts here. Own Goal is your personal
+              Your journey to career success starts here. North Star is your personal
               guide to effective career planning and goal achievement.
             </p>
 
             <div className="bg-blue-50 p-4 rounded-lg my-6">
               <p className="text-gray-700">
                 Developed by professional career coaches and grounded in proven career development principles, 
-                Own Goal combines decades of coaching expertise with cutting-edge AI technology to provide 
+                North Star combines decades of coaching expertise with cutting-edge AI technology to provide 
                 you with personalized, actionable career guidance.
               </p>
             </div>
