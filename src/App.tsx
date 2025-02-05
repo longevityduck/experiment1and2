@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +22,7 @@ import Success from "./pages/Success";
 import NotFound from "./pages/NotFound";
 import EntrepreneurshipResources from "./pages/EntrepreneurshipResources";
 import TermsOfUse from "./pages/TermsOfUse";
+import MeetTheTeam from "./pages/MeetTheTeam";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,6 +58,7 @@ const App = () => (
           <Route path="/success" element={<Success />} />
           <Route path="/entrepreneurship-resources" element={<EntrepreneurshipResources />} />
           <Route path="/terms-of-use" element={<TermsOfUse />} />
+          <Route path="/meet-the-team" element={<MeetTheTeam />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

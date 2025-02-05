@@ -1,5 +1,5 @@
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 
@@ -36,7 +36,7 @@ const Introduction = () => {
               {/* Info box */}
               <div className="bg-blue-50/50 border border-blue-100 rounded-lg p-4">
                 <p className="text-gray-700">
-                  Developed by professional career coaches and grounded in proven career development principles, 
+                  Developed by <Link to="/meet-the-team" className="text-blue-600 hover:underline">professional career coaches</Link> and grounded in proven career development principles, 
                   North Star combines decades of coaching expertise with cutting-edge AI technology to provide 
                   you with personalized, actionable career guidance.
                 </p>
@@ -47,7 +47,7 @@ const Introduction = () => {
                 <h2 className="text-lg font-medium text-gray-800">
                   What You'll Get:
                 </h2>
-                <ul className="space-y-2 text-gray-600 list-disc inline-block text-left pl-4">
+                <ul className="space-y-2 text-gray-600 list-disc inline-block text-left">
                   <li>Personalized career goal suggestions</li>
                   <li>Skills assessment and development plans</li>
                   <li>Actionable next steps for your career journey</li>
