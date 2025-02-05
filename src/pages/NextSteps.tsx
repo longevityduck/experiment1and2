@@ -10,6 +10,7 @@ import StepsGenerator from "@/components/next-steps/StepsGenerator";
 import { Step } from "@/types/steps";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { storage } from "@/utils/storage";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,7 +20,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 const NextSteps = () => {
@@ -33,18 +33,14 @@ const NextSteps = () => {
   const [showValidationDialog, setShowValidationDialog] = useState(false);
 
   const handleReset = () => {
-    localStorage.removeItem("careerInfo");
-    localStorage.removeItem("careerGoals");
-    localStorage.removeItem("skills");
-    localStorage.removeItem("guidanceAnswers");
-    localStorage.removeItem("clarificationAnswers");
+    storage.clearCareerInfo();
     navigate("/");
   };
 
   const validateSteps = async () => {
     try {
-      const careerGoals = localStorage.getItem("careerGoals");
-      if (!careerGoals) {
+      const careerInfo = storage.getCareerInfo();
+      if (!careerInfo.careerGoals) {
         toast({
           title: "Error",
           description: "Career goals not found. Please restart the process.",
@@ -56,7 +52,7 @@ const NextSteps = () => {
       const { data, error } = await supabase.functions.invoke("validate-career-steps", {
         body: {
           steps,
-          careerGoal: careerGoals,
+          careerGoal: careerInfo.careerGoals,
         },
       });
 
@@ -174,3 +170,4 @@ const NextSteps = () => {
 };
 
 export default NextSteps;
+
