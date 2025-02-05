@@ -46,13 +46,13 @@ const NextSteps = () => {
             <div className="text-sm text-gray-600 space-y-2 mb-6">
               <p>Based on your responses and career goals, we've created a personalized career plan that we think will help you achieve your objectives.</p>
               <p>Feel free to modify these steps to better align with your preferences and circumstances.</p>
-              <p className="text-xs mt-2">
+              <p className="text-sm text-gray-600 mt-4">
                 Want to learn more about career planning? Watch this helpful{" "}
                 <a 
                   href="https://www.youtube.com/watch?v=josBNfsFtU4" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-primary hover:underline"
+                  className="text-blue-500 hover:text-blue-700 font-medium underline"
                 >
                   video guide on setting a career plan
                 </a>
