@@ -42,16 +42,20 @@ First, provide a single career goal statement that is specific, measurable, and 
 Format: "Career Goal: [Your goal statement here]"
 
 Then, provide 5-7 actionable steps to achieve this goal. For each step:
-1. Describe the action clearly
-2. Include a realistic timeframe in months
-3. Most importantly, provide a brief explanation of why this step is crucial for their career progression based on their specific situation and goals
+1. Describe the action clearly and concisely
+2. Include a realistic timeframe in months (e.g., "3 months")
+3. Provide a detailed explanation of why this step is important for their specific situation
 
-Format each step as:
+Format each step exactly as follows (maintain exact formatting):
 Step: [Action step]
-Timeframe: [X months]
+Timeframe: [X] months
 Explanation: [2-3 sentences explaining why this step is important for their specific situation]
 
-Separate each step with a line break.`;
+Make sure each step is separated by a blank line.
+Make timeframes realistic and varied between steps.
+Ensure explanations are personalized and specific to the user's situation.`;
+
+      console.log('Sending prompt to OpenAI:', prompt);
 
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -60,7 +64,7 @@ Separate each step with a line break.`;
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4',
+          model: 'gpt-4o',
           messages: [
             {
               role: 'system',
@@ -69,11 +73,12 @@ Separate each step with a line break.`;
             { role: 'user', content: prompt }
           ],
           temperature: 0.7,
-          max_tokens: 1000,
+          max_tokens: 1500,
         }),
       });
 
       if (!response.ok) {
+        console.error('OpenAI API error:', response.statusText);
         throw new Error(`OpenAI API error: ${response.statusText}`);
       }
 
@@ -159,6 +164,7 @@ Provide brief career advice focusing on potential growth opportunities and skill
     }
 
     throw new Error('Invalid request type');
+
   } catch (error) {
     console.error('Error in career-advice function:', error);
     return new Response(

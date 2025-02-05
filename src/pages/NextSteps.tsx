@@ -39,6 +39,13 @@ const NextSteps = () => {
         const clarificationAnswers = JSON.parse(localStorage.getItem("clarificationAnswers") || "{}");
         const careerGoals = localStorage.getItem("careerGoals") || "";
 
+        console.log('Sending request to career-advice function with:', {
+          personalInfo,
+          guidanceAnswers,
+          clarificationAnswers,
+          careerGoals
+        });
+
         const { data, error } = await supabase.functions.invoke('career-advice', {
           body: {
             type: 'career-goal',
@@ -54,9 +61,11 @@ const NextSteps = () => {
           throw error;
         }
 
+        console.log('Received response from career-advice function:', data);
+
         // Parse the AI response and format it into steps
         const aiResponse = data.advice;
-        const steps = [];
+        const steps: Partial<Step>[] = [];
         let currentStep: Partial<Step> = {};
         
         // Skip the career goal part and process only the steps
@@ -80,7 +89,8 @@ const NextSteps = () => {
             };
             processingSteps = true;
           } else if (processingSteps && line.toLowerCase().startsWith('timeframe:')) {
-            currentStep.timeframe = line.replace(/^timeframe:\s*/i, '').trim();
+            const timeframeMatch = line.match(/(\d+)\s*months?/i);
+            currentStep.timeframe = timeframeMatch ? `${timeframeMatch[1]} months` : '3 months';
           } else if (processingSteps && line.toLowerCase().startsWith('explanation:')) {
             currentStep.explanation = line.replace(/^explanation:\s*/i, '').trim();
           }
@@ -90,14 +100,22 @@ const NextSteps = () => {
           steps.push(currentStep);
         }
 
+        console.log('Parsed steps:', steps);
+
         const formattedSteps = steps.map((step, index) => ({
           id: index,
           content: step.content || '',
-          timeframe: step.timeframe || '1-3 months',
+          timeframe: step.timeframe || '3 months',
           explanation: step.explanation || 'This step was generated based on your career goals and preferences.',
           isEditing: false,
           isOriginal: true,
         }));
+
+        console.log('Formatted steps:', formattedSteps);
+
+        if (formattedSteps.length === 0) {
+          throw new Error('No steps were generated');
+        }
 
         setSteps(formattedSteps);
         localStorage.setItem("userSteps", JSON.stringify(formattedSteps));
@@ -116,28 +134,30 @@ const NextSteps = () => {
         const skills = JSON.parse(localStorage.getItem("skills") || "[]");
         const fallbackSteps = [
           {
+            id: 0,
             content: `Research advanced certifications in ${careerInfo.industry || 'your industry'}`,
-            timeframe: "1-3 months",
+            timeframe: "3 months",
             explanation: "Professional certifications demonstrate your commitment to growth and validate your expertise to potential employers.",
             isOriginal: true,
+            isEditing: false
           },
           {
+            id: 1,
             content: `Build a portfolio showcasing your ${skills[0] || 'professional'} skills`,
-            timeframe: "2-4 months",
-            explanation: "A well-curated portfolio provides tangible evidence of your capabilities.",
+            timeframe: "4 months",
+            explanation: "A well-curated portfolio provides tangible evidence of your capabilities and helps you stand out in job applications.",
             isOriginal: true,
+            isEditing: false
           },
           {
+            id: 2,
             content: `Network with professionals in ${careerInfo.occupation || 'your target role'}`,
-            timeframe: "1-2 months",
-            explanation: "Professional networking is crucial for career advancement.",
+            timeframe: "2 months",
+            explanation: "Professional networking is crucial for career advancement and can lead to mentorship opportunities and job referrals.",
             isOriginal: true,
+            isEditing: false
           }
-        ].map((step, id) => ({
-          id,
-          ...step,
-          isEditing: false,
-        }));
+        ];
 
         setSteps(fallbackSteps);
         localStorage.setItem("userSteps", JSON.stringify(fallbackSteps));
