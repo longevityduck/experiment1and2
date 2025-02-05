@@ -1,14 +1,34 @@
-import { storage } from "./storage";
+import { createClient } from '@supabase/supabase-js';
 
-const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
+
+const getOpenAIKey = async () => {
+  const { data, error } = await supabase
+    .from('secrets')
+    .select('value')
+    .eq('name', 'OPENAI_API_KEY')
+    .single();
+
+  if (error) {
+    console.error('Error fetching OpenAI API key:', error);
+    throw new Error('Failed to fetch OpenAI API key');
+  }
+
+  return data.value;
+};
 
 export const getIndustrySuggestions = async (occupation: string): Promise<string[]> => {
   try {
+    const apiKey = await getOpenAIKey();
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
         model: "gpt-4",
@@ -43,11 +63,13 @@ export const getIndustrySuggestions = async (occupation: string): Promise<string
 
 export const getCareerAdvice = async (personalInfo: any): Promise<string> => {
   try {
+    const apiKey = await getOpenAIKey();
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
         model: "gpt-4",
