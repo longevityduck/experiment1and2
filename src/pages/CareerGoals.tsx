@@ -7,13 +7,52 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const CareerGoals = () => {
   const navigate = useNavigate();
   const [goals, setGoals] = useState("");
   const [isUnsure, setIsUnsure] = useState(false);
+  const [showValidationDialog, setShowValidationDialog] = useState(false);
+  const [validationReason, setValidationReason] = useState("");
+  const [isValidating, setIsValidating] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateCareerGoal = async () => {
+    try {
+      setIsValidating(true);
+      const { data, error } = await supabase.functions.invoke("validate-career-goal", {
+        body: { careerGoal: goals },
+      });
+
+      if (error) throw error;
+
+      if (!data.valid) {
+        setValidationReason(data.reason);
+        setShowValidationDialog(true);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error validating career goal:", error);
+      toast.error("Could not validate the career goal. You may proceed if you wish.");
+      return true;
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (isUnsure) {
@@ -26,6 +65,15 @@ const CareerGoals = () => {
       return;
     }
 
+    const isValid = await validateCareerGoal();
+    if (isValid) {
+      localStorage.setItem("careerGoals", goals);
+      navigate("/skills-assessment");
+    }
+  };
+
+  const handleContinueAnyway = () => {
+    setShowValidationDialog(false);
     localStorage.setItem("careerGoals", goals);
     navigate("/skills-assessment");
   };
@@ -90,13 +138,38 @@ const CareerGoals = () => {
               >
                 Back
               </Button>
-              <Button type="submit" className="w-full">
-                Next
+              <Button type="submit" className="w-full" disabled={isValidating}>
+                {isValidating ? "Validating..." : "Next"}
               </Button>
             </div>
           </form>
         </div>
       </div>
+
+      <AlertDialog open={showValidationDialog} onOpenChange={setShowValidationDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Review Your Career Goal</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4">
+              <p>
+                Your career goal might need some refinement:
+              </p>
+              <p className="text-amber-600">
+                {validationReason}
+              </p>
+              <p>
+                Would you like to revise your goal, or continue with your current goal?
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Revise Goal</AlertDialogCancel>
+            <AlertDialogAction onClick={handleContinueAnyway}>
+              Continue Anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
