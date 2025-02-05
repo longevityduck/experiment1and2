@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
+import { getIndustrySuggestions, getCareerAdvice } from "@/utils/openai";
+import { Loader2 } from "lucide-react";
 
 const industries = [
   "Technology",
@@ -24,6 +26,7 @@ const industries = [
 
 const PersonalInfo = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     age: "",
     industry: "",
@@ -31,8 +34,8 @@ const PersonalInfo = () => {
     occupation: "",
     experience: "",
   });
+  const [suggestedIndustries, setSuggestedIndustries] = useState<string[]>([]);
 
-  // Load existing data when component mounts
   useEffect(() => {
     const savedInfo = localStorage.getItem("personalInfo");
     if (savedInfo) {
@@ -41,42 +44,69 @@ const PersonalInfo = () => {
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleOccupationChange = async (value: string) => {
+    setFormData({ ...formData, occupation: value });
+    if (value.length > 2) {
+      try {
+        const suggestions = await getIndustrySuggestions(value);
+        setSuggestedIndustries(suggestions);
+      } catch (error) {
+        console.error('Error getting industry suggestions:', error);
+      }
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     
-    // Validate age
-    const age = Number(formData.age);
-    if (age < 13) {
-      toast.error("You must be at least 13 years old to use this application");
-      return;
+    try {
+      // Validate age
+      const age = Number(formData.age);
+      if (age < 13) {
+        toast.error("You must be at least 13 years old to use this application");
+        return;
+      }
+
+      // Validate years of experience
+      const experience = Number(formData.experience);
+      if (experience < 0) {
+        toast.error("Years of experience cannot be negative");
+        return;
+      }
+
+      if (!formData.age || !formData.industry || !formData.occupation || !formData.experience) {
+        toast.error("Please fill in all fields");
+        return;
+      }
+
+      if (formData.industry === "Other" && !formData.customIndustry) {
+        toast.error("Please specify your industry");
+        return;
+      }
+
+      const dataToStore = {
+        ...formData,
+        industry: formData.industry === "Other" ? formData.customIndustry : formData.industry,
+      };
+
+      // Get AI career advice
+      const advice = await getCareerAdvice(dataToStore);
+      
+      // Store all data
+      localStorage.setItem("careerInfo", JSON.stringify({
+        ...dataToStore,
+        aiAdvice: advice
+      }));
+      localStorage.setItem("personalInfo", JSON.stringify(formData));
+      
+      navigate("/career-goals");
+    } catch (error) {
+      console.error('Error during form submission:', error);
+      toast.error("An error occurred while processing your information");
+    } finally {
+      setLoading(false);
     }
-
-    // Validate years of experience
-    const experience = Number(formData.experience);
-    if (experience < 0) {
-      toast.error("Years of experience cannot be negative");
-      return;
-    }
-
-    if (!formData.age || !formData.industry || !formData.occupation || !formData.experience) {
-      toast.error("Please fill in all fields");
-      return;
-    }
-
-    if (formData.industry === "Other" && !formData.customIndustry) {
-      toast.error("Please specify your industry");
-      return;
-    }
-
-    const dataToStore = {
-      ...formData,
-      industry: formData.industry === "Other" ? formData.customIndustry : formData.industry,
-    };
-
-    // Store in both careerInfo (for backward compatibility) and personalInfo
-    localStorage.setItem("careerInfo", JSON.stringify(dataToStore));
-    localStorage.setItem("personalInfo", JSON.stringify(formData));
-    navigate("/career-goals");
   };
 
   return (
@@ -104,6 +134,20 @@ const PersonalInfo = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
+                Occupation <span className="text-red-500">*</span>
+              </label>
+              <Input
+                type="text"
+                value={formData.occupation}
+                onChange={(e) => handleOccupationChange(e.target.value)}
+                placeholder="Enter your current occupation"
+                className="w-full"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Industry <span className="text-red-500">*</span>
               </label>
               <Select
@@ -115,7 +159,7 @@ const PersonalInfo = () => {
                   <SelectValue placeholder="Select your industry" />
                 </SelectTrigger>
                 <SelectContent>
-                  {industries.map((industry) => (
+                  {[...industries, ...suggestedIndustries].map((industry) => (
                     <SelectItem key={industry} value={industry}>
                       {industry}
                     </SelectItem>
@@ -138,20 +182,6 @@ const PersonalInfo = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Occupation <span className="text-red-500">*</span>
-              </label>
-              <Input
-                type="text"
-                value={formData.occupation}
-                onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
-                placeholder="Enter your current occupation"
-                className="w-full"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Years of Experience <span className="text-red-500">*</span>
               </label>
               <Input
@@ -165,8 +195,15 @@ const PersonalInfo = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full">
-              Next
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Next"
+              )}
             </Button>
           </form>
         </div>
