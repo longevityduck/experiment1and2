@@ -61,9 +61,18 @@ const NextSteps = () => {
         const aiSteps = data.advice.split('\n')
           .filter((step: string) => step.trim().length > 0)
           .map((step: string, index: number) => {
-            const timeframeMatch = step.match(/\((\d+(?:-\d+)?\s*months?)\)/i);
+            // Remove "Step X:" prefix if it exists
+            const cleanStep = step.replace(/^Step \d+:\s*/i, '');
+            
+            const timeframeMatch = cleanStep.match(/\((\d+(?:-\d+)?\s*months?)\)/i);
             const timeframe = timeframeMatch ? timeframeMatch[1] : "1-3 months";
-            const content = step.replace(/\(\d+(?:-\d+)?\s*months?\)/i, '').trim();
+            const content = cleanStep.replace(/\(\d+(?:-\d+)?\s*months?\)/i, '').trim();
+            
+            // Filter out career goal and action plan steps
+            if (content.toLowerCase().includes("career goal:") || 
+                content.toLowerCase().includes("action plan")) {
+              return null;
+            }
             
             return {
               id: index,
@@ -73,7 +82,8 @@ const NextSteps = () => {
               explanation: "This step was generated based on your career goals and preferences.",
               isOriginal: true,
             };
-          });
+          })
+          .filter(Boolean); // Remove null entries
 
         setSteps(aiSteps);
         // Save the initial steps
@@ -158,7 +168,7 @@ const NextSteps = () => {
           <>
             <div className="text-sm text-gray-600 space-y-2 mb-6">
               <p>Based on your responses and career goals, we've created a personalized career plan that we think will help you achieve your objectives.</p>
-              <p>Feel free to modify these steps to better align with your preferences and circumstances. You can add, edit, reorganize, or remove steps to make this plan truly yours.</p>
+              <p>Feel free to modify these steps to better align with your preferences and circumstances.</p>
             </div>
             <StepsList
               steps={steps}
