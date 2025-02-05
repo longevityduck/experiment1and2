@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -30,6 +31,7 @@ const questions: ClarifyingQuestion[] = [
 const CareerClarification = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   useEffect(() => {
     const savedInfo = storage.getCareerInfo();
@@ -38,9 +40,29 @@ const CareerClarification = () => {
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleNext = () => {
+    const currentQuestion = questions[currentQuestionIndex];
+    if (!answers[currentQuestion.id]?.trim()) {
+      toast.error("Please answer the current question before proceeding");
+      return;
+    }
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      handleSubmit();
+    }
+  };
+
+  const handleBack = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    } else {
+      navigate(-1);
+    }
+  };
+
+  const handleSubmit = () => {
     if (Object.keys(answers).length < questions.length) {
       toast.error("Please answer all questions");
       return;
@@ -50,6 +72,8 @@ const CareerClarification = () => {
     navigate("/career-goal-suggestion");
   };
 
+  const currentQuestion = questions[currentQuestionIndex];
+
   return (
     <>
       <ProgressIndicator />
@@ -58,32 +82,28 @@ const CareerClarification = () => {
           <div className="bg-blue-50 p-4 rounded-lg space-y-3">
             <p className="text-gray-700">
               These open-ended questions are designed to help you explore your skills, preferences, and aspirations in more detail. 
-              Your thoughtful responses will help us understand the unique aspects of your career journey.
+              Take your time to reflect on each question.
             </p>
-            <p className="text-gray-700">
-              Take your time to reflect on each question. Consider specific examples and experiences that have shaped your preferences. 
-              The more detailed your responses, the better we can tailor your career goals to align with your personal and professional aspirations.
-            </p>
+            <div className="text-sm font-medium text-blue-600">
+              Question {currentQuestionIndex + 1} of {questions.length}
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {questions.map((question) => (
-              <ClarificationQuestionItem
-                key={question.id}
-                question={question}
-                value={answers[question.id] || ""}
-                onChange={(value) => 
-                  setAnswers((prev) => ({ ...prev, [question.id]: value }))
-                }
-              />
-            ))}
-
-            <NavigationButtons
-              onBack={() => navigate(-1)}
-              onNext={() => {}}
-              nextButtonText="Generate Career Goal"
+          <div key={currentQuestion.id}>
+            <ClarificationQuestionItem
+              question={currentQuestion}
+              value={answers[currentQuestion.id] || ""}
+              onChange={(value) => 
+                setAnswers((prev) => ({ ...prev, [currentQuestion.id]: value }))
+              }
             />
-          </form>
+          </div>
+
+          <NavigationButtons
+            onBack={handleBack}
+            onNext={handleNext}
+            nextButtonText={currentQuestionIndex === questions.length - 1 ? "Generate Career Goal" : "Next"}
+          />
         </div>
       </FormContainer>
     </>
