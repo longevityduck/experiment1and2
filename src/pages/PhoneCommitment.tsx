@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,14 +16,14 @@ const PhoneCommitment = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, ''); // Remove non-digits
-    if (value.length <= 8) { // Limit to 8 digits
+    const value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 8) {
       setPhoneNumber(value);
     }
   };
 
   const validatePhoneNumber = (number: string) => {
-    const phoneRegex = /^[89]\d{7}$/; // Must start with 8 or 9 and have exactly 8 digits
+    const phoneRegex = /^[89]\d{7}$/;
     return phoneRegex.test(number);
   };
 
@@ -46,7 +47,6 @@ const PhoneCommitment = () => {
     }
 
     setIsSubmitting(true);
-    // Here you would typically make an API call to save the phone number and name
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     toast({
@@ -114,7 +114,7 @@ const PhoneCommitment = () => {
             className="w-full"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Submitting..." : "Commit to Journey"}
+            {isSubmitting ? "Submitting..." : "Lock in your plan, secure your future"}
           </Button>
         </div>
       </div>
