@@ -7,67 +7,75 @@ const Introduction = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4 sm:p-6">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50/80 to-white">
       <Header />
-      <div className="max-w-2xl mx-auto pt-8 sm:pt-12">
-        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-8 text-center space-y-4 sm:space-y-6">
-          <div className="mb-6 sm:mb-8">
-            <h2 className="text-3xl sm:text-4xl font-bold text-blue-600 mb-2">
-              Stop feeling lost
-            </h2>
-            <p className="text-xl sm:text-2xl text-gray-700">
-              Get a clear career roadmap in 15 minutes
-            </p>
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">
-            Welcome to North Star
-          </h1>
-          
-          <div className="space-y-4 text-base sm:text-lg text-gray-600">
-            <p>
-              North Star is your personal career guide, designed to support your reflection, 
-              clarify your path, and help you achieve your goals.
-            </p>
-
-            <div className="bg-blue-50 p-4 rounded-lg my-6">
-              <p className="text-gray-700">
-                Developed by professional career coaches and grounded in proven career development principles, 
-                North Star combines decades of coaching expertise with cutting-edge AI technology to provide 
-                you with personalized, actionable career guidance.
+      <main className="px-4 py-8 sm:py-12 sm:px-6">
+        <div className="max-w-2xl mx-auto">
+          <div className="space-y-8 bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
+            {/* Main headline section */}
+            <div className="space-y-2 text-center">
+              <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800">
+                Stop feeling lost
+              </h2>
+              <p className="text-lg sm:text-xl text-gray-600">
+                Get a clear career roadmap in 15 minutes
               </p>
             </div>
 
-            <div className="py-4">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
-                What You'll Get:
-              </h2>
-              <ul className="space-y-2 text-left list-disc list-inside px-2">
-                <li>Personalized career goal suggestions</li>
-                <li>Skills assessment and development plans</li>
-                <li>Actionable next steps for your career journey</li>
-                <li>Regular updates and insights to keep you on track</li>
-              </ul>
+            {/* Welcome section */}
+            <div className="space-y-6">
+              <h1 className="text-xl sm:text-2xl font-semibold text-gray-800 text-center">
+                Welcome to North Star
+              </h1>
+              
+              <p className="text-gray-600 leading-relaxed">
+                North Star is your personal career guide, designed to support your reflection, 
+                clarify your path, and help you achieve your goals.
+              </p>
+              
+              {/* Info box */}
+              <div className="bg-blue-50/50 border border-blue-100 rounded-lg p-4">
+                <p className="text-gray-700">
+                  Developed by professional career coaches and grounded in proven career development principles, 
+                  North Star combines decades of coaching expertise with cutting-edge AI technology to provide 
+                  you with personalized, actionable career guidance.
+                </p>
+              </div>
+
+              {/* Features section */}
+              <div className="space-y-4">
+                <h2 className="text-lg font-medium text-gray-800">
+                  What You'll Get:
+                </h2>
+                <ul className="space-y-2 text-gray-600 list-disc list-inside">
+                  <li>Personalized career goal suggestions</li>
+                  <li>Skills assessment and development plans</li>
+                  <li>Actionable next steps for your career journey</li>
+                  <li>Regular updates and insights to keep you on track</li>
+                </ul>
+              </div>
+
+              {/* Quote */}
+              <p className="text-gray-600 italic text-center border-t border-gray-100 pt-6">
+                "The best way to predict your future is to create it."
+              </p>
             </div>
 
-            <p className="italic">
-              "The best way to predict your future is to create it."
-            </p>
-          </div>
-
-          <div className="mt-6 sm:mt-8">
-            <Button 
-              onClick={() => {
-                localStorage.clear();
-                navigate("/user-type");
-              }}
-              className="px-4 sm:px-8 py-4 sm:py-6 text-base sm:text-lg w-full sm:w-auto"
-            >
-              Start Your Career Planning Journey
-            </Button>
+            {/* CTA Button */}
+            <div className="pt-4">
+              <Button 
+                onClick={() => {
+                  localStorage.clear();
+                  navigate("/user-type");
+                }}
+                className="w-full sm:w-auto px-6 py-3 text-base bg-blue-600 hover:bg-blue-700 transition-colors"
+              >
+                Start Your Career Planning Journey
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
