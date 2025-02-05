@@ -35,14 +35,16 @@ const CareerGoalSuggestion = () => {
         if (error) {
           console.error('Error generating career goal:', error);
           
-          // Check if the error is related to OpenAI API quota
-          if (error.message?.includes('exceeded your current quota')) {
+          // Handle quota exceeded error (429)
+          if (error.status === 429) {
             toast.error("Our AI service is temporarily unavailable. We've provided a general suggestion instead.");
             setSuggestedGoal(FALLBACK_GOAL);
-          } else {
-            toast.error("Failed to generate career goal. Using a general suggestion instead.");
-            setSuggestedGoal(FALLBACK_GOAL);
+            return;
           }
+          
+          // Handle other errors
+          toast.error("Failed to generate career goal. Using a general suggestion instead.");
+          setSuggestedGoal(FALLBACK_GOAL);
           return;
         }
 
