@@ -47,7 +47,7 @@ Only include steps that have issues. If all steps align well, return an empty ar
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           {
             role: 'system',
@@ -61,6 +61,7 @@ Only include steps that have issues. If all steps align well, return an empty ar
     });
 
     if (!response.ok) {
+      console.error('OpenAI API error:', await response.text());
       throw new Error(`OpenAI API error: ${response.statusText}`);
     }
 
