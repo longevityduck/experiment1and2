@@ -29,6 +29,14 @@ const Introduction = () => {
               guide to effective career planning and goal achievement.
             </p>
 
+            <div className="bg-blue-50 p-4 rounded-lg my-6">
+              <p className="text-gray-700">
+                Developed by professional career coaches and grounded in proven career development principles, 
+                Own Goal combines decades of coaching expertise with cutting-edge AI technology to provide 
+                you with personalized, actionable career guidance.
+              </p>
+            </div>
+
             <div className="py-4">
               <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
                 What You'll Get:
