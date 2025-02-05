@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
 import { getCareerAdvice } from "@/utils/openai";
 import { Loader2 } from "lucide-react";
+import { FormContainer } from "@/components/career-guidance/FormContainer";
 
 const industries = [
   "Technology",
@@ -98,12 +99,20 @@ const PersonalInfo = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
-      <div className="max-w-md mx-auto">
-        <ProgressIndicator />
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">Personal Information</h1>
-          
+    <>
+      <ProgressIndicator />
+      <FormContainer title="Personal Information">
+        <div className="space-y-6">
+          <div className="bg-blue-50 p-4 rounded-lg space-y-3">
+            <p className="text-gray-700 text-lg font-medium">
+              Let's get to know you better!
+            </p>
+            <p className="text-gray-700">
+              Your background and experience are important factors in shaping your career journey. 
+              Please provide some basic information about yourself to help us understand your current situation.
+            </p>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -195,8 +204,8 @@ const PersonalInfo = () => {
             </Button>
           </form>
         </div>
-      </div>
-    </div>
+      </FormContainer>
+    </>
   );
 };
 
