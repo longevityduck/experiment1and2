@@ -34,11 +34,11 @@ ${userAddedSteps.map((step: any, index: number) =>
   `Step ${index + 1}: ${step.content} (Timeframe: ${step.timeframe})`
 ).join('\n')}
 
-For each step that might not align well with the career goal, explain why. Format the response as a JSON array where each object has:
+Return a JSON array (no markdown formatting) where each object has:
 - stepContent: The content of the problematic step
 - reason: A brief, constructive explanation of why it might not align well with the career goal
 
-Only include steps that have issues. If all steps align well, return an empty array.`;
+Only include steps that have issues. Return [] if all steps align well.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -51,7 +51,7 @@ Only include steps that have issues. If all steps align well, return an empty ar
         messages: [
           {
             role: 'system',
-            content: 'You are a career development expert analyzing career steps. Be constructive and specific in your feedback, identifying only genuinely misaligned steps.'
+            content: 'You are a career development expert analyzing career steps. Return only raw JSON arrays without any markdown formatting or explanation text. Be constructive and specific in your feedback, identifying only genuinely misaligned steps.'
           },
           { role: 'user', content: prompt }
         ],
@@ -66,15 +66,21 @@ Only include steps that have issues. If all steps align well, return an empty ar
     }
 
     const data = await response.json();
-    const analysis = JSON.parse(data.choices[0].message.content);
-
-    return new Response(
-      JSON.stringify({
-        valid: analysis.length === 0,
-        issues: analysis
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    console.log('OpenAI response:', data.choices[0].message.content);
+    
+    try {
+      const analysis = JSON.parse(data.choices[0].message.content);
+      return new Response(
+        JSON.stringify({
+          valid: analysis.length === 0,
+          issues: analysis
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError, 'Content:', data.choices[0].message.content);
+      throw new Error('Failed to parse OpenAI response as JSON');
+    }
   } catch (error) {
     console.error('Error in validate-career-steps function:', error);
     return new Response(
