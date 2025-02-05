@@ -5,24 +5,43 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
+import { Loader2 } from "lucide-react";
+import { storage } from "@/utils/storage";
+import { supabase } from "@/integrations/supabase/client";
 
 const CareerGoalSuggestion = () => {
   const navigate = useNavigate();
   const [suggestedGoal, setSuggestedGoal] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Mock AI suggestion - in a real app, this would call an AI API
-    const generateSuggestion = () => {
-      const clarificationAnswers = JSON.parse(localStorage.getItem("careerClarificationAnswers") || "{}");
-      const guidanceAnswers = JSON.parse(localStorage.getItem("careerGuidanceAnswers") || "{}");
-      
-      // Simple mock suggestion based on stored answers
-      const suggestion = `Based on your responses, a suitable career goal would be to focus on ${clarificationAnswers["interests"] || "your interests"} 
-        while leveraging your strengths in ${clarificationAnswers["skills-strengths"] || "your current skills"}. 
-        Consider roles that align with your values of ${clarificationAnswers["values"] || "work-life balance"} 
-        in environments that are ${clarificationAnswers["ideal-environment"] || "collaborative and growth-oriented"}.`;
-      
-      setSuggestedGoal(suggestion);
+    const generateSuggestion = async () => {
+      try {
+        const personalInfo = storage.getCareerInfo().personalInfo || {};
+        const guidanceAnswers = storage.getCareerInfo().guidanceAnswers || {};
+        const clarificationAnswers = storage.getCareerInfo().clarificationAnswers || {};
+
+        const { data, error } = await supabase.functions.invoke('career-advice', {
+          body: {
+            type: 'career-goal',
+            personalInfo,
+            guidanceAnswers,
+            clarificationAnswers
+          }
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        setSuggestedGoal(data.advice);
+      } catch (error) {
+        console.error('Error generating career goal:', error);
+        toast.error("Failed to generate career goal. Please try again.");
+        setSuggestedGoal("Unable to generate a career goal at this time. Please try again or proceed with your own goal.");
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     generateSuggestion();
@@ -34,7 +53,7 @@ const CareerGoalSuggestion = () => {
       return;
     }
 
-    localStorage.setItem("careerGoals", suggestedGoal);
+    storage.saveCareerInfo({ careerGoals: suggestedGoal });
     navigate("/skills-assessment");
   };
 
@@ -56,27 +75,37 @@ const CareerGoalSuggestion = () => {
 
           <div className="mb-6 text-gray-600 space-y-4">
             <p>
-              Based on your previous responses, we've generated a personalized career goal using established career coaching theories and AI assistance. This suggestion takes into account your skills, interests, and aspirations.
+              Based on your previous responses, we've generated a personalized career goal using AI assistance. 
+              This suggestion takes into account your background, skills, interests, and aspirations.
             </p>
             <p>
-              While this suggestion serves as a starting point, we encourage you to review and modify it to better align with your personal vision and career aspirations. Your unique perspective and understanding of your goals are invaluable in crafting the perfect career objective.
+              While this suggestion serves as a starting point, we encourage you to review and modify it to better 
+              align with your personal vision and career aspirations.
             </p>
           </div>
 
           <Card className="mb-6">
             <CardContent className="pt-6">
               <h2 className="text-lg font-semibold mb-2">Suggested Career Goal:</h2>
-              <Textarea
-                value={suggestedGoal}
-                onChange={(e) => setSuggestedGoal(e.target.value)}
-                className="min-h-[150px]"
-              />
+              {isLoading ? (
+                <div className="flex items-center justify-center p-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                </div>
+              ) : (
+                <Textarea
+                  value={suggestedGoal}
+                  onChange={(e) => setSuggestedGoal(e.target.value)}
+                  className="min-h-[150px]"
+                  placeholder="Your career goal will appear here..."
+                />
+              )}
             </CardContent>
           </Card>
 
           <Button 
             onClick={handleSubmit}
             className="w-full"
+            disabled={isLoading}
           >
             Continue to Skills Assessment
           </Button>
