@@ -25,11 +25,11 @@ const CareerGoals = () => {
   const [isUnsure, setIsUnsure] = useState(false);
   const [showValidationDialog, setShowValidationDialog] = useState(false);
   const [validationReason, setValidationReason] = useState("");
-  const [isValidating, setIsValidating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const validateCareerGoal = async () => {
     try {
-      setIsValidating(true);
+      setIsSaving(true);
       const { data, error } = await supabase.functions.invoke("validate-career-goal", {
         body: { careerGoal: goals },
       });
@@ -48,7 +48,7 @@ const CareerGoals = () => {
       toast.error("Could not validate the career goal. You may proceed if you wish.");
       return true;
     } finally {
-      setIsValidating(false);
+      setIsSaving(false);
     }
   };
 
@@ -138,8 +138,8 @@ const CareerGoals = () => {
               >
                 Back
               </Button>
-              <Button type="submit" className="w-full" disabled={isValidating}>
-                {isValidating ? "Validating..." : "Next"}
+              <Button type="submit" className="w-full" disabled={isSaving}>
+                {isSaving ? "Saving..." : "Next"}
               </Button>
             </div>
           </form>
