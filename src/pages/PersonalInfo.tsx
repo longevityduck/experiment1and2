@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
-import { getIndustrySuggestions, getCareerAdvice } from "@/utils/openai";
+import { getCareerAdvice } from "@/utils/openai";
 import { Loader2 } from "lucide-react";
 
 const industries = [
@@ -20,6 +20,7 @@ const industries = [
   "Finance",
   "Education",
   "Manufacturing",
+  "Professional Services",
   "Retail",
   "Other",
 ];
@@ -34,7 +35,6 @@ const PersonalInfo = () => {
     occupation: "",
     experience: "",
   });
-  const [suggestedIndustries, setSuggestedIndustries] = useState<string[]>([]);
 
   useEffect(() => {
     const savedInfo = localStorage.getItem("personalInfo");
@@ -43,18 +43,6 @@ const PersonalInfo = () => {
       setFormData(parsedInfo);
     }
   }, []);
-
-  const handleOccupationChange = async (value: string) => {
-    setFormData({ ...formData, occupation: value });
-    if (value.length > 2) {
-      try {
-        const suggestions = await getIndustrySuggestions(value);
-        setSuggestedIndustries(suggestions);
-      } catch (error) {
-        console.error('Error getting industry suggestions:', error);
-      }
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,7 +127,7 @@ const PersonalInfo = () => {
               <Input
                 type="text"
                 value={formData.occupation}
-                onChange={(e) => handleOccupationChange(e.target.value)}
+                onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
                 placeholder="Enter your current occupation"
                 className="w-full"
                 required
@@ -159,7 +147,7 @@ const PersonalInfo = () => {
                   <SelectValue placeholder="Select your industry" />
                 </SelectTrigger>
                 <SelectContent>
-                  {[...industries, ...suggestedIndustries].map((industry) => (
+                  {industries.map((industry) => (
                     <SelectItem key={industry} value={industry}>
                       {industry}
                     </SelectItem>
