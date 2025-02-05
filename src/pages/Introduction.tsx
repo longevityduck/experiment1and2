@@ -43,11 +43,11 @@ const Introduction = () => {
               </div>
 
               {/* Features section */}
-              <div className="space-y-4">
+              <div className="space-y-4 text-center">
                 <h2 className="text-lg font-medium text-gray-800">
                   What You'll Get:
                 </h2>
-                <ul className="space-y-2 text-gray-600 list-disc list-inside">
+                <ul className="space-y-2 text-gray-600 list-none">
                   <li>Personalized career goal suggestions</li>
                   <li>Skills assessment and development plans</li>
                   <li>Actionable next steps for your career journey</li>
