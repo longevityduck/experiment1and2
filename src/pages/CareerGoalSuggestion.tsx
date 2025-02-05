@@ -46,7 +46,9 @@ const CareerGoalSuggestion = () => {
           return;
         }
 
-        setSuggestedGoal(data.advice);
+        // Extract just the career goal from the response
+        const goalOnly = data.advice.split('\n')[0].replace(/^Career Goal:\s*/i, '').trim();
+        setSuggestedGoal(goalOnly);
       } catch (error) {
         console.error('Error generating career goal:', error);
         toast.error("An unexpected error occurred. Using a general suggestion instead.");
