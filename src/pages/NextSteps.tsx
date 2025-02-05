@@ -5,6 +5,7 @@ import StepsList from "@/components/next-steps/StepsList";
 import ActionButtons from "@/components/next-steps/ActionButtons";
 import { FormContainer } from "@/components/career-guidance/FormContainer";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Step {
   id: number;
@@ -34,62 +35,49 @@ const NextSteps = () => {
           return;
         }
 
-        // If no saved steps, generate new ones
-        const careerInfo = JSON.parse(localStorage.getItem("careerInfo") || "{}");
-        const skills = JSON.parse(localStorage.getItem("skills") || "[]");
+        // If no saved steps, generate new ones using AI
+        const personalInfo = JSON.parse(localStorage.getItem("careerInfo") || "{}");
+        const guidanceAnswers = JSON.parse(localStorage.getItem("guidanceAnswers") || "{}");
+        const clarificationAnswers = JSON.parse(localStorage.getItem("clarificationAnswers") || "{}");
+        const careerGoals = localStorage.getItem("careerGoals") || "";
 
-        const mockSteps = [
-          {
-            content: `Research advanced certifications in ${careerInfo.industry}`,
-            timeframe: "1-3 months",
-            explanation:
-              "Professional certifications demonstrate your commitment to growth and validate your expertise to potential employers. They can significantly increase your marketability and open doors to advanced positions.",
-            isOriginal: true,
-          },
-          {
-            content: `Build a portfolio showcasing your ${skills[0]} skills`,
-            timeframe: "2-4 months",
-            explanation:
-              "A well-curated portfolio provides tangible evidence of your capabilities and helps you stand out in competitive job markets. It's your personal brand showcase that speaks louder than any resume.",
-            isOriginal: true,
-          },
-          {
-            content: `Network with professionals in ${careerInfo.occupation} roles`,
-            timeframe: "1-2 months",
-            explanation:
-              "Professional networking is crucial for career advancement. It provides insider industry knowledge, mentorship opportunities, and often leads to job opportunities before they're publicly posted.",
-            isOriginal: true,
-          },
-          {
-            content: "Attend industry conferences and workshops",
-            timeframe: "3-6 months",
-            explanation:
-              "Industry events keep you updated with the latest trends and technologies while providing valuable face-to-face networking opportunities. They're essential for staying relevant in your field.",
-            isOriginal: true,
-          },
-          {
-            content: "Seek mentorship opportunities",
-            timeframe: "1-3 months",
-            explanation:
-              "Mentors can provide invaluable guidance, share their experiences, and help you avoid common career pitfalls. Their insights can accelerate your professional growth significantly.",
-            isOriginal: true,
-          },
-          {
-            content: "Create a detailed timeline for career progression",
-            timeframe: "1-2 months",
-            explanation:
-              "A structured timeline helps you stay focused and accountable to your goals. It transforms abstract aspirations into concrete, actionable milestones.",
-            isOriginal: true,
-          },
-        ].map((step, id) => ({
-          id,
-          ...step,
-          isEditing: false,
-        }));
+        // Call the AI function to generate personalized steps
+        const { data, error } = await supabase.functions.invoke('career-advice', {
+          body: {
+            type: 'career-goal',
+            personalInfo,
+            guidanceAnswers,
+            clarificationAnswers,
+            careerGoals
+          }
+        });
 
-        setSteps(mockSteps);
+        if (error) {
+          console.error('Error generating steps:', error);
+          throw error;
+        }
+
+        // Parse the AI response and format it into steps
+        const aiSteps = data.advice.split('\n')
+          .filter((step: string) => step.trim().length > 0)
+          .map((step: string, index: number) => {
+            const timeframeMatch = step.match(/\((\d+(?:-\d+)?\s*months?)\)/i);
+            const timeframe = timeframeMatch ? timeframeMatch[1] : "1-3 months";
+            const content = step.replace(/\(\d+(?:-\d+)?\s*months?\)/i, '').trim();
+            
+            return {
+              id: index,
+              content,
+              timeframe,
+              isEditing: false,
+              explanation: "This step was generated based on your career goals and preferences.",
+              isOriginal: true,
+            };
+          });
+
+        setSteps(aiSteps);
         // Save the initial steps
-        localStorage.setItem("userSteps", JSON.stringify(mockSteps));
+        localStorage.setItem("userSteps", JSON.stringify(aiSteps));
         setLoading(false);
       } catch (error) {
         console.error("Error generating steps:", error);
@@ -99,6 +87,37 @@ const NextSteps = () => {
           description: "Failed to generate next steps. Please try again.",
           variant: "destructive",
         });
+
+        // Fallback to default steps if AI generation fails
+        const careerInfo = JSON.parse(localStorage.getItem("careerInfo") || "{}");
+        const skills = JSON.parse(localStorage.getItem("skills") || "[]");
+        const fallbackSteps = [
+          {
+            content: `Research advanced certifications in ${careerInfo.industry || 'your industry'}`,
+            timeframe: "1-3 months",
+            explanation: "Professional certifications demonstrate your commitment to growth and validate your expertise to potential employers.",
+            isOriginal: true,
+          },
+          {
+            content: `Build a portfolio showcasing your ${skills[0] || 'professional'} skills`,
+            timeframe: "2-4 months",
+            explanation: "A well-curated portfolio provides tangible evidence of your capabilities.",
+            isOriginal: true,
+          },
+          {
+            content: `Network with professionals in ${careerInfo.occupation || 'your target role'}`,
+            timeframe: "1-2 months",
+            explanation: "Professional networking is crucial for career advancement.",
+            isOriginal: true,
+          }
+        ].map((step, id) => ({
+          id,
+          ...step,
+          isEditing: false,
+        }));
+
+        setSteps(fallbackSteps);
+        localStorage.setItem("userSteps", JSON.stringify(fallbackSteps));
       }
     };
 
@@ -116,6 +135,8 @@ const NextSteps = () => {
     localStorage.removeItem("careerInfo");
     localStorage.removeItem("careerGoals");
     localStorage.removeItem("skills");
+    localStorage.removeItem("guidanceAnswers");
+    localStorage.removeItem("clarificationAnswers");
     navigate("/");
   };
 
@@ -136,7 +157,7 @@ const NextSteps = () => {
         ) : (
           <>
             <div className="text-sm text-gray-600 space-y-2 mb-6">
-              <p>Based on your responses, we've created a personalized career plan that we think will help you achieve your goals.</p>
+              <p>Based on your responses and career goals, we've created a personalized career plan that we think will help you achieve your objectives.</p>
               <p>Feel free to modify these steps to better align with your preferences and circumstances. You can add, edit, reorganize, or remove steps to make this plan truly yours.</p>
             </div>
             <StepsList
