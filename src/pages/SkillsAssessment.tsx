@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { SkillInput } from "@/components/skills/SkillInput";
 import { SkillsList } from "@/components/skills/SkillsList";
-import { Loader2, ListChecks } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { FormContainer } from "@/components/career-guidance/FormContainer";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
+import { supabase } from "@/integrations/supabase/client";
 
 const SkillsAssessment = () => {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const SkillsAssessment = () => {
   const [isConfirmed, setIsConfirmed] = useState(false);
 
   useEffect(() => {
-    const loadOrGenerateSkills = async () => {
+    const generateSkills = async () => {
       try {
         const savedSkills = localStorage.getItem("userSkills");
         if (savedSkills) {
@@ -25,34 +26,53 @@ const SkillsAssessment = () => {
         }
 
         const careerInfo = JSON.parse(localStorage.getItem("careerInfo") || "{}");
-        const mockSkills = [
+        
+        if (!careerInfo.industry || !careerInfo.occupation || !careerInfo.experience) {
+          toast.error("Missing required information. Please complete your profile first.");
+          navigate("/personal-info");
+          return;
+        }
+
+        const { data, error } = await supabase.functions.invoke('generate-skills', {
+          body: {
+            industry: careerInfo.industry,
+            occupation: careerInfo.occupation,
+            experience: careerInfo.experience
+          }
+        });
+
+        if (error) {
+          console.error('Error generating skills:', error);
+          throw new Error('Failed to generate skills');
+        }
+
+        const generatedSkills = data.skills;
+        setSkills(generatedSkills);
+        localStorage.setItem("userSkills", JSON.stringify(generatedSkills));
+        localStorage.setItem("skills", JSON.stringify(generatedSkills));
+      } catch (error) {
+        console.error("Error generating skills:", error);
+        toast.error("Failed to generate skills. Using default skills instead.");
+        
+        const careerInfo = JSON.parse(localStorage.getItem("careerInfo") || "{}");
+        const defaultSkills = [
           `${careerInfo.industry || 'Industry'} Knowledge`,
           `${careerInfo.occupation || 'Professional'} Expertise`,
           "Project Management",
           "Communication",
           "Leadership",
         ];
-
-        setSkills(mockSkills);
-        localStorage.setItem("userSkills", JSON.stringify(mockSkills));
-        localStorage.setItem("skills", JSON.stringify(mockSkills));
+        
+        setSkills(defaultSkills);
+        localStorage.setItem("userSkills", JSON.stringify(defaultSkills));
+        localStorage.setItem("skills", JSON.stringify(defaultSkills));
+      } finally {
         setLoading(false);
-      } catch (error) {
-        console.error("Error loading/generating skills:", error);
-        setLoading(false);
-        toast.error("Failed to load skills. Please try again.");
       }
     };
 
-    loadOrGenerateSkills();
-  }, []);
-
-  useEffect(() => {
-    if (!loading && skills.length > 0) {
-      localStorage.setItem("userSkills", JSON.stringify(skills));
-      localStorage.setItem("skills", JSON.stringify(skills));
-    }
-  }, [skills, loading]);
+    generateSkills();
+  }, [navigate]);
 
   const handleConfirm = () => {
     setIsConfirmed(true);
@@ -71,8 +91,8 @@ const SkillsAssessment = () => {
           ) : (
             <div className="space-y-6">
               <div className="text-sm text-gray-600 space-y-2">
-                <p>Based on the information you've shared with us, we've compiled a list of skills that you may have.</p>
-                <p>Please review and edit this list to accurately reflect your current skillset. Understanding your skills helps us better guide your next career steps.</p>
+                <p>Based on your profile information, we've generated a list of relevant skills for your career path.</p>
+                <p>Please review and customize this list to accurately reflect your current skillset. Understanding your skills helps us better guide your next career steps.</p>
               </div>
 
               <div className="animate-fade-in">
