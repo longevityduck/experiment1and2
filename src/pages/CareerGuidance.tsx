@@ -80,23 +80,36 @@ const CareerGuidance = () => {
     <>
       <ProgressIndicator />
       <FormContainer title="About You">
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {questions.map((question) => (
-            <QuestionItem
-              key={question.id}
-              question={question}
-              value={answers[question.id] || ""}
-              onChange={(value) => 
-                setAnswers((prev) => ({ ...prev, [question.id]: value }))
-              }
-            />
-          ))}
+        <div className="space-y-8">
+          <div className="bg-blue-50 p-4 rounded-lg space-y-3">
+            <p className="text-gray-700">
+              These questions will help us understand your current career situation, aspirations, and preferences. 
+              Take a moment to reflect on each question - your answers will shape the career goals we suggest.
+            </p>
+            <p className="text-gray-700">
+              Consider not just what your immediate answers might be, but also why you feel that way. 
+              Your honest responses will help us provide more meaningful and personalized guidance.
+            </p>
+          </div>
 
-          <NavigationButtons
-            onBack={() => navigate(-1)}
-            onNext={() => {}}
-          />
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {questions.map((question) => (
+              <QuestionItem
+                key={question.id}
+                question={question}
+                value={answers[question.id] || ""}
+                onChange={(value) => 
+                  setAnswers((prev) => ({ ...prev, [question.id]: value }))
+                }
+              />
+            ))}
+
+            <NavigationButtons
+              onBack={() => navigate(-1)}
+              onNext={() => {}}
+            />
+          </form>
+        </div>
       </FormContainer>
     </>
   );

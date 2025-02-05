@@ -54,24 +54,37 @@ const CareerClarification = () => {
     <>
       <ProgressIndicator />
       <FormContainer title="More About You">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {questions.map((question) => (
-            <ClarificationQuestionItem
-              key={question.id}
-              question={question}
-              value={answers[question.id] || ""}
-              onChange={(value) => 
-                setAnswers((prev) => ({ ...prev, [question.id]: value }))
-              }
-            />
-          ))}
+        <div className="space-y-6">
+          <div className="bg-blue-50 p-4 rounded-lg space-y-3">
+            <p className="text-gray-700">
+              These open-ended questions are designed to help you explore your skills, preferences, and aspirations in more detail. 
+              Your thoughtful responses will help us understand the unique aspects of your career journey.
+            </p>
+            <p className="text-gray-700">
+              Take your time to reflect on each question. Consider specific examples and experiences that have shaped your preferences. 
+              The more detailed your responses, the better we can tailor your career goals to align with your personal and professional aspirations.
+            </p>
+          </div>
 
-          <NavigationButtons
-            onBack={() => navigate(-1)}
-            onNext={() => {}}
-            nextButtonText="Generate Career Goal"
-          />
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {questions.map((question) => (
+              <ClarificationQuestionItem
+                key={question.id}
+                question={question}
+                value={answers[question.id] || ""}
+                onChange={(value) => 
+                  setAnswers((prev) => ({ ...prev, [question.id]: value }))
+                }
+              />
+            ))}
+
+            <NavigationButtons
+              onBack={() => navigate(-1)}
+              onNext={() => {}}
+              nextButtonText="Generate Career Goal"
+            />
+          </form>
+        </div>
       </FormContainer>
     </>
   );
