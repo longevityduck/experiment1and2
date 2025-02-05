@@ -19,11 +19,45 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
 
-    const { type, personalInfo, guidanceAnswers, clarificationAnswers } = await req.json();
-    console.log('Received request:', { type, personalInfo, guidanceAnswers, clarificationAnswers });
+    const requestData = await req.json();
+    console.log('Received request:', requestData);
 
-    if (type === 'career-goal') {
-      // Construct a detailed prompt based on user inputs
+    // Handle industry suggestions
+    if (requestData.occupation) {
+      const prompt = `Based on the occupation "${requestData.occupation}", suggest 5 relevant industries that this person might work in. Format the response as a simple list, one industry per line.`;
+
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: 'You are a career advisor helping to suggest relevant industries for different occupations.' },
+            { role: 'user', content: prompt }
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('OpenAI API error:', error);
+        throw new Error('Failed to generate industry suggestions');
+      }
+
+      const data = await response.json();
+      return new Response(
+        JSON.stringify({ advice: data.choices[0].message.content }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Handle career goal generation
+    if (requestData.type === 'career-goal') {
+      const { personalInfo, guidanceAnswers, clarificationAnswers } = requestData;
+      
       const prompt = `As a career advisor, generate a specific, measurable, achievable, relevant, and time-bound (SMART) career goal based on the following information:
 
 Personal Information:
@@ -46,10 +80,7 @@ Generate a concise (2-3 sentences) SMART career goal that takes into account the
         body: JSON.stringify({
           model: 'gpt-4o-mini',
           messages: [
-            {
-              role: 'system',
-              content: 'You are a career advisor specializing in helping people define clear, actionable career goals.'
-            },
+            { role: 'system', content: 'You are a career advisor specializing in helping people define clear, actionable career goals.' },
             { role: 'user', content: prompt }
           ],
         }),
@@ -62,8 +93,6 @@ Generate a concise (2-3 sentences) SMART career goal that takes into account the
       }
 
       const data = await response.json();
-      console.log('OpenAI response:', data);
-
       return new Response(
         JSON.stringify({ advice: data.choices[0].message.content }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
