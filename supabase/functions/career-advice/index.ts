@@ -6,20 +6,17 @@ const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { 
-      headers: corsHeaders,
-      status: 200
-    });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
     if (!openAIApiKey) {
+      console.error('OpenAI API key not configured');
       throw new Error('OpenAI API key not configured');
     }
 
@@ -29,7 +26,6 @@ serve(async (req) => {
     // Handle industry suggestions
     if (requestData.occupation) {
       const prompt = `Based on the occupation "${requestData.occupation}", suggest 5 relevant industries that this person might work in. Format the response as a simple list, one industry per line.`;
-
       console.log('Generating industry suggestions for:', requestData.occupation);
 
       try {
@@ -51,6 +47,22 @@ serve(async (req) => {
         if (!response.ok) {
           const error = await response.json();
           console.error('OpenAI API error:', error);
+          
+          // Check for quota exceeded error
+          if (error.error?.message?.includes('exceeded your current quota')) {
+            return new Response(
+              JSON.stringify({ 
+                error: 'OpenAI API quota exceeded',
+                message: 'AI service temporarily unavailable',
+                type: 'QUOTA_EXCEEDED'
+              }),
+              { 
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                status: 429 // Using 429 for quota exceeded
+              }
+            );
+          }
+          
           throw new Error(`OpenAI API error: ${error.error?.message || 'Unknown error'}`);
         }
 
@@ -119,7 +131,7 @@ Generate a concise (2-3 sentences) SMART career goal that takes into account the
           const error = await response.json();
           console.error('OpenAI API error:', error);
           
-          // Check specifically for quota exceeded error
+          // Check for quota exceeded error
           if (error.error?.message?.includes('exceeded your current quota')) {
             return new Response(
               JSON.stringify({ 
@@ -129,7 +141,7 @@ Generate a concise (2-3 sentences) SMART career goal that takes into account the
               }),
               { 
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 500
+                status: 429 // Using 429 for quota exceeded
               }
             );
           }
@@ -149,6 +161,22 @@ Generate a concise (2-3 sentences) SMART career goal that takes into account the
         );
       } catch (error) {
         console.error('Error generating career goal:', error);
+        
+        // Check if the error is related to quota
+        if (error.message?.includes('exceeded your current quota')) {
+          return new Response(
+            JSON.stringify({ 
+              error: 'OpenAI API quota exceeded',
+              message: 'AI service temporarily unavailable',
+              type: 'QUOTA_EXCEEDED'
+            }),
+            { 
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              status: 429
+            }
+          );
+        }
+        
         return new Response(
           JSON.stringify({ 
             error: error.message || 'Failed to generate career goal',
