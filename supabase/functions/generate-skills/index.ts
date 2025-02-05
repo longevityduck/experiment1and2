@@ -30,7 +30,7 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a career advisor that generates relevant professional skills based on industry, occupation, and years of experience. Return only an array of skills, no other text.'
+            content: 'You are a career advisor that generates relevant professional skills based on industry, occupation, and years of experience. Return only a simple list of skills, one per line, without any brackets, quotes, or commas. Do not number the skills or add any additional formatting.'
           },
           {
             role: 'user',
@@ -43,11 +43,14 @@ serve(async (req) => {
     const data = await response.json();
     console.log('OpenAI response:', data);
 
-    // Parse the response to get an array of skills
+    // Parse the response and clean up any remaining special characters
     const skillsText = data.choices[0].message.content;
     const skills = skillsText
       .split('\n')
-      .map(skill => skill.replace(/^\d+\.\s*/, '').trim())
+      .map(skill => skill
+        .replace(/[\[\]",]/g, '') // Remove brackets, quotes, and commas
+        .trim()
+      )
       .filter(skill => skill.length > 0);
 
     return new Response(JSON.stringify({ skills }), {
