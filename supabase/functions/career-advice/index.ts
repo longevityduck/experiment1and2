@@ -9,7 +9,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -23,7 +22,6 @@ serve(async (req) => {
     const requestData = await req.json();
     console.log('Received request:', requestData);
 
-    // Handle industry suggestions
     if (requestData.occupation) {
       const prompt = `Based on the occupation "${requestData.occupation}", suggest 5 relevant industries that this person might work in. Format the response as a simple list, one industry per line.`;
       console.log('Generating industry suggestions for:', requestData.occupation);
@@ -91,12 +89,10 @@ serve(async (req) => {
       }
     }
 
-    // Handle career goal generation
     if (requestData.type === 'career-goal') {
-      const { personalInfo, guidanceAnswers, clarificationAnswers } = requestData;
-      console.log('Processing career goal request with:', { personalInfo, guidanceAnswers, clarificationAnswers });
+      const { personalInfo, guidanceAnswers, clarificationAnswers, careerGoals } = requestData;
       
-      const prompt = `As a career advisor, generate a specific, measurable, achievable, relevant, and time-bound (SMART) career goal based on the following information:
+      const prompt = `As a career advisor, analyze the following information and create a detailed, step-by-step career development plan. Break down the main goals into smaller, actionable steps, each with its own specific timeline.
 
 Personal Information:
 ${Object.entries(personalInfo || {}).map(([key, value]) => `${key}: ${value}`).join('\n')}
@@ -107,9 +103,19 @@ ${Object.entries(guidanceAnswers || {}).map(([key, value]) => `Question ${key}: 
 Career Clarification Responses:
 ${Object.entries(clarificationAnswers || {}).map(([key, value]) => `${key}: ${value}`).join('\n')}
 
-Generate a concise (2-3 sentences) SMART career goal that takes into account their background, skills, interests, and aspirations. The goal should be specific and actionable.`;
+Career Goals:
+${careerGoals || ''}
 
-      console.log('Sending prompt to OpenAI:', prompt);
+Please provide a detailed action plan with the following requirements:
+1. Break down the career goals into 5-7 specific, actionable steps
+2. Each step should be clear and achievable
+3. Assign a realistic timeline for each step (in months)
+4. Format each step as: "Action step (X months)" where X is the number of months
+5. Make steps progressive, building upon each other
+6. Include both short-term (1-3 months) and longer-term (6+ months) steps
+7. Focus on practical, measurable outcomes
+
+Format the response as a list, with one step per line, including the timeline in parentheses at the end of each step.`;
 
       try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -121,9 +127,14 @@ Generate a concise (2-3 sentences) SMART career goal that takes into account the
           body: JSON.stringify({
             model: 'gpt-4o-mini',
             messages: [
-              { role: 'system', content: 'You are a career advisor specializing in helping people define clear, actionable career goals.' },
+              {
+                role: 'system',
+                content: 'You are a career development expert who creates detailed, actionable career plans. Your advice is specific, measurable, and time-bound.'
+              },
               { role: 'user', content: prompt }
             ],
+            temperature: 0.7,
+            max_tokens: 1000,
           }),
         });
 
@@ -131,7 +142,6 @@ Generate a concise (2-3 sentences) SMART career goal that takes into account the
           const error = await response.json();
           console.error('OpenAI API error:', error);
           
-          // Check for quota exceeded error
           if (error.error?.message?.includes('exceeded your current quota')) {
             return new Response(
               JSON.stringify({ 
@@ -141,7 +151,7 @@ Generate a concise (2-3 sentences) SMART career goal that takes into account the
               }),
               { 
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 429 // Using 429 for quota exceeded
+                status: 429
               }
             );
           }
@@ -150,8 +160,8 @@ Generate a concise (2-3 sentences) SMART career goal that takes into account the
         }
 
         const data = await response.json();
-        console.log('OpenAI response for career goal:', data);
-        
+        console.log('OpenAI response:', data);
+
         return new Response(
           JSON.stringify({ advice: data.choices[0].message.content }),
           { 
@@ -160,26 +170,10 @@ Generate a concise (2-3 sentences) SMART career goal that takes into account the
           }
         );
       } catch (error) {
-        console.error('Error generating career goal:', error);
-        
-        // Check if the error is related to quota
-        if (error.message?.includes('exceeded your current quota')) {
-          return new Response(
-            JSON.stringify({ 
-              error: 'OpenAI API quota exceeded',
-              message: 'AI service temporarily unavailable',
-              type: 'QUOTA_EXCEEDED'
-            }),
-            { 
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-              status: 429
-            }
-          );
-        }
-        
+        console.error('Error generating career steps:', error);
         return new Response(
           JSON.stringify({ 
-            error: error.message || 'Failed to generate career goal',
+            error: 'Failed to generate career steps',
             details: error.toString()
           }),
           { 
