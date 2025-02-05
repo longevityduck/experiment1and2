@@ -17,17 +17,18 @@ serve(async (req) => {
   try {
     const { careerGoal } = await req.json();
 
-    const prompt = `As a career development expert, analyze if the following text represents a valid career goal. A valid career goal should be:
-1. Specific and clear about what someone wants to achieve
-2. Career or professional development focused
-3. Realistic and achievable
-4. Not too vague or general
+    const prompt = `As a career development expert, analyze if the following text could be considered a career goal. A valid career goal should be:
+1. Related to work, career, or professional aspirations in any way
+2. Express some kind of desire or intention
+3. Not be completely unrelated to career or work (like "I want to eat pizza")
+
+Be very lenient in your analysis. If the text expresses any kind of work-related aspiration, even if vague or general, consider it valid.
 
 Career Goal: "${careerGoal}"
 
 Return a JSON object (no markdown) with:
-- valid: boolean indicating if this is a valid career goal
-- reason: If not valid, provide a constructive explanation why. If valid, leave empty string
+- valid: boolean indicating if this could be considered a career goal
+- reason: If not valid, provide a gentle explanation why. If valid, leave empty string
 `;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -41,7 +42,7 @@ Return a JSON object (no markdown) with:
         messages: [
           {
             role: 'system',
-            content: 'You are a career development expert analyzing career goals. Return only raw JSON without any markdown formatting or explanation text. Be constructive in your feedback.'
+            content: 'You are a supportive career development expert analyzing career goals. Return only raw JSON without any markdown formatting or explanation text. Be very lenient and accepting of different types of career goals.'
           },
           { role: 'user', content: prompt }
         ],
@@ -79,3 +80,4 @@ Return a JSON object (no markdown) with:
     );
   }
 });
+
