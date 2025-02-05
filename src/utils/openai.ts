@@ -3,7 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 export const getIndustrySuggestions = async (occupation: string): Promise<string[]> => {
   try {
     const { data, error } = await supabase.functions.invoke('career-advice', {
-      body: { occupation }
+      body: { 
+        type: 'industry-suggestions',
+        occupation 
+      }
     });
 
     if (error) throw error;
@@ -25,7 +28,10 @@ export const getIndustrySuggestions = async (occupation: string): Promise<string
 export const getCareerAdvice = async (personalInfo: any): Promise<string> => {
   try {
     const { data, error } = await supabase.functions.invoke('career-advice', {
-      body: personalInfo
+      body: {
+        type: 'career-advice',
+        ...personalInfo
+      }
     });
 
     if (error) throw error;

@@ -17,6 +17,47 @@ serve(async (req) => {
     const requestData = await req.json();
     console.log('Received request:', requestData);
 
+    if (!requestData.type) {
+      throw new Error('Request type is required');
+    }
+
+    if (requestData.type === 'industry-suggestions') {
+      const { occupation } = requestData;
+      
+      if (!occupation) {
+        throw new Error('Occupation is required for industry suggestions');
+      }
+
+      const prompt = `Given the occupation "${occupation}", suggest 5 relevant industries where this occupation is commonly found. Format each suggestion on a new line with a number prefix (e.g., "1. Technology").`;
+
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4',
+          messages: [
+            { role: 'system', content: 'You are a career advisor helping to suggest relevant industries for different occupations.' },
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.7,
+          max_tokens: 200,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI API error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return new Response(
+        JSON.stringify({ advice: data.choices[0].message.content }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     if (requestData.type === 'career-goal') {
       const { personalInfo, guidanceAnswers, clarificationAnswers } = requestData;
       
@@ -59,7 +100,7 @@ Format the response with the career goal first, followed by two line breaks, the
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'gpt-4o-mini',
+            model: 'gpt-4',
             messages: [
               {
                 role: 'system',
@@ -75,21 +116,6 @@ Format the response with the career goal first, followed by two line breaks, the
         if (!response.ok) {
           const error = await response.json();
           console.error('OpenAI API error:', error);
-          
-          if (error.error?.message?.includes('exceeded your current quota')) {
-            return new Response(
-              JSON.stringify({ 
-                error: 'OpenAI API quota exceeded',
-                message: 'AI service temporarily unavailable',
-                type: 'QUOTA_EXCEEDED'
-              }),
-              { 
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                status: 429
-              }
-            );
-          }
-          
           throw new Error(`OpenAI API error: ${error.error?.message || 'Unknown error'}`);
         }
 
@@ -98,24 +124,48 @@ Format the response with the career goal first, followed by two line breaks, the
 
         return new Response(
           JSON.stringify({ advice: data.choices[0].message.content }),
-          { 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 200
-          }
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       } catch (error) {
         console.error('Error generating career steps:', error);
-        return new Response(
-          JSON.stringify({ 
-            error: 'Failed to generate career steps',
-            details: error.toString()
-          }),
-          { 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 500
-          }
-        );
+        throw error;
       }
+    }
+
+    if (requestData.type === 'career-advice') {
+      // Handle general career advice
+      const prompt = `Based on the following information about a professional:
+      
+${Object.entries(requestData).filter(([key]) => key !== 'type').map(([key, value]) => `${key}: ${value}`).join('\n')}
+
+Provide brief career advice focusing on potential growth opportunities and skill development areas.`;
+
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4',
+          messages: [
+            { role: 'system', content: 'You are a career advisor providing concise, actionable advice.' },
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.7,
+          max_tokens: 300,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI API error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return new Response(
+        JSON.stringify({ advice: data.choices[0].message.content }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     throw new Error('Invalid request type');
