@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
 import { supabase } from "@/integrations/supabase/client";
 import { storage } from "@/utils/storage";
+import { getCareerAdvice } from "@/utils/openai";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +28,28 @@ const CareerGoals = () => {
   const [showValidationDialog, setShowValidationDialog] = useState(false);
   const [validationReason, setValidationReason] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoadingAI, setIsLoadingAI] = useState(true);
+
+  useEffect(() => {
+    const fetchAIAdvice = async () => {
+      try {
+        const personalInfo = JSON.parse(localStorage.getItem("personalInfo") || "{}");
+        if (Object.keys(personalInfo).length === 0) {
+          navigate("/personal-info");
+          return;
+        }
+        
+        const advice = await getCareerAdvice(personalInfo);
+        storage.saveCareerInfo({ aiAdvice: advice });
+        setIsLoadingAI(false);
+      } catch (error) {
+        console.error('Error getting AI advice:', error);
+        setIsLoadingAI(false);
+      }
+    };
+
+    fetchAIAdvice();
+  }, [navigate]);
 
   const validateCareerGoal = async () => {
     try {
@@ -78,6 +101,22 @@ const CareerGoals = () => {
     storage.saveCareerInfo({ careerGoals: goals });
     navigate("/skills-assessment");
   };
+
+  if (isLoadingAI) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
+        <div className="max-w-md mx-auto">
+          <ProgressIndicator />
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="flex flex-col items-center justify-center space-y-4 py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+              <p className="text-gray-600">Analyzing your background...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">

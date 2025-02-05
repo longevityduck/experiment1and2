@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
-import { getCareerAdvice } from "@/utils/openai";
 import { Loader2 } from "lucide-react";
 import { FormContainer } from "@/components/career-guidance/FormContainer";
 
@@ -79,15 +79,8 @@ const PersonalInfo = () => {
         industry: formData.industry === "Other" ? formData.customIndustry : formData.industry,
       };
 
-      // Get AI career advice
-      const advice = await getCareerAdvice(dataToStore);
-      
-      // Store all data
-      localStorage.setItem("careerInfo", JSON.stringify({
-        ...dataToStore,
-        aiAdvice: advice
-      }));
       localStorage.setItem("personalInfo", JSON.stringify(formData));
+      localStorage.setItem("careerInfo", JSON.stringify({ personalInfo: dataToStore }));
       
       navigate("/career-goals");
     } catch (error) {
