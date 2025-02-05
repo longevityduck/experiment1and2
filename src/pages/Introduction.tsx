@@ -20,12 +20,12 @@ const Introduction = () => {
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">
-            Welcome to North Star
+            Welcome to Own Goal
           </h1>
           
           <div className="space-y-4 text-base sm:text-lg text-gray-600">
             <p>
-              Your journey to career success starts here. North Star is your personal
+              Your journey to career success starts here. Own Goal is your personal
               guide to effective career planning and goal achievement.
             </p>
 
