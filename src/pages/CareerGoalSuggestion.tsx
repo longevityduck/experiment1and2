@@ -9,6 +9,8 @@ import { Loader2 } from "lucide-react";
 import { storage } from "@/utils/storage";
 import { supabase } from "@/integrations/supabase/client";
 
+const FALLBACK_GOAL = `Based on your responses, consider setting a goal to advance your career through continuous learning and skill development. Focus on identifying specific skills that align with your interests and industry demands, then create a structured plan to acquire those skills through courses, certifications, or hands-on projects.`;
+
 const CareerGoalSuggestion = () => {
   const navigate = useNavigate();
   const [suggestedGoal, setSuggestedGoal] = useState("");
@@ -31,14 +33,24 @@ const CareerGoalSuggestion = () => {
         });
 
         if (error) {
-          throw error;
+          console.error('Error generating career goal:', error);
+          
+          // Check if the error is related to OpenAI API quota
+          if (error.message?.includes('exceeded your current quota')) {
+            toast.error("Our AI service is temporarily unavailable. We've provided a general suggestion instead.");
+            setSuggestedGoal(FALLBACK_GOAL);
+          } else {
+            toast.error("Failed to generate career goal. Using a general suggestion instead.");
+            setSuggestedGoal(FALLBACK_GOAL);
+          }
+          return;
         }
 
         setSuggestedGoal(data.advice);
       } catch (error) {
         console.error('Error generating career goal:', error);
-        toast.error("Failed to generate career goal. Please try again.");
-        setSuggestedGoal("Unable to generate a career goal at this time. Please try again or proceed with your own goal.");
+        toast.error("An unexpected error occurred. Using a general suggestion instead.");
+        setSuggestedGoal(FALLBACK_GOAL);
       } finally {
         setIsLoading(false);
       }
