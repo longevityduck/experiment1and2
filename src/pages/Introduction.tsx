@@ -62,13 +62,13 @@ const Introduction = () => {
             </div>
 
             {/* CTA Button */}
-            <div className="pt-4">
+            <div className="pt-4 flex justify-center">
               <Button 
                 onClick={() => {
                   localStorage.clear();
                   navigate("/user-type");
                 }}
-                className="w-full sm:w-auto px-6 py-3 text-base bg-blue-600 hover:bg-blue-700 transition-colors"
+                className="px-6 py-3 text-base bg-blue-600 hover:bg-blue-700 transition-colors"
               >
                 Start Your Career Planning Journey
               </Button>
