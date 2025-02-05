@@ -47,7 +47,7 @@ const Introduction = () => {
                 <h2 className="text-lg font-medium text-gray-800">
                   What You'll Get:
                 </h2>
-                <ul className="space-y-2 text-gray-600 list-none">
+                <ul className="space-y-2 text-gray-600 list-disc inline-block text-left pl-4">
                   <li>Personalized career goal suggestions</li>
                   <li>Skills assessment and development plans</li>
                   <li>Actionable next steps for your career journey</li>
