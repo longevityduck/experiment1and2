@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -12,19 +11,19 @@ import { ClarifyingQuestion } from "@/types/career";
 const questions: ClarifyingQuestion[] = [
   {
     id: "skills-strengths",
-    text: "What are your skills and strengths? Consider what tasks energize you, what skills others compliment you on, and what problems you enjoy solving."
+    text: "What are you really good at? Think about things you enjoy doing, what your friends say you're good at, and problems you like to solve."
   },
   {
     id: "work-environment",
-    text: "What kind of work environment or lifestyle do you want? Think about whether you prefer working alone or in teams, structured routines or flexibility, and your ideal work-life balance."
+    text: "How do you like to work? For example: Do you prefer working with others or by yourself? Do you like following a schedule or being flexible? How much free time do you want to have?"
   },
   {
     id: "fields-industries",
-    text: "What fields or industries excite you? Consider which topics naturally interest you, what problems or trends excite you, and whether you prefer high-demand industries or passion-driven niches."
+    text: "What subjects or activities get you excited? Tell us about topics you love learning about or things happening in the world that interest you the most."
   },
   {
     id: "career-exploration",
-    text: "How will you test and explore your career path? Think about potential side projects, networking opportunities, or small steps you can take in the next month to explore your chosen direction."
+    text: "What small steps could you take in the next month to learn more about jobs you might like? Maybe join a club, talk to someone with an interesting job, or try a new hobby?"
   }
 ];
 
