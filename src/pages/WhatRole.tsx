@@ -23,7 +23,7 @@ const WhatRole = () => {
     e.preventDefault();
     
     if (!role.trim()) {
-      toast.error("Please enter your desired role");
+      toast.error("Please enter your desired job");
       return;
     }
 
@@ -34,24 +34,24 @@ const WhatRole = () => {
   return (
     <>
       <ProgressIndicator />
-      <FormContainer title="What Role Are You Considering?">
+      <FormContainer title="What Job Are You Considering?">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div className="text-sm text-gray-600 mb-2">
-              <p>Please be as specific as possible when describing your desired role.</p>
+              <p>Please be as specific as possible when describing your desired job.</p>
               <p>For example, instead of just "Manager", try "Finance Manager" or "Marketing Manager".</p>
             </div>
             
             <Input
               type="text"
-              placeholder="Enter your desired role"
+              placeholder="Enter your desired job"
               value={role}
               onChange={(e) => setRole(e.target.value)}
             />
             
             <div className="text-sm text-gray-600 space-y-2">
-              <p>Not sure about which role suits you?</p>
-              <p>Try exploring suitable roles at{" "}
+              <p>Not sure about which job suits you?</p>
+              <p>Try exploring suitable jobs at{" "}
                 <a 
                   href="https://careersfinder.mycareersfuture.gov.sg/" 
                   target="_blank" 
