@@ -7,28 +7,96 @@ import { NavigationButtons } from "@/components/career-guidance/NavigationButton
 import { Input } from "@/components/ui/input";
 import { storage } from "@/utils/storage";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
+import { supabase } from "@/integrations/supabase/client";
 
 const WhatRole = () => {
   const navigate = useNavigate();
-  const [role, setRole] = useState("");
+  const [job, setJob] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const savedInfo = storage.getCareerInfo();
-    if (savedInfo.desiredRole) {
-      setRole(savedInfo.desiredRole);
-    }
+    const loadSavedJob = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        // If no user is logged in, try to get from local storage as fallback
+        const savedInfo = storage.getCareerInfo();
+        if (savedInfo.desiredJob) {
+          setJob(savedInfo.desiredJob);
+        }
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('career_guidance')
+        .select('desired_job')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error loading job data:', error);
+        return;
+      }
+
+      if (data?.desired_job) {
+        setJob(data.desired_job);
+      }
+    };
+
+    loadSavedJob();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!role.trim()) {
+    if (!job.trim()) {
       toast.error("Please enter your desired job");
       return;
     }
 
-    storage.saveCareerInfo({ desiredRole: role });
-    navigate("/career-clarification");
+    setIsLoading(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        // First try to update existing record
+        const { data, error: selectError } = await supabase
+          .from('career_guidance')
+          .select('id')
+          .eq('user_id', user.id)
+          .single();
+
+        if (data) {
+          // Update existing record
+          const { error: updateError } = await supabase
+            .from('career_guidance')
+            .update({ desired_job: job })
+            .eq('user_id', user.id);
+
+          if (updateError) throw updateError;
+        } else {
+          // Insert new record
+          const { error: insertError } = await supabase
+            .from('career_guidance')
+            .insert([
+              { user_id: user.id, desired_job: job }
+            ]);
+
+          if (insertError) throw insertError;
+        }
+      } else {
+        // Fallback to local storage if no user is logged in
+        storage.saveCareerInfo({ desiredJob: job });
+      }
+
+      navigate("/career-clarification");
+    } catch (error) {
+      console.error('Error saving job:', error);
+      toast.error("Failed to save your job preference. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -45,8 +113,9 @@ const WhatRole = () => {
             <Input
               type="text"
               placeholder="Enter your desired job"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
+              value={job}
+              onChange={(e) => setJob(e.target.value)}
+              disabled={isLoading}
             />
             
             <div className="text-sm text-gray-600 space-y-2">
@@ -67,6 +136,7 @@ const WhatRole = () => {
           <NavigationButtons
             onBack={() => navigate("/career-guidance")}
             onNext={() => {}}
+            disabled={isLoading}
           />
         </form>
       </FormContainer>
