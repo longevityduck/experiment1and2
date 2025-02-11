@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -57,7 +58,7 @@ const WhatRole = () => {
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline"
                 >
-                  Careers Finder
+                  CareersFinder
                 </a>
               </p>
             </div>
