@@ -1,15 +1,18 @@
+
 import { Button } from "@/components/ui/button";
 
 interface NavigationButtonsProps {
   onBack: () => void;
   onNext: () => void;
   nextButtonText?: string;
+  disabled?: boolean;  // Added disabled prop
 }
 
 export const NavigationButtons = ({ 
   onBack, 
   onNext, 
-  nextButtonText = "Next" 
+  nextButtonText = "Next",
+  disabled = false  // Added with default value
 }: NavigationButtonsProps) => {
   return (
     <div className="flex gap-4">
@@ -18,6 +21,7 @@ export const NavigationButtons = ({
         variant="outline"
         className="w-full"
         onClick={onBack}
+        disabled={disabled}
       >
         Back
       </Button>
@@ -25,6 +29,7 @@ export const NavigationButtons = ({
         type="submit" 
         className="w-full"
         onClick={onNext}
+        disabled={disabled}
       >
         {nextButtonText}
       </Button>
