@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -11,52 +12,102 @@ import { GuidanceQuestion } from "@/types/career";
 const questions: GuidanceQuestion[] = [
   {
     id: 1,
-    text: "How satisfied are you with your current career path?",
-    options: ["Very satisfied", "Somewhat satisfied", "Neutral", "Somewhat dissatisfied", "Very dissatisfied"]
+    text: "How do you feel about what you're doing right now in school or work?",
+    options: [
+      "I really love it!",
+      "It's pretty good",
+      "It's okay",
+      "I don't like it much",
+      "I really don't like it"
+    ]
   },
   {
     id: 2,
-    text: "What's your primary motivation for considering career changes?",
-    options: ["Higher income", "Better work-life balance", "More meaningful work", "New challenges", "Personal growth"]
+    text: "What makes you want to try something new?",
+    options: [
+      "I want to earn more money",
+      "I want more free time",
+      "I want to do something that helps others",
+      "I want to learn new things",
+      "I want to grow as a person"
+    ]
   },
   {
     id: 3,
-    text: "Where do you see yourself in the next 5 years?",
+    text: "What would you like to be doing 5 years from now?",
     options: [
-      "Same role, more senior",
-      "Different role, same industry",
-      "Different industry, same role",
-      "Different industry and role",
-      "Running my own business",
-      "Semi-retired"
+      "Doing the same thing but being better at it",
+      "Doing something different but in the same field",
+      "Trying out a completely new field",
+      "Starting my own thing",
+      "Working less and enjoying life more",
+      "Not sure yet, but want to explore"
     ]
   },
   {
     id: 4,
-    text: "How much risk are you willing to take in your career?",
-    options: ["Very high risk", "Moderate risk", "Low risk", "No risk", "Unsure"]
+    text: "How do you feel about trying new things?",
+    options: [
+      "I love trying new things!",
+      "I'll try if it seems interesting",
+      "I prefer to play it safe",
+      "I don't like big changes",
+      "I'm not sure"
+    ]
   },
   {
     id: 5,
-    text: "What's most important to you in your career?",
-    options: ["Financial security", "Work-life balance", "Professional growth", "Independence", "Impact on others"]
+    text: "What matters most to you when thinking about your future?",
+    options: [
+      "Having enough money to feel safe",
+      "Having time for family and fun",
+      "Learning and getting better at things",
+      "Being my own boss",
+      "Making the world better"
+    ]
   }
 ];
 
 const CareerGuidance = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   useEffect(() => {
     const savedInfo = storage.getCareerInfo();
     if (savedInfo.guidanceAnswers) {
       setAnswers(savedInfo.guidanceAnswers);
+      // Find the first unanswered question
+      const firstUnanswered = questions.findIndex(
+        (q) => !savedInfo.guidanceAnswers[q.id]
+      );
+      setCurrentQuestionIndex(firstUnanswered === -1 ? questions.length - 1 : firstUnanswered);
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleNext = () => {
+    const currentQuestion = questions[currentQuestionIndex];
+    if (!answers[currentQuestion.id]) {
+      toast.error("Please choose an answer before moving on");
+      return;
+    }
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      handleSubmit();
+    }
+  };
+
+  const handleBack = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    } else {
+      navigate(-1);
+    }
+  };
+
+  const handleSubmit = () => {
     if (Object.keys(answers).length < questions.length) {
       toast.error("Please answer all questions");
       return;
@@ -67,48 +118,48 @@ const CareerGuidance = () => {
     // Check user's 5-year plan (question with id 3)
     const fiveYearPlan = answers[3];
     
-    if (fiveYearPlan === "Running my own business") {
+    if (fiveYearPlan === "Starting my own thing") {
       navigate("/entrepreneurship-resources");
-    } else if (fiveYearPlan === "Different role, same industry" || fiveYearPlan === "Different industry and role") {
+    } else if (fiveYearPlan === "Doing something different but in the same field" || 
+               fiveYearPlan === "Trying out a completely new field") {
       navigate("/what-role");
     } else {
       navigate("/career-clarification");
     }
   };
 
+  const currentQuestion = questions[currentQuestionIndex];
+
   return (
     <>
       <ProgressIndicator />
-      <FormContainer title="About You">
+      <FormContainer title="Tell Us About Yourself">
         <div className="space-y-8">
           <div className="bg-blue-50 p-4 rounded-lg space-y-3">
             <p className="text-gray-700">
-              These questions will help us understand your current career situation, aspirations, and preferences. 
-              Take a moment to reflect on each question - your answers will shape the career goals we suggest.
+              Let's get to know you better! We'll ask you a few simple questions about what you like 
+              and what you want for your future. Take your time - there are no wrong answers!
             </p>
-            <p className="text-gray-700">
-              Consider not just what your immediate answers might be, but also why you feel that way. 
-              Your honest responses will help us provide more meaningful and personalized guidance.
-            </p>
+            <div className="text-sm font-medium text-blue-600">
+              Question {currentQuestionIndex + 1} of {questions.length}
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {questions.map((question) => (
-              <QuestionItem
-                key={question.id}
-                question={question}
-                value={answers[question.id] || ""}
-                onChange={(value) => 
-                  setAnswers((prev) => ({ ...prev, [question.id]: value }))
-                }
-              />
-            ))}
-
-            <NavigationButtons
-              onBack={() => navigate(-1)}
-              onNext={() => {}}
+          <div key={currentQuestion.id}>
+            <QuestionItem
+              question={currentQuestion}
+              value={answers[currentQuestion.id] || ""}
+              onChange={(value) => 
+                setAnswers((prev) => ({ ...prev, [currentQuestion.id]: value }))
+              }
             />
-          </form>
+          </div>
+
+          <NavigationButtons
+            onBack={handleBack}
+            onNext={handleNext}
+            nextButtonText={currentQuestionIndex === questions.length - 1 ? "Continue" : "Next Question"}
+          />
         </div>
       </FormContainer>
     </>
