@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -22,11 +23,7 @@ const Success = () => {
                     recommendations
                   </li>
                   <li>
-                    You'll receive an email with detailed next steps and resources
-                  </li>
-                  <li>
-                    A career coach will contact you within 2 business days to
-                    schedule your consultation
+                    You'll receive a WhatsApp message with detailed next steps and resources
                   </li>
                 </ul>
               </div>
