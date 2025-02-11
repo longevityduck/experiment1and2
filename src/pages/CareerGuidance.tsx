@@ -12,7 +12,7 @@ import { GuidanceQuestion } from "@/types/career";
 const questions: GuidanceQuestion[] = [
   {
     id: 1,
-    text: "How do you feel about your current career or study path?",
+    text: "How do you feel about your current career?",
     options: [
       "I love it!",
       "It's okay",
@@ -62,7 +62,7 @@ const questions: GuidanceQuestion[] = [
       "Having a stable income",
       "Having time for myself and family",
       "Learning and getting better",
-      "Being my own boss",
+      "Having more independence to work on what I want",
       "Making a difference in people's lives"
     ]
   }
