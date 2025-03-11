@@ -1,6 +1,6 @@
 
 import { CareerInfo } from "../types/career";
-import { supabase } from "../integrations/supabase/client";
+import { supabase, type CareerGuidanceRow } from "../integrations/supabase/client";
 
 const STORAGE_KEY = "careerInfo";
 
@@ -20,7 +20,7 @@ export const storage = {
           .from('career_guidance')
           .select('id')
           .eq('user_id', user.id)
-          .single();
+          .single() as { data: { id: string } | null };
           
         if (existingEntry) {
           // Update existing entry
@@ -30,7 +30,7 @@ export const storage = {
               guidance_answers: newData,
               updated_at: new Date().toISOString()
             })
-            .eq('user_id', user.id);
+            .eq('user_id', user.id) as any;
         } else {
           // Create new entry
           await supabase
@@ -39,7 +39,7 @@ export const storage = {
               user_id: user.id, 
               guidance_answers: newData,
               desired_job: newData.desiredJob || null
-            }]);
+            }]) as any;
         }
       }
     } catch (error) {
@@ -66,7 +66,7 @@ export const storage = {
             guidance_answers: null,
             updated_at: new Date().toISOString()
           })
-          .eq('user_id', user.id);
+          .eq('user_id', user.id) as any;
       }
     } catch (error) {
       console.error("Error clearing data in Supabase:", error);
@@ -87,7 +87,7 @@ export const storage = {
             guidance_answers: null,
             updated_at: new Date().toISOString()
           })
-          .eq('user_id', user.id);
+          .eq('user_id', user.id) as any;
       }
     } catch (error) {
       console.error("Error resetting responses in Supabase:", error);

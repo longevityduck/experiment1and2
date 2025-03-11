@@ -7,7 +7,7 @@ import { NavigationButtons } from "@/components/career-guidance/NavigationButton
 import { Input } from "@/components/ui/input";
 import { storage } from "@/utils/storage";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, type CareerGuidanceRow } from "@/integrations/supabase/client";
 
 const WhatRole = () => {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ const WhatRole = () => {
         .from('career_guidance')
         .select('desired_job')
         .eq('user_id', user.id)
-        .single();
+        .single() as { data: Pick<CareerGuidanceRow, 'desired_job'> | null, error: any };
 
       if (error) {
         console.error('Error loading job data:', error);
@@ -65,14 +65,14 @@ const WhatRole = () => {
           .from('career_guidance')
           .select('id')
           .eq('user_id', user.id)
-          .single();
+          .single() as { data: { id: string } | null, error: any };
 
         if (data) {
           // Update existing record
           const { error: updateError } = await supabase
             .from('career_guidance')
             .update({ desired_job: job })
-            .eq('user_id', user.id);
+            .eq('user_id', user.id) as any;
 
           if (updateError) throw updateError;
         } else {
@@ -81,7 +81,7 @@ const WhatRole = () => {
             .from('career_guidance')
             .insert([
               { user_id: user.id, desired_job: job }
-            ]);
+            ]) as any;
 
           if (insertError) throw insertError;
         }
