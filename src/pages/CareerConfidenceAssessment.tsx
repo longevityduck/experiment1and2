@@ -60,7 +60,8 @@ const CareerConfidenceAssessment = () => {
       customFeeling: otherText
     });
     
-    navigate("/next-steps");
+    // Changed navigation to go to personal info page instead of next steps
+    navigate("/personal-info");
   };
 
   return (
