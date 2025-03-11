@@ -31,7 +31,7 @@ const NextSteps = () => {
         description: "Please complete the career assessment process first.",
         variant: "destructive",
       });
-      navigate("/confidence-assessment");
+      navigate("/career-confidence-assessment");
     }
   }, [navigate, toast]);
 

@@ -83,6 +83,7 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
   useEffect(() => {
     const generateSteps = async () => {
       try {
+        // Check if we already have saved steps
         const savedSteps = localStorage.getItem("userSteps");
         if (savedSteps) {
           onStepsGenerated(JSON.parse(savedSteps));
@@ -90,6 +91,7 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
           return;
         }
 
+        // Gather all necessary information
         const careerInfo = storage.getCareerInfo();
         const personalInfo = {
           age: careerInfo.age,
@@ -129,6 +131,7 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
 
           console.log('Received response from career-advice function:', data);
 
+          // Process the response from the LLM
           const aiResponse = data.advice;
           const steps: Partial<Step>[] = [];
           let currentStep: Partial<Step> = {};
@@ -163,6 +166,7 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
             steps.push(currentStep);
           }
 
+          // Format the steps for display
           const formattedSteps = steps.map((step, index) => ({
             id: index,
             content: step.content || '',
@@ -194,6 +198,7 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
           variant: "default",
         });
 
+        // Fall back to local generation if the LLM call fails
         const careerInfo = storage.getCareerInfo();
         const skills = JSON.parse(localStorage.getItem("skills") || "[]");
         const fallbackSteps = generateFallbackSteps(careerInfo, skills);
