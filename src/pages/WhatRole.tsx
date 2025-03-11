@@ -90,7 +90,7 @@ const WhatRole = () => {
         storage.saveCareerInfo({ desiredJob: job });
       }
 
-      navigate("/career-clarification");
+      navigate("/career-goal-suggestion");
     } catch (error) {
       console.error('Error saving job:', error);
       toast.error("Failed to save your job preference. Please try again.");
@@ -136,6 +136,7 @@ const WhatRole = () => {
           <NavigationButtons
             onBack={() => navigate("/career-guidance")}
             onNext={() => {}}
+            isNextSubmit={true}
             disabled={isLoading}
           />
         </form>
