@@ -66,7 +66,7 @@ const CareerGoalSuggestion = () => {
     }
 
     storage.saveCareerInfo({ careerGoals: suggestedGoal });
-    navigate("/success");
+    navigate("/career-confidence-assessment");
   };
 
   return (
@@ -118,7 +118,7 @@ const CareerGoalSuggestion = () => {
             className="w-full mt-6"
             disabled={isLoading}
           >
-            Complete
+            Continue
           </Button>
         </div>
       </div>

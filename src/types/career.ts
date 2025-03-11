@@ -18,4 +18,6 @@ export interface CareerInfo {
   clarificationAnswers?: Record<string, string>;
   desiredJob?: string;
   confidenceLevel?: number;
+  readinessLevel?: number;
+  feelingAboutCareerGoal?: string;
 }

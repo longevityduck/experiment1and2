@@ -8,8 +8,9 @@ const routes = [
   { path: "/career-guidance", step: 4, label: "Career Guidance" },
   { path: "/what-role", step: 5, label: "Role Selection" },
   { path: "/career-goal-suggestion", step: 6, label: "Goal Suggestion" },
-  { path: "/entrepreneurship-resources", step: 7, label: "Resources" },
-  { path: "/success", step: 8, label: "Success" },
+  { path: "/career-confidence-assessment", step: 7, label: "Final Assessment" },
+  { path: "/entrepreneurship-resources", step: 8, label: "Resources" },
+  { path: "/success", step: 9, label: "Success" },
 ];
 
 export const ProgressIndicator = () => {
