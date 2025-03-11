@@ -43,20 +43,24 @@ First, provide a single career goal statement that follows SMART principles (spe
 Format: "Career Goal: [Your goal statement here]"
 
 Then, provide 5-7 actionable steps to achieve this goal. For each step:
-1. Make each action step specific and clearly defined
-2. Include measurable criteria to track progress
-3. Ensure the step is achievable within the given timeframe
-4. Make it relevant to their career goal
-5. Include a realistic timeframe in months
+1. Make each action step extremely specific and clearly defined with concrete activities
+2. Include specific, measurable success criteria or metrics to track progress
+3. Ensure the step is achievable but challenging within the given timeframe
+4. Make it directly relevant to their career goal and situation based on their responses
+5. Include a realistic timeframe in months or weeks
+6. Consider the person's industry, occupation, and experience level to tailor the advice
 
 Format each step exactly as follows (maintain exact formatting):
-Step: [Specific, measurable action step]
+Step: [Specific, measurable action step with metrics]
 Timeframe: [X] months
 Explanation: [2-3 sentences explaining why this step is important, how it's achievable, and how it connects to the larger goal]
 
 Make sure each step is separated by a blank line.
 Make timeframes realistic and varied between steps.
 Ensure explanations are personalized and specific to the user's situation.
+Steps should build on each other in a logical progression.
+Include specific metrics and milestones in each step.
+Reference industry-specific skills, certifications, or networking opportunities where applicable.
 Do not explicitly label SMART components in the output.`;
 
       console.log('Sending prompt to OpenAI:', prompt);
@@ -72,12 +76,12 @@ Do not explicitly label SMART components in the output.`;
           messages: [
             {
               role: 'system',
-              content: 'You are a career development expert who creates personalized, actionable career plans. Your advice should follow SMART goal principles while maintaining a natural, conversational tone.'
+              content: 'You are a career development expert who creates personalized, actionable career plans. Your advice should follow SMART goal principles while maintaining a natural, conversational tone. Ensure all steps are highly specific, measurable with concrete metrics, achievable yet challenging, relevant to the person\'s situation, and time-bound with realistic deadlines.'
             },
             { role: 'user', content: prompt }
           ],
-          temperature: 0.7,
-          max_tokens: 1500,
+          temperature: 0.5, // Lower temperature for more precise, focused output
+          max_tokens: 2000, // Increased max tokens for more comprehensive steps
         }),
       });
 
@@ -180,4 +184,3 @@ Provide brief career advice focusing on potential growth opportunities and skill
     );
   }
 });
-

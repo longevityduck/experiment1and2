@@ -20,25 +20,25 @@ const generateFallbackSteps = (careerInfo: any, skills: string[] = []): Step[] =
   const steps: Step[] = [
     {
       id: 0,
-      content: `Research advanced certifications in ${industry}`,
+      content: `Complete an advanced certification in ${industry} with 85% or higher score`,
       timeframe: "3 months",
-      explanation: "Professional certifications demonstrate your commitment to growth and validate your expertise to potential employers.",
+      explanation: "Professional certifications demonstrate your commitment to growth and validate your expertise to potential employers. This specific certification will address key skill gaps in your profile.",
       isOriginal: true,
       isEditing: false
     },
     {
       id: 1,
-      content: `Build a portfolio showcasing your ${skillsList[0] || 'professional'} skills`,
+      content: `Build a portfolio showcasing 5-7 projects demonstrating your ${skillsList[0] || 'professional'} skills`,
       timeframe: "4 months",
-      explanation: "A well-curated portfolio provides tangible evidence of your capabilities and helps you stand out in job applications.",
+      explanation: "A well-curated portfolio with specific examples provides tangible evidence of your capabilities and helps you stand out among competitors in job applications.",
       isOriginal: true,
       isEditing: false
     },
     {
       id: 2,
-      content: `Network with professionals in ${occupation}`,
+      content: `Connect with and have informational interviews with 10 professionals in ${occupation}`,
       timeframe: "2 months",
-      explanation: "Professional networking is crucial for career advancement and can lead to mentorship opportunities and job referrals.",
+      explanation: "Professional networking with specific outreach goals is crucial for career advancement and can lead to mentorship opportunities and job referrals. Setting a concrete target ensures consistent effort.",
       isOriginal: true,
       isEditing: false
     }
@@ -48,27 +48,27 @@ const generateFallbackSteps = (careerInfo: any, skills: string[] = []): Step[] =
   if (experience < 3) {
     steps.push({
       id: 3,
-      content: `Complete a specialized online course in ${industry}`,
+      content: `Complete 2 specialized online courses in ${industry} and implement learnings in 1 real-world project`,
       timeframe: "3 months",
-      explanation: "Early career professionals benefit greatly from structured learning to build foundational skills quickly.",
+      explanation: "Early career professionals benefit greatly from structured learning combined with practical application to build foundational skills quickly. The specific project will demonstrate your application of knowledge.",
       isOriginal: true,
       isEditing: false
     });
   } else if (experience >= 3 && experience < 7) {
     steps.push({
       id: 3,
-      content: `Seek opportunities to lead small projects or teams`,
+      content: `Lead a project team of 3-5 people to deliver 1 significant initiative with measurable business impact`,
       timeframe: "6 months",
-      explanation: "Mid-career professionals should focus on developing leadership skills to prepare for senior roles.",
+      explanation: "Mid-career professionals should focus on developing leadership skills through tangible projects to prepare for senior roles. This specific leadership experience will strengthen your resume.",
       isOriginal: true,
       isEditing: false
     });
   } else {
     steps.push({
       id: 3,
-      content: `Mentor junior professionals in ${occupation}`,
+      content: `Mentor 2-3 junior professionals in ${occupation} with documented growth metrics`,
       timeframe: "4 months",
-      explanation: "Experienced professionals can solidify their expertise and enhance their reputation through mentoring others.",
+      explanation: "Experienced professionals can solidify their expertise and enhance their reputation through structured mentoring programs with measurable outcomes for mentees.",
       isOriginal: true,
       isEditing: false
     });
@@ -155,8 +155,14 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
               };
               processingSteps = true;
             } else if (processingSteps && line.toLowerCase().startsWith('timeframe:')) {
-              const timeframeMatch = line.match(/(\d+)\s*months?/i);
-              currentStep.timeframe = timeframeMatch ? `${timeframeMatch[1]} months` : '3 months';
+              const timeframeMatch = line.match(/(\d+)\s*months?/i) || line.match(/(\d+)\s*weeks?/i);
+              if (timeframeMatch) {
+                const value = timeframeMatch[1];
+                const unit = line.toLowerCase().includes('week') ? 'weeks' : 'months';
+                currentStep.timeframe = `${value} ${unit}`;
+              } else {
+                currentStep.timeframe = '3 months'; // Default fallback
+              }
             } else if (processingSteps && line.toLowerCase().startsWith('explanation:')) {
               currentStep.explanation = line.replace(/^explanation:\s*/i, '').trim();
             }
