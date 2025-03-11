@@ -11,9 +11,6 @@ import { storage } from "@/utils/storage";
 const PersonalInfoForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    location: "",
     age: "",
     occupation: "",
     industry: "",
@@ -28,61 +25,29 @@ const PersonalInfoForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { name, email } = formData;
-    if (!name.trim() || !email.trim()) {
-      toast.error("Name and email are required");
-      return;
-    }
+    // Save the data to storage
+    const personalInfo = {
+      age: formData.age,
+      occupation: formData.occupation,
+      industry: formData.industry,
+      experience: formData.experience,
+    };
 
-    if (!validateEmail(email)) {
-      toast.error("Please enter a valid email address");
-      return;
-    }
-
-    // Save personal info to storage
-    storage.saveCareerInfo({ personalInfo: formData });
+    // Store the values in CareerInfo
+    storage.saveCareerInfo({
+      age: formData.age,
+      occupation: formData.occupation,
+      industry: formData.industry,
+      experience: formData.experience,
+    });
 
     // Navigate to career goals
     navigate("/career-goals");
   };
 
-  const validateEmail = (email: string) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="name">
-            Your Name <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="name"
-            name="name"
-            placeholder="Enter your full name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="email">
-            Email Address <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="you@example.com"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
         <div className="space-y-2">
           <Label htmlFor="age">Age</Label>
           <Input
@@ -129,17 +94,6 @@ const PersonalInfoForm = () => {
             min="0"
             max="60"
             value={formData.experience}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="location">Location (Optional)</Label>
-          <Input
-            id="location"
-            name="location"
-            placeholder="City, Country"
-            value={formData.location}
             onChange={handleChange}
           />
         </div>

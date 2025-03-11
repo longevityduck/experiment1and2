@@ -8,7 +8,7 @@ const PersonalInfo = () => {
   return (
     <>
       <ProgressIndicator />
-      <FormContainer title="Let's get to know you better">
+      <FormContainer title="Tell us about yourself">
         <div className="space-y-6">
           <FormIntroduction />
           <PersonalInfoForm />
