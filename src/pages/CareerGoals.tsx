@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { FormContainer } from "@/components/career-guidance/FormContainer";
+import { NavigationButtons } from "@/components/career-guidance/NavigationButtons";
 
 const CareerGoals = () => {
   const navigate = useNavigate();
@@ -30,23 +33,33 @@ const CareerGoals = () => {
   const validateCareerGoal = async () => {
     try {
       setIsSaving(true);
-      const { data, error } = await supabase.functions.invoke("validate-career-goal", {
-        body: { careerGoal: goals },
-      });
+      
+      // Try to validate with the Edge Function
+      try {
+        const { data, error } = await supabase.functions.invoke("validate-career-goal", {
+          body: { careerGoal: goals },
+        });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      if (!data.valid) {
-        setValidationReason(data.reason);
-        setShowValidationDialog(true);
-        return false;
+        if (!data.valid) {
+          setValidationReason(data.reason);
+          setShowValidationDialog(true);
+          return false;
+        }
+
+        return true;
+      } catch (functionError) {
+        console.error("Error validating career goal:", functionError);
+        
+        // If the function fails, do a basic validation and proceed
+        if (goals.trim().length < 5) {
+          toast.warning("Your career goal is quite short. Consider adding more detail.");
+          return true;
+        }
+        
+        return true;
       }
-
-      return true;
-    } catch (error) {
-      console.error("Error validating career goal:", error);
-      toast.error("Could not validate the career goal. You may proceed if you wish.");
-      return true;
     } finally {
       setIsSaving(false);
     }
@@ -79,71 +92,61 @@ const CareerGoals = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
-      <div className="max-w-md mx-auto">
-        <ProgressIndicator />
-        
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">Career Goals</h1>
-          
-          <div className="mb-6 space-y-4">
-            <p className="text-gray-600">
-              Career goals provide direction and motivation, helping you grow, stay focused, and achieve professional success.
+    <FormContainer title="Career Goals">
+      <ProgressIndicator />
+      
+      <div className="space-y-6">
+        <div className="space-y-4">
+          <p className="text-gray-600">
+            Career goals provide direction and motivation, helping you grow, stay focused, and achieve professional success.
+          </p>
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <span className="font-medium">Example of a career goal:</span><br />
+              "I want to earn a promotion in the next 2 years by developing leadership skills and taking on more responsibilities."
             </p>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="text-sm text-blue-800">
-                <span className="font-medium">Example of a career goal:</span><br />
-                "I want to earn a promotion in the next 2 years by developing leadership skills and taking on more responsibilities."
-              </p>
-            </div>
           </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <RadioGroup
-              value={isUnsure ? "unsure" : "know"}
-              onValueChange={(value) => setIsUnsure(value === "unsure")}
-              className="space-y-4"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="know" id="know" />
-                <Label htmlFor="know">I know my career goals</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="unsure" id="unsure" />
-                <Label htmlFor="unsure">I'm not sure about my career goals</Label>
-              </div>
-            </RadioGroup>
-
-            {!isUnsure && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  What are your career goals? <span className="text-red-500">*</span>
-                </label>
-                <Textarea
-                  value={goals}
-                  onChange={(e) => setGoals(e.target.value)}
-                  placeholder="Describe your career goals and aspirations..."
-                  className="min-h-[150px]"
-                  required
-                />
-              </div>
-            )}
-
-            <div className="flex gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={() => navigate(-1)}
-              >
-                Back
-              </Button>
-              <Button type="submit" className="w-full" disabled={isSaving}>
-                {isSaving ? "Saving..." : "Next"}
-              </Button>
-            </div>
-          </form>
         </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <RadioGroup
+            value={isUnsure ? "unsure" : "know"}
+            onValueChange={(value) => setIsUnsure(value === "unsure")}
+            className="space-y-4"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="know" id="know" />
+              <Label htmlFor="know">I know my career goals</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="unsure" id="unsure" />
+              <Label htmlFor="unsure">I'm not sure about my career goals</Label>
+            </div>
+          </RadioGroup>
+
+          {!isUnsure && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                What are your career goals? <span className="text-red-500">*</span>
+              </label>
+              <Textarea
+                value={goals}
+                onChange={(e) => setGoals(e.target.value)}
+                placeholder="Describe your career goals and aspirations..."
+                className="min-h-[150px]"
+                required
+              />
+            </div>
+          )}
+
+          <NavigationButtons
+            onBack={() => navigate(-1)}
+            onNext={() => {}}
+            nextButtonText={isSaving ? "Saving..." : "Next"}
+            disabled={isSaving}
+            isNextSubmit={true}
+          />
+        </form>
       </div>
 
       <AlertDialog open={showValidationDialog} onOpenChange={setShowValidationDialog}>
@@ -170,7 +173,7 @@ const CareerGoals = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </FormContainer>
   );
 };
 
