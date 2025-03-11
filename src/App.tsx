@@ -13,6 +13,7 @@ import CareerGoalSuggestion from "./pages/CareerGoalSuggestion";
 import CareerConfidenceAssessment from "./pages/CareerConfidenceAssessment";
 import EntrepreneurshipResources from "./pages/EntrepreneurshipResources";
 import NextSteps from "./pages/NextSteps";
+import ReviewCareerSteps from "./pages/ReviewCareerSteps";
 import NotFound from "./pages/NotFound";
 import Success from "./pages/Success";
 
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/career-confidence-assessment" element={<CareerConfidenceAssessment />} />
           <Route path="/entrepreneurship-resources" element={<EntrepreneurshipResources />} />
           <Route path="/next-steps" element={<NextSteps />} />
+          <Route path="/review-career-steps" element={<ReviewCareerSteps />} />
           <Route path="/success" element={<Success />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

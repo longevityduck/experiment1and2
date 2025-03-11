@@ -47,60 +47,21 @@ const NextSteps = () => {
     try {
       setLoading(true);
       
-      // Validate user-added steps against career goal
-      const careerGoal = storage.getCareerInfo().careerGoals || "";
-      const { data, error } = await supabase.functions.invoke('validate-career-steps', {
-        body: { 
-          steps,
-          careerGoal
-        }
-      });
-      
-      if (error) {
-        throw error;
-      }
-      
-      if (!data.valid && data.issues.length > 0) {
-        // Show issues to user
-        toast({
-          title: "Review Needed",
-          description: `Some steps may need adjustment: ${data.issues[0].reason}`,
-          variant: "destructive",
-          duration: 5000,
-        });
-        setLoading(false);
-        return;
-      }
-      
-      // Everything is valid, save steps and go to success page
+      // Save steps before navigating
       localStorage.setItem("userSteps", JSON.stringify(steps));
-      toast({
-        title: "Success!",
-        description: "Your career steps have been saved.",
-      });
       
-      // Navigate to success page
-      navigate("/success");
+      // Navigate to review steps page
+      navigate("/review-career-steps");
     } catch (error) {
-      console.error("Error validating steps:", error);
+      console.error("Error saving steps:", error);
       toast({
         title: "Error",
-        description: "Failed to validate your career steps. Please try again.",
+        description: "Failed to save your career steps. Please try again.",
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleResetSteps = () => {
-    // Clear saved steps
-    localStorage.removeItem("userSteps");
-    setLoading(true);
-    // This will trigger the StepsGenerator to generate new steps
-    setTimeout(() => {
-      window.location.reload();
-    }, 500);
   };
 
   return (
@@ -137,10 +98,7 @@ const NextSteps = () => {
                 setEditingTimeframe={setEditingTimeframe}
               />
               
-              <ActionButtons 
-                onReset={handleResetSteps} 
-                onCommit={handleCommitSteps} 
-              />
+              <ActionButtons onCommit={handleCommitSteps} />
             </>
           )}
           
