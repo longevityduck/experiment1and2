@@ -31,7 +31,7 @@ const Success = () => {
               </div>
             </div>
             <div className="flex flex-col gap-3 justify-center pt-4">
-              <Button onClick={() => navigate("/introduction")}>
+              <Button onClick={() => navigate("/personal-info")}>
                 Return to Homepage
               </Button>
               <Button 

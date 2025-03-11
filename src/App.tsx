@@ -4,8 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Introduction from "./pages/Introduction";
-import Login from "./pages/Login";
 import PersonalInfo from "./pages/PersonalInfo";
 import CareerGoals from "./pages/CareerGoals";
 import CareerGuidance from "./pages/CareerGuidance";
@@ -32,9 +30,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/introduction" replace />} />
-          <Route path="/introduction" element={<Introduction />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Navigate to="/personal-info" replace />} />
           <Route path="/personal-info" element={<PersonalInfo />} />
           <Route path="/career-goals" element={<CareerGoals />} />
           <Route path="/career-guidance" element={<CareerGuidance />} />
