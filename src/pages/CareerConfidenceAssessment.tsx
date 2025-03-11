@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,7 @@ const CareerConfidenceAssessment = () => {
   const [confidenceLevel, setConfidenceLevel] = useState<number>(5);
   const [readinessLevel, setReadinessLevel] = useState<number>(5);
   const [selectedFeeling, setSelectedFeeling] = useState<FeelingOption | null>(null);
-  const [otherFeeling, setOtherFeeling] = useState("");
+  const [otherText, setOtherText] = useState("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   useEffect(() => {
@@ -53,26 +52,16 @@ const CareerConfidenceAssessment = () => {
     "Other"
   ];
 
-  const handleSubmit = () => {
-    if (!selectedFeeling) {
-      toast.error("Please select how you feel about your next career steps");
-      return;
-    }
-
-    if (selectedFeeling === "Other" && !otherFeeling.trim()) {
-      toast.error("Please describe how you feel in the text box");
-      return;
-    }
-
-    // Save to storage
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    // Save the user's choice
     storage.saveCareerInfo({
-      confidenceLevel,
-      readinessLevel,
-      feelingAboutCareerGoal: selectedFeeling === "Other" ? otherFeeling : selectedFeeling
+      feelingAboutCareerGoal: selectedFeeling,
+      customFeeling: otherText
     });
-
-    setHasSubmitted(true);
-    navigate("/success");
+    
+    navigate("/next-steps");
   };
 
   return (
@@ -170,8 +159,8 @@ const CareerConfidenceAssessment = () => {
 
               {selectedFeeling === "Other" && (
                 <Textarea
-                  value={otherFeeling}
-                  onChange={(e) => setOtherFeeling(e.target.value)}
+                  value={otherText}
+                  onChange={(e) => setOtherText(e.target.value)}
                   placeholder="Please describe how you feel..."
                   className="mt-4"
                 />
