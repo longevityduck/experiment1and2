@@ -32,8 +32,8 @@ const ConfidenceAssessment = () => {
       readinessLevel: readinessLevel[0]
     });
     
-    // Navigate to the next steps page
-    navigate("/next-steps");
+    // Navigate to the personal info page instead of next-steps
+    navigate("/personal-info");
   };
 
   return (

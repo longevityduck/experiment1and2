@@ -67,8 +67,8 @@ const CareerConfidenceAssessment = () => {
       readinessLevel: readinessLevel
     });
     
-    // Navigate to personal info page
-    navigate("/personal-info");
+    // Navigate to next-steps page
+    navigate("/next-steps");
   };
 
   return (
