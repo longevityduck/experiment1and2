@@ -10,7 +10,30 @@ import { Loader2 } from "lucide-react";
 import { storage } from "@/utils/storage";
 import { supabase } from "@/integrations/supabase/client";
 
-const FALLBACK_GOAL = `To advance to a senior position within your current field in the next 3-5 years by expanding your expertise and taking on greater responsibilities.`;
+// Enhanced fallback goal with specific examples based on common career paths
+const generateFallbackGoal = (personalInfo = {}, guidanceAnswers = {}) => {
+  const reason = guidanceAnswers[2] || 'grow professionally';
+  const timeframe = guidanceAnswers[3]?.includes('5 years') ? '5 years' : '3-5 years';
+  const industry = personalInfo.industry || 'your current industry';
+  const occupation = personalInfo.occupation || 'your current field';
+  
+  let goalText = '';
+  
+  // Create different goals based on the main motivation (question 2)
+  if (reason.includes('earn more money')) {
+    goalText = `To increase your income by at least 20% within ${timeframe} by advancing to a senior position in ${occupation} through acquiring specialized certifications and expanding your expertise in ${industry}.`;
+  } else if (reason.includes('free time')) {
+    goalText = `To achieve a better work-life balance within ${timeframe} by transitioning to a role in ${industry} that offers flexible working arrangements while maintaining your career progression in ${occupation}.`;
+  } else if (reason.includes('meaningful')) {
+    goalText = `To transition into a more fulfilling role in ${industry} within ${timeframe} that aligns with your values and allows you to make a positive impact while leveraging your experience in ${occupation}.`;
+  } else if (reason.includes('challenges')) {
+    goalText = `To take on progressively more challenging projects and responsibilities in ${occupation} over the next ${timeframe}, positioning yourself for a leadership role in ${industry}.`;
+  } else {
+    goalText = `To advance to a senior position within ${occupation} in the next ${timeframe} by expanding your expertise in ${industry} and taking on greater responsibilities.`;
+  }
+  
+  return goalText;
+};
 
 const CareerGoalSuggestion = () => {
   const navigate = useNavigate();
@@ -20,37 +43,68 @@ const CareerGoalSuggestion = () => {
   useEffect(() => {
     const generateSuggestion = async () => {
       try {
-        const personalInfo = storage.getCareerInfo().personalInfo || {};
-        const guidanceAnswers = storage.getCareerInfo().guidanceAnswers || {};
+        const careerInfo = storage.getCareerInfo();
+        const personalInfo = careerInfo.personalInfo || {};
+        const guidanceAnswers = careerInfo.guidanceAnswers || {};
+        
+        // Add age, occupation, etc. directly from careerInfo if they exist
+        const enrichedPersonalInfo = {
+          ...personalInfo,
+          age: careerInfo.age || personalInfo.age,
+          occupation: careerInfo.occupation || personalInfo.occupation,
+          industry: careerInfo.industry || personalInfo.industry,
+          experience: careerInfo.experience || personalInfo.experience
+        };
 
-        const { data, error } = await supabase.functions.invoke('career-advice', {
-          body: {
-            type: 'career-goal',
-            personalInfo,
-            guidanceAnswers
-          }
+        console.log('Sending career goal generation request with:', {
+          personalInfo: enrichedPersonalInfo,
+          guidanceAnswers
         });
 
-        if (error) {
-          console.error('Error generating career goal:', error);
-          
-          if (error.status === 429) {
-            toast.error("Our AI service is temporarily unavailable. We've provided a general suggestion instead.");
-            setSuggestedGoal(FALLBACK_GOAL);
-            return;
+        // First try with Supabase function
+        try {
+          const { data, error } = await supabase.functions.invoke('career-advice', {
+            body: {
+              type: 'career-goal',
+              personalInfo: enrichedPersonalInfo,
+              guidanceAnswers
+            }
+          });
+
+          if (error) {
+            console.error('Error generating career goal from Supabase:', error);
+            throw error;
           }
-          
-          toast.error("Failed to generate career goal. Using a general suggestion instead.");
-          setSuggestedGoal(FALLBACK_GOAL);
+
+          const goalOnly = data.advice.split('\n')[0].replace(/^Career Goal:\s*/i, '').trim();
+          setSuggestedGoal(goalOnly);
+          setIsLoading(false);
           return;
+        } catch (supabaseError) {
+          console.error('Supabase function failed, using local generation:', supabaseError);
+          // If Supabase fails, continue to fallback
         }
 
-        const goalOnly = data.advice.split('\n')[0].replace(/^Career Goal:\s*/i, '').trim();
-        setSuggestedGoal(goalOnly);
+        // Local fallback generation if Supabase fails
+        const fallbackGoal = generateFallbackGoal(enrichedPersonalInfo, guidanceAnswers);
+        console.log('Using locally generated goal:', fallbackGoal);
+        setSuggestedGoal(fallbackGoal);
+        
       } catch (error) {
         console.error('Error generating career goal:', error);
-        toast.error("An unexpected error occurred. Using a general suggestion instead.");
-        setSuggestedGoal(FALLBACK_GOAL);
+        
+        // Use the enhanced fallback goal generator
+        const careerInfo = storage.getCareerInfo();
+        const fallbackGoal = generateFallbackGoal(
+          {
+            industry: careerInfo.industry,
+            occupation: careerInfo.occupation
+          }, 
+          careerInfo.guidanceAnswers || {}
+        );
+        
+        setSuggestedGoal(fallbackGoal);
+        toast.error("We're having trouble with our AI service. We've created a suggested goal for you instead.");
       } finally {
         setIsLoading(false);
       }
