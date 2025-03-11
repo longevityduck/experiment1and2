@@ -23,9 +23,17 @@ const NextSteps = () => {
   useEffect(() => {
     // Check if we have the required data to generate steps
     const careerInfo = storage.getCareerInfo();
-    const hasRequiredData = careerInfo.careerGoals && careerInfo.personalInfo;
+    console.log("Available career info:", careerInfo);
     
-    if (!hasRequiredData) {
+    const hasCareerGoals = Boolean(careerInfo.careerGoals);
+    const hasPersonalInfo = Boolean(
+      careerInfo.occupation && 
+      careerInfo.industry && 
+      careerInfo.experience
+    );
+    
+    if (!hasCareerGoals || !hasPersonalInfo) {
+      console.log("Missing required data, hasCareerGoals:", hasCareerGoals, "hasPersonalInfo:", hasPersonalInfo);
       toast({
         title: "Missing Information",
         description: "Please complete the career assessment process first.",

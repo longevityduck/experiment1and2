@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -33,11 +32,28 @@ const CareerConfidenceAssessment = () => {
 
   useEffect(() => {
     const careerInfo = storage.getCareerInfo();
+    
+    // Load career goal from storage
     if (careerInfo.careerGoals) {
       setCareerGoal(careerInfo.careerGoals);
     } else {
       navigate("/confidence-assessment");
       toast.error("Please complete previous steps first");
+    }
+    
+    // Load saved values if they exist
+    if (careerInfo.confidenceLevel) {
+      setConfidenceLevel(careerInfo.confidenceLevel);
+    }
+    if (careerInfo.readinessLevel) {
+      setReadinessLevel(careerInfo.readinessLevel);
+    }
+    if (careerInfo.feelingAboutCareerGoal) {
+      const feelings = careerInfo.feelingAboutCareerGoal.split(", ") as FeelingOption[];
+      setSelectedFeelings(feelings);
+    }
+    if (careerInfo.customFeeling) {
+      setOtherText(careerInfo.customFeeling);
     }
   }, [navigate]);
 
@@ -69,13 +85,37 @@ const CareerConfidenceAssessment = () => {
       return;
     }
     
+    // Make sure we have the career goal set
+    if (!careerGoal) {
+      toast.error("Career goal is missing. Please go back and set your career goal.");
+      navigate("/career-goals");
+      return;
+    }
+    
+    // Ensure personal info exists
+    const careerInfo = storage.getCareerInfo();
+    if (!careerInfo.occupation || !careerInfo.industry || !careerInfo.experience) {
+      toast.error("Personal information is missing. Please complete your profile first.");
+      navigate("/personal-info");
+      return;
+    }
+    
     // Save all the assessment data
     storage.saveCareerInfo({
+      careerGoals: careerGoal,
       feelingAboutCareerGoal: selectedFeelings.join(", "),
       customFeeling: otherText,
       confidenceLevel: confidenceLevel,
-      readinessLevel: readinessLevel
+      readinessLevel: readinessLevel,
+      personalInfo: { 
+        age: careerInfo.age,
+        occupation: careerInfo.occupation,
+        industry: careerInfo.industry,
+        experience: careerInfo.experience
+      }
     });
+    
+    console.log("Navigating to next-steps with data:", storage.getCareerInfo());
     
     // Navigate to next-steps page
     navigate("/next-steps");
