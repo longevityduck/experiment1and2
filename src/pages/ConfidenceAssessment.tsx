@@ -12,44 +12,28 @@ const ConfidenceAssessment = () => {
   const navigate = useNavigate();
   const [confidenceLevel, setConfidenceLevel] = useState<number[]>([5]);
   const [readinessLevel, setReadinessLevel] = useState<number[]>([5]);
-  const [isResetting, setIsResetting] = useState(false);
   
   useEffect(() => {
-    const resetData = async () => {
-      setIsResetting(true);
-      try {
-        // Reset all responses when landing on this page
-        await storage.resetAllResponses();
-        toast.success("Starting a new assessment", {
-          description: "Previous responses have been cleared"
-        });
-      } catch (error) {
-        console.error("Error resetting responses:", error);
-        toast.error("Failed to reset previous responses");
-      } finally {
-        setIsResetting(false);
-      }
-    };
+    // Reset all responses when landing on this page
+    storage.resetAllResponses();
+    toast.success("Starting a new assessment", {
+      description: "Previous responses have been cleared"
+    });
     
-    resetData();
+    // No need to load saved values anymore since we're resetting everything
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    try {
-      // Save both levels
-      await storage.saveCareerInfo({ 
-        confidenceLevel: confidenceLevel[0],
-        readinessLevel: readinessLevel[0]
-      });
-      
-      // Navigate to the personal info page
-      navigate("/personal-info");
-    } catch (error) {
-      console.error("Error saving data:", error);
-      toast.error("Failed to save your responses");
-    }
+    // Save both levels
+    storage.saveCareerInfo({ 
+      confidenceLevel: confidenceLevel[0],
+      readinessLevel: readinessLevel[0]
+    });
+    
+    // Navigate to the personal info page instead of next-steps
+    navigate("/personal-info");
   };
 
   return (
@@ -113,8 +97,8 @@ const ConfidenceAssessment = () => {
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isResetting}>
-            {isResetting ? "Starting new assessment..." : "Continue"}
+          <Button type="submit" className="w-full">
+            Continue
           </Button>
         </form>
       </FormContainer>
