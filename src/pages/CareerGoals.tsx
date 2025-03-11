@@ -91,8 +91,14 @@ const CareerGoals = () => {
     e.preventDefault();
     
     if (isUnsure) {
-      storage.saveCareerInfo({ careerGoals: "" });
-      navigate("/career-guidance");
+      // Clear any previously saved guidance answers
+      storage.saveCareerInfo({ 
+        careerGoals: "",
+        guidanceAnswers: {} // Reset guidance answers
+      });
+      
+      // Navigate to guidance with a state indicator
+      navigate("/career-guidance", { state: { from: "careerGoals" } });
       return;
     }
 

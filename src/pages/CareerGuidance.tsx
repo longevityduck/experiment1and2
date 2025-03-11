@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { QuestionItem } from "@/components/career-guidance/QuestionItem";
 import { FormContainer } from "@/components/career-guidance/FormContainer";
@@ -70,13 +70,28 @@ const questions: GuidanceQuestion[] = [
 
 const CareerGuidance = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   useEffect(() => {
     const savedInfo = storage.getCareerInfo();
     
-    // Initialize answers if they exist
+    // Check if we're coming from career goals with "not sure" option
+    const comingFromCareerGoals = savedInfo.careerGoals === "" && 
+                                 location.state?.from === "careerGoals";
+    
+    // If coming from career goals with "not sure", always start at the first question
+    if (comingFromCareerGoals) {
+      setCurrentQuestionIndex(0);
+      // Initialize with empty answers
+      setAnswers({});
+      // Save empty guidance answers to storage to avoid future conflicts
+      storage.saveCareerInfo({ guidanceAnswers: {} });
+      return;
+    }
+    
+    // Regular flow - Initialize answers if they exist
     if (savedInfo.guidanceAnswers) {
       setAnswers(savedInfo.guidanceAnswers);
       
@@ -85,16 +100,14 @@ const CareerGuidance = () => {
         (q) => !savedInfo.guidanceAnswers[q.id]
       );
       
-      // Fix: Always start with the first question if coming from career goals page with "not sure"
-      // We check if guidanceAnswers exists but is empty (new navigation)
+      // Handle the index appropriately
       if (Object.keys(savedInfo.guidanceAnswers).length === 0) {
         setCurrentQuestionIndex(0);
       } else {
         setCurrentQuestionIndex(firstUnanswered === -1 ? questions.length - 1 : firstUnanswered);
       }
     }
-    // Default is already 0 from the useState initialization
-  }, []);
+  }, [location]);
 
   const handleNext = () => {
     const currentQuestion = questions[currentQuestionIndex];
