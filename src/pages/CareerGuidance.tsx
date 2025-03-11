@@ -82,6 +82,9 @@ const CareerGuidance = () => {
         (q) => !savedInfo.guidanceAnswers[q.id]
       );
       setCurrentQuestionIndex(firstUnanswered === -1 ? questions.length - 1 : firstUnanswered);
+    } else {
+      // Initialize currentQuestionIndex to 0 when no saved answers
+      setCurrentQuestionIndex(0);
     }
   }, []);
 
