@@ -30,17 +30,41 @@ const CareerGoals = () => {
   const [validationReason, setValidationReason] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
+  // Basic client-side validation
+  const basicValidation = (text: string) => {
+    const trimmed = text.trim();
+    if (trimmed.length < 5) {
+      return {
+        valid: false,
+        reason: "Your career goal is quite short. Consider adding more detail."
+      };
+    }
+    return { valid: true, reason: "" };
+  };
+
   const validateCareerGoal = async () => {
     try {
       setIsSaving(true);
       
-      // Try to validate with the Edge Function
+      // First do a basic client-side validation
+      const basicCheck = basicValidation(goals);
+      if (!basicCheck.valid) {
+        setValidationReason(basicCheck.reason);
+        setShowValidationDialog(true);
+        return false;
+      }
+      
+      // Then try to validate with the Edge Function
       try {
         const { data, error } = await supabase.functions.invoke("validate-career-goal", {
           body: { careerGoal: goals },
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Error validating career goal:", error);
+          // If there's an error, still allow the user to proceed
+          return true;
+        }
 
         if (!data.valid) {
           setValidationReason(data.reason);
@@ -51,15 +75,13 @@ const CareerGoals = () => {
         return true;
       } catch (functionError) {
         console.error("Error validating career goal:", functionError);
-        
-        // If the function fails, do a basic validation and proceed
-        if (goals.trim().length < 5) {
-          toast.warning("Your career goal is quite short. Consider adding more detail.");
-          return true;
-        }
-        
+        // If the function fails, just accept the goal and proceed
         return true;
       }
+    } catch (e) {
+      console.error("Unexpected error during validation:", e);
+      // For any other errors, allow the user to proceed
+      return true;
     } finally {
       setIsSaving(false);
     }
@@ -69,6 +91,7 @@ const CareerGoals = () => {
     e.preventDefault();
     
     if (isUnsure) {
+      storage.saveCareerInfo({ careerGoals: "" });
       navigate("/career-guidance");
       return;
     }
@@ -81,14 +104,22 @@ const CareerGoals = () => {
     const isValid = await validateCareerGoal();
     if (isValid) {
       storage.saveCareerInfo({ careerGoals: goals });
-      navigate("/career-guidance");
+      
+      // Determine the next page based on where the user is coming from
+      const careerInfo = storage.getCareerInfo();
+      const nextPage = careerInfo.guidanceAnswers ? "/career-confidence-assessment" : "/career-guidance";
+      navigate(nextPage);
     }
   };
 
   const handleContinueAnyway = () => {
     setShowValidationDialog(false);
     storage.saveCareerInfo({ careerGoals: goals });
-    navigate("/career-guidance");
+    
+    // Determine the next page based on where the user is coming from
+    const careerInfo = storage.getCareerInfo();
+    const nextPage = careerInfo.guidanceAnswers ? "/career-confidence-assessment" : "/career-guidance";
+    navigate(nextPage);
   };
 
   return (

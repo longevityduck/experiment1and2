@@ -17,36 +17,24 @@ serve(async (req) => {
   try {
     const { careerGoal } = await req.json();
 
-    // Basic validation if OpenAI isn't available
+    // Basic validation - always use this as a fallback
+    const basicValidation = () => {
+      const goalText = careerGoal?.trim() || '';
+      const isValid = typeof goalText === 'string' && goalText.length > 5;
+      return {
+        valid: isValid,
+        reason: isValid ? "" : "Please provide a more detailed career goal."
+      };
+    };
+
+    // If OpenAI isn't available, just use basic validation
     if (!openAIApiKey) {
-      const isValid = typeof careerGoal === 'string' && careerGoal.trim().length > 5;
+      console.log("OpenAI API key not available, using basic validation");
       return new Response(
-        JSON.stringify({
-          valid: isValid,
-          reason: isValid ? "" : "Please provide a more detailed career goal."
-        }),
+        JSON.stringify(basicValidation()),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-
-    // Define fallback function
-    const performBasicValidation = () => {
-      // Simple validation logic - checks if the goal is related to career
-      const careerKeywords = ["career", "job", "work", "professional", "skill", "promote", "promotion", "advance", 
-                             "grow", "develop", "learn", "improve", "progress", "success", "industry", "position",
-                             "role", "opportunity", "experience", "achievement", "leadership", "business", "entrepreneur"];
-      
-      const goalLower = careerGoal.toLowerCase();
-      const containsCareerKeywords = careerKeywords.some(keyword => goalLower.includes(keyword));
-      const hasMinLength = goalLower.split(" ").length >= 3;
-      
-      const isValid = containsCareerKeywords && hasMinLength;
-      
-      return {
-        valid: isValid,
-        reason: isValid ? "" : "Your goal should be related to your career and contain at least a few words."
-      };
-    };
 
     try {
       const prompt = `As a career development expert, analyze if the following text could be considered a career goal. A valid career goal should be:
@@ -87,7 +75,7 @@ serve(async (req) => {
         console.error('OpenAI API error:', await response.text());
         // Fall back to basic validation
         return new Response(
-          JSON.stringify(performBasicValidation()),
+          JSON.stringify(basicValidation()),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
@@ -103,22 +91,21 @@ serve(async (req) => {
         );
       } catch (parseError) {
         console.error('JSON parse error:', parseError, 'Content:', data.choices[0].message.content);
-        // Fall back to basic validation
         return new Response(
-          JSON.stringify(performBasicValidation()),
+          JSON.stringify(basicValidation()),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
     } catch (aiError) {
       console.error('Error calling OpenAI:', aiError);
-      // Fall back to basic validation
       return new Response(
-        JSON.stringify(performBasicValidation()),
+        JSON.stringify(basicValidation()),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
   } catch (error) {
     console.error('Error in validate-career-goal function:', error);
+    // In case of any error, accept the goal as valid to avoid blocking the user
     return new Response(
       JSON.stringify({ 
         valid: true, 
