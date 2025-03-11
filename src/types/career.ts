@@ -20,4 +20,5 @@ export interface CareerInfo {
   confidenceLevel?: number;
   readinessLevel?: number;
   feelingAboutCareerGoal?: string;
+  customFeeling?: string;
 }

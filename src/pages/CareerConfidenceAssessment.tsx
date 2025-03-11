@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -52,9 +53,7 @@ const CareerConfidenceAssessment = () => {
     "Other"
   ];
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
+  const handleSubmit = () => {
     // Save the user's choice
     storage.saveCareerInfo({
       feelingAboutCareerGoal: selectedFeeling,
