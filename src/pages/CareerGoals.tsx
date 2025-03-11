@@ -105,10 +105,8 @@ const CareerGoals = () => {
     if (isValid) {
       storage.saveCareerInfo({ careerGoals: goals });
       
-      // Determine the next page based on where the user is coming from
-      const careerInfo = storage.getCareerInfo();
-      const nextPage = careerInfo.guidanceAnswers ? "/career-confidence-assessment" : "/career-guidance";
-      navigate(nextPage);
+      // Always navigate directly to the career confidence assessment when a valid goal is provided
+      navigate("/career-confidence-assessment");
     }
   };
 
@@ -116,10 +114,8 @@ const CareerGoals = () => {
     setShowValidationDialog(false);
     storage.saveCareerInfo({ careerGoals: goals });
     
-    // Determine the next page based on where the user is coming from
-    const careerInfo = storage.getCareerInfo();
-    const nextPage = careerInfo.guidanceAnswers ? "/career-confidence-assessment" : "/career-guidance";
-    navigate(nextPage);
+    // Always navigate directly to the career confidence assessment
+    navigate("/career-confidence-assessment");
   };
 
   return (
