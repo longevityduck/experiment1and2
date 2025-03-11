@@ -10,20 +10,27 @@ import { storage } from "@/utils/storage";
 const ConfidenceAssessment = () => {
   const navigate = useNavigate();
   const [confidenceLevel, setConfidenceLevel] = useState<number[]>([5]);
+  const [readinessLevel, setReadinessLevel] = useState<number[]>([5]);
   
   useEffect(() => {
-    // Load saved confidence level if it exists
+    // Load saved values if they exist
     const savedInfo = storage.getCareerInfo();
     if (savedInfo.confidenceLevel) {
       setConfidenceLevel([savedInfo.confidenceLevel]);
+    }
+    if (savedInfo.readinessLevel) {
+      setReadinessLevel([savedInfo.readinessLevel]);
     }
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Save the confidence level
-    storage.saveCareerInfo({ confidenceLevel: confidenceLevel[0] });
+    // Save both levels
+    storage.saveCareerInfo({ 
+      confidenceLevel: confidenceLevel[0],
+      readinessLevel: readinessLevel[0]
+    });
     
     // Navigate to personal info page
     navigate("/personal-info");
@@ -33,10 +40,9 @@ const ConfidenceAssessment = () => {
     <>
       <ProgressIndicator />
       <FormContainer 
-        title="Career Confidence Assessment" 
-        description="Let's start by understanding your confidence level"
+        title="Career Confidence Assessment"
       >
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
           <div className="space-y-4">
             <h3 className="text-lg font-medium">On a scale of 1 to 10, how confident are you in determining your next career steps?</h3>
             
@@ -65,6 +71,29 @@ const ConfidenceAssessment = () => {
                 Career steps refer to the key stages or actions you take in the process of planning, 
                 making decisions, and progressing in your career.
               </p>
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-4">
+            <h3 className="text-lg font-medium">On a scale of 1 to 10, how ready do you feel if you had to take your next career step within a month?</h3>
+            
+            <div className="pt-6 pb-8">
+              <Slider
+                value={readinessLevel}
+                onValueChange={setReadinessLevel}
+                max={10}
+                min={1}
+                step={1}
+              />
+              
+              <div className="flex justify-between mt-2 text-sm text-gray-500">
+                <span>1 - Unprepared</span>
+                <span>10 - Very Prepared</span>
+              </div>
+              
+              <div className="text-center mt-4 font-medium text-xl">
+                {readinessLevel[0]}
+              </div>
             </div>
           </div>
 
