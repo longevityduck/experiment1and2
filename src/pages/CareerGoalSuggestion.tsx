@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,26 +10,78 @@ import { Loader2 } from "lucide-react";
 import { storage } from "@/utils/storage";
 import { supabase } from "@/integrations/supabase/client";
 
-// Enhanced fallback goal with specific examples based on common career paths
+// Enhanced fallback goal that properly considers all 5 guidance questions
 const generateFallbackGoal = (personalInfo: Record<string, any> = {}, guidanceAnswers: Record<number, string> = {}) => {
-  const reason = guidanceAnswers[2] || 'grow professionally';
-  const timeframe = guidanceAnswers[3]?.includes('5 years') ? '5 years' : '3-5 years';
-  const industry = personalInfo.industry || 'your current industry';
-  const occupation = personalInfo.occupation || 'your current field';
+  // Parse career satisfaction (question 1)
+  const satisfaction = guidanceAnswers[1] || 'not specified';
+  
+  // Parse main motivation (question 2)
+  const motivation = guidanceAnswers[2] || 'grow professionally';
+  
+  // Parse 5-year plan (question 3)
+  const fiveYearPlan = guidanceAnswers[3] || 'not specified';
+  
+  // Parse risk tolerance (question 4)
+  const riskTolerance = guidanceAnswers[4] || 'moderate';
+  
+  // Parse career value (question 5)
+  const careerValue = guidanceAnswers[5] || 'balance';
+  
+  // Get basic info
+  const timeframe = fiveYearPlan?.includes('5 years') ? '5 years' : '3-5 years';
+  const job = personalInfo?.occupation || 'your current occupation';
+  const desiredJob = personalInfo?.desiredJob || '';
+  const industry = personalInfo?.industry || 'your current industry';
+  const experience = parseInt(personalInfo?.experience || '0', 10);
   
   let goalText = '';
   
-  // Create different goals based on the main motivation (question 2)
-  if (reason.includes('earn more money')) {
-    goalText = `To increase your income by at least 20% within ${timeframe} by advancing to a senior position in ${occupation} through acquiring specialized certifications and expanding your expertise in ${industry}.`;
-  } else if (reason.includes('free time')) {
-    goalText = `To achieve a better work-life balance within ${timeframe} by transitioning to a role in ${industry} that offers flexible working arrangements while maintaining your career progression in ${occupation}.`;
-  } else if (reason.includes('meaningful')) {
-    goalText = `To transition into a more fulfilling role in ${industry} within ${timeframe} that aligns with your values and allows you to make a positive impact while leveraging your experience in ${occupation}.`;
-  } else if (reason.includes('challenges')) {
-    goalText = `To take on progressively more challenging projects and responsibilities in ${occupation} over the next ${timeframe}, positioning yourself for a leadership role in ${industry}.`;
+  // Consider desired job if available
+  const targetRole = desiredJob ? desiredJob : (
+    fiveYearPlan === 'Same job but higher position' ? 
+    `a senior ${job}` : 
+    fiveYearPlan === 'Same field but different job' ? 
+    `a different role in ${industry}` : 
+    fiveYearPlan === 'Same job but different field' ? 
+    `${job} in a different industry` : 
+    fiveYearPlan === 'Completely different job and field' ? 
+    `a new career outside of ${industry}` : 
+    fiveYearPlan === 'Starting my own business' ? 
+    `your own business in ${industry}` : 
+    fiveYearPlan === 'Working part-time or less' ? 
+    `a part-time position as ${job}` :
+    `a more fulfilling role`
+  );
+  
+  // Build a goal that incorporates all 5 questions
+  if (motivation.includes('earn more money')) {
+    // Financial focus
+    goalText = `To increase your income by at least 20% within ${timeframe} by advancing to ${targetRole}${riskTolerance.includes('comfortable') ? ', taking calculated risks when necessary' : ', with minimal career risk'}.`;
+  } else if (motivation.includes('free time') || careerValue.includes('time for myself')) {
+    // Work-life balance focus
+    goalText = `To achieve a better work-life balance within ${timeframe} by transitioning to ${targetRole} that offers flexible working arrangements while ${satisfaction.includes('love') ? 'maintaining your career satisfaction' : 'improving your career satisfaction'}.`;
+  } else if (motivation.includes('meaningful') || careerValue.includes('difference')) {
+    // Purpose-driven focus
+    goalText = `To transition into ${targetRole} within ${timeframe} that aligns with your values and allows you to make a positive impact${riskTolerance.includes('comfortable') ? ' while taking strategic risks' : ' through a measured approach'}.`;
+  } else if (motivation.includes('challenges') || careerValue.includes('Learning')) {
+    // Growth focus
+    goalText = `To develop expertise in ${targetRole} over the next ${timeframe} by continuously learning new skills and taking on ${riskTolerance.includes('comfortable') ? 'challenging' : 'appropriately scoped'} projects.`;
+  } else if (motivation.includes('grow as a person')) {
+    // Personal development focus
+    goalText = `To grow professionally and personally by securing a position as ${targetRole} within ${timeframe} that ${careerValue.includes('stable') ? 'provides stability while' : ''} challenges you to develop new competencies.`;
+  } else if (careerValue.includes('independence')) {
+    // Autonomy focus
+    goalText = `To gain greater professional autonomy within ${timeframe} by establishing yourself in ${targetRole} where you can ${riskTolerance.includes('comfortable') ? 'independently direct your work' : 'have structured independence'}.`;
   } else {
-    goalText = `To advance to a senior position within ${occupation} in the next ${timeframe} by expanding your expertise in ${industry} and taking on greater responsibilities.`;
+    // Default goal
+    goalText = `To advance to ${targetRole} within ${timeframe} by expanding your expertise and taking on greater responsibilities${careerValue.includes('stable') ? ' while maintaining stability' : ''}.`;
+  }
+  
+  // Add experience-based modifier
+  if (experience < 3) {
+    goalText += ` As an early-career professional, focus on rapidly building fundamental skills and industry connections.`;
+  } else if (experience >= 10) {
+    goalText += ` Leverage your extensive experience to position yourself as a thought leader and mentor in your field.`;
   }
   
   return goalText;
@@ -46,13 +99,14 @@ const CareerGoalSuggestion = () => {
         const personalInfo = careerInfo.personalInfo || {};
         const guidanceAnswers = careerInfo.guidanceAnswers || {};
         
-        // Add age, occupation, etc. directly from careerInfo if they exist
+        // Add all relevant information from careerInfo
         const enrichedPersonalInfo = {
           ...personalInfo,
           age: careerInfo.age || personalInfo.age,
           occupation: careerInfo.occupation || personalInfo.occupation,
           industry: careerInfo.industry || personalInfo.industry,
-          experience: careerInfo.experience || personalInfo.experience
+          experience: careerInfo.experience || personalInfo.experience,
+          desiredJob: careerInfo.desiredJob
         };
 
         console.log('Sending career goal generation request with:', {
@@ -84,7 +138,7 @@ const CareerGoalSuggestion = () => {
           // If Supabase fails, continue to fallback
         }
 
-        // Local fallback generation if Supabase fails
+        // Enhanced local fallback generation
         const fallbackGoal = generateFallbackGoal(enrichedPersonalInfo, guidanceAnswers);
         console.log('Using locally generated goal:', fallbackGoal);
         setSuggestedGoal(fallbackGoal);
@@ -92,12 +146,14 @@ const CareerGoalSuggestion = () => {
       } catch (error) {
         console.error('Error generating career goal:', error);
         
-        // Use the enhanced fallback goal generator
+        // Use the enhanced fallback goal generator with all available information
         const careerInfo = storage.getCareerInfo();
         const fallbackGoal = generateFallbackGoal(
           {
             industry: careerInfo.industry,
-            occupation: careerInfo.occupation
+            occupation: careerInfo.occupation,
+            desiredJob: careerInfo.desiredJob,
+            experience: careerInfo.experience
           }, 
           careerInfo.guidanceAnswers || {}
         );
