@@ -21,4 +21,8 @@ export interface CareerInfo {
   readinessLevel?: number;
   feelingAboutCareerGoal?: string;
   customFeeling?: string;
+  age?: string;
+  occupation?: string;
+  industry?: string;
+  experience?: string;
 }

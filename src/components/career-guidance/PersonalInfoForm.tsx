@@ -14,6 +14,10 @@ const PersonalInfoForm = () => {
     name: "",
     email: "",
     location: "",
+    age: "",
+    occupation: "",
+    industry: "",
+    experience: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,6 +80,56 @@ const PersonalInfoForm = () => {
             value={formData.email}
             onChange={handleChange}
             required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="age">Age</Label>
+          <Input
+            id="age"
+            name="age"
+            type="number"
+            placeholder="Enter your age"
+            min="16"
+            max="100"
+            value={formData.age}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="occupation">Current Occupation</Label>
+          <Input
+            id="occupation"
+            name="occupation"
+            placeholder="e.g. Software Developer, Student, Marketing Manager"
+            value={formData.occupation}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="industry">Industry</Label>
+          <Input
+            id="industry"
+            name="industry"
+            placeholder="e.g. Technology, Healthcare, Education"
+            value={formData.industry}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="experience">Years of Experience</Label>
+          <Input
+            id="experience"
+            name="experience"
+            type="number"
+            placeholder="Years of professional experience"
+            min="0"
+            max="60"
+            value={formData.experience}
+            onChange={handleChange}
           />
         </div>
 
