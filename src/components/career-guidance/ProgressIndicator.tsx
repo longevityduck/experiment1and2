@@ -1,20 +1,17 @@
+
 import { useLocation } from "react-router-dom";
 
 const routes = [
   { path: "/introduction", step: 1, label: "Introduction" },
-  { path: "/user-type", step: 2, label: "User Type" },
-  { path: "/login", step: 3, label: "Login" },
-  { path: "/personal-info", step: 4, label: "Personal Info" },
-  { path: "/career-goals", step: 5, label: "Career Goals" },
-  { path: "/career-guidance", step: 6, label: "Career Guidance" },
-  { path: "/what-role", step: 7, label: "Role Selection" },
-  { path: "/career-clarification", step: 8, label: "Career Clarification" },
-  { path: "/career-goal-suggestion", step: 9, label: "Goal Suggestion" },
-  { path: "/entrepreneurship-resources", step: 10, label: "Resources" },
-  { path: "/skills-assessment", step: 11, label: "Skills" },
-  { path: "/next-steps", step: 12, label: "Next Steps" },
-  { path: "/phone-commitment", step: 13, label: "Commitment" },
-  { path: "/success", step: 14, label: "Success" },
+  { path: "/login", step: 2, label: "Login" },
+  { path: "/personal-info", step: 3, label: "Personal Info" },
+  { path: "/career-goals", step: 4, label: "Career Goals" },
+  { path: "/career-guidance", step: 5, label: "Career Guidance" },
+  { path: "/what-role", step: 6, label: "Role Selection" },
+  { path: "/career-clarification", step: 7, label: "Career Clarification" },
+  { path: "/career-goal-suggestion", step: 8, label: "Goal Suggestion" },
+  { path: "/entrepreneurship-resources", step: 9, label: "Resources" },
+  { path: "/success", step: 10, label: "Success" },
 ];
 
 export const ProgressIndicator = () => {

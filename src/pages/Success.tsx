@@ -11,19 +11,21 @@ const Success = () => {
       <Card>
         <CardContent className="pt-6">
           <div className="text-center space-y-6">
-            <h1 className="text-2xl font-bold">Thank You!</h1>
+            <h1 className="text-2xl font-bold">Your Career Goals Are Set!</h1>
             <div className="space-y-4">
               <p>
-                Your career guidance session is complete. Here's what happens next:
+                Congratulations on completing your career goal definition process. You now have:
               </p>
               <div className="text-left">
                 <ul className="list-disc list-inside space-y-2">
                   <li>
-                    We'll review your responses and prepare personalized
-                    recommendations
+                    A clearer understanding of your career aspirations
                   </li>
                   <li>
-                    You'll receive a WhatsApp message with detailed next steps and resources
+                    A well-defined career goal to guide your professional development
+                  </li>
+                  <li>
+                    A foundation for planning your next career steps
                   </li>
                 </ul>
               </div>
@@ -34,9 +36,9 @@ const Success = () => {
               </Button>
               <Button 
                 variant="outline"
-                onClick={() => window.open("https://www.careergrit.sg", "_blank")}
+                onClick={() => navigate("/career-goal-suggestion")}
               >
-                More Career Resources
+                Review My Career Goal
               </Button>
             </div>
           </div>

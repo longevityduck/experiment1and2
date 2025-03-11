@@ -46,7 +46,6 @@ const CareerGoalSuggestion = () => {
           return;
         }
 
-        // Extract just the career goal from the response
         const goalOnly = data.advice.split('\n')[0].replace(/^Career Goal:\s*/i, '').trim();
         setSuggestedGoal(goalOnly);
       } catch (error) {
@@ -68,7 +67,7 @@ const CareerGoalSuggestion = () => {
     }
 
     storage.saveCareerInfo({ careerGoals: suggestedGoal });
-    navigate("/skills-assessment");
+    navigate("/success");
   };
 
   return (

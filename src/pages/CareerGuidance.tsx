@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -119,10 +118,8 @@ const CareerGuidance = () => {
     
     if (fiveYearPlan === "Starting my own business") {
       navigate("/entrepreneurship-resources");
-    } else if (fiveYearPlan === "Same field but different job" || fiveYearPlan === "Completely different job and field") {
-      navigate("/what-role");
     } else {
-      navigate("/career-clarification");
+      navigate("/what-role");
     }
   };
 

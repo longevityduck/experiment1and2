@@ -13,9 +13,8 @@ export interface GuidanceQuestion {
 export interface CareerInfo {
   personalInfo?: Record<string, string>;
   skills?: string[];
-  currentGoal?: string;
   careerGoals?: string;
   guidanceAnswers?: Record<number, string>;
   clarificationAnswers?: Record<string, string>;
-  desiredJob?: string;  // Changed from desiredRole to desiredJob
+  desiredJob?: string;
 }

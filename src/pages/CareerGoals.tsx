@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -69,14 +68,14 @@ const CareerGoals = () => {
     const isValid = await validateCareerGoal();
     if (isValid) {
       storage.saveCareerInfo({ careerGoals: goals });
-      navigate("/skills-assessment");
+      navigate("/career-guidance");
     }
   };
 
   const handleContinueAnyway = () => {
     setShowValidationDialog(false);
     storage.saveCareerInfo({ careerGoals: goals });
-    navigate("/skills-assessment");
+    navigate("/career-guidance");
   };
 
   return (
