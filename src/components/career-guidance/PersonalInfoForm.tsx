@@ -92,10 +92,10 @@ const PersonalInfoForm = () => {
       </div>
 
       <NavigationButtons
-        onBack={() => navigate("/career-confidence-assessment")}
+        onBack={() => navigate("/confidence-assessment")}
         onNext={() => {}}
         nextButtonText="Continue"
-        isNextSubmit
+        isNextSubmit={true}
       />
     </form>
   );
