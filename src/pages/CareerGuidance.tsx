@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -118,8 +119,15 @@ const CareerGuidance = () => {
     
     if (fiveYearPlan === "Starting my own business") {
       navigate("/entrepreneurship-resources");
-    } else {
+    } else if (
+      fiveYearPlan === "Completely different job and field" || 
+      fiveYearPlan === "Same field but different job"
+    ) {
+      // Only show the role selection screen for these specific choices
       navigate("/what-role");
+    } else {
+      // Skip role selection for other choices
+      navigate("/career-goal-suggestion");
     }
   };
 

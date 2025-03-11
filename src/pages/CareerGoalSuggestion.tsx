@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { Loader2 } from "lucide-react";
 import { storage } from "@/utils/storage";
 import { supabase } from "@/integrations/supabase/client";
 
-const FALLBACK_GOAL = `To advance to a senior software developer position within the next three years by mastering advanced technical skills and taking on leadership responsibilities in project teams.`;
+const FALLBACK_GOAL = `To advance to a senior position within your current field in the next 3-5 years by expanding your expertise and taking on greater responsibilities.`;
 
 const CareerGoalSuggestion = () => {
   const navigate = useNavigate();
@@ -21,14 +22,12 @@ const CareerGoalSuggestion = () => {
       try {
         const personalInfo = storage.getCareerInfo().personalInfo || {};
         const guidanceAnswers = storage.getCareerInfo().guidanceAnswers || {};
-        const clarificationAnswers = storage.getCareerInfo().clarificationAnswers || {};
 
         const { data, error } = await supabase.functions.invoke('career-advice', {
           body: {
             type: 'career-goal',
             personalInfo,
-            guidanceAnswers,
-            clarificationAnswers
+            guidanceAnswers
           }
         });
 
@@ -89,7 +88,7 @@ const CareerGoalSuggestion = () => {
           <div className="mb-6 text-gray-600 space-y-4">
             <p>
               Based on your responses, we've generated a personalized career goal 
-              using AI assistance. This takes into account your background, skills, interests, and aspirations.
+              using AI assistance. This takes into account your background and aspirations.
             </p>
             <p>
               Feel free to review and modify this goal to better align with your vision.
@@ -119,7 +118,7 @@ const CareerGoalSuggestion = () => {
             className="w-full mt-6"
             disabled={isLoading}
           >
-            Continue to Skills Assessment
+            Complete
           </Button>
         </div>
       </div>
