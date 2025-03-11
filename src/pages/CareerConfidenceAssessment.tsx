@@ -115,7 +115,7 @@ const CareerConfidenceAssessment = () => {
             {/* Readiness Level Slider */}
             <div>
               <h2 className="text-lg font-medium mb-4">
-                On a scale of 1 to 10, how ready do you feel if you had to take your next career step within a month?
+                Now that you have defined your career goal, on a scale of 1 to 10, how ready do you feel if you had to take your next career step within a month?
               </h2>
               <div className="space-y-4">
                 <Slider
