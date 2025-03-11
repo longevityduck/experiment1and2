@@ -6,6 +6,7 @@ import { FormContainer } from "@/components/career-guidance/FormContainer";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { storage } from "@/utils/storage";
+import { toast } from "sonner";
 
 const ConfidenceAssessment = () => {
   const navigate = useNavigate();
@@ -13,14 +14,13 @@ const ConfidenceAssessment = () => {
   const [readinessLevel, setReadinessLevel] = useState<number[]>([5]);
   
   useEffect(() => {
-    // Load saved values if they exist
-    const savedInfo = storage.getCareerInfo();
-    if (savedInfo.confidenceLevel) {
-      setConfidenceLevel([savedInfo.confidenceLevel]);
-    }
-    if (savedInfo.readinessLevel) {
-      setReadinessLevel([savedInfo.readinessLevel]);
-    }
+    // Reset all responses when landing on this page
+    storage.resetAllResponses();
+    toast.success("Starting a new assessment", {
+      description: "Previous responses have been cleared"
+    });
+    
+    // No need to load saved values anymore since we're resetting everything
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {

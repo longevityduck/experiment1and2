@@ -1,3 +1,4 @@
+
 import { CareerInfo } from "../types/career";
 
 const STORAGE_KEY = "careerInfo";
@@ -16,5 +17,11 @@ export const storage = {
 
   clearCareerInfo: () => {
     localStorage.removeItem(STORAGE_KEY);
+  },
+  
+  resetAllResponses: () => {
+    // Completely remove all stored data
+    localStorage.removeItem(STORAGE_KEY);
+    console.log("All responses have been reset");
   }
 };
