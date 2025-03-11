@@ -54,13 +54,20 @@ const CareerConfidenceAssessment = () => {
   ];
 
   const handleSubmit = () => {
-    // Save the user's choice
+    if (!selectedFeeling) {
+      toast.error("Please select how you feel about your career goal");
+      return;
+    }
+    
+    // Save all the assessment data
     storage.saveCareerInfo({
       feelingAboutCareerGoal: selectedFeeling,
-      customFeeling: otherText
+      customFeeling: otherText,
+      confidenceLevel: confidenceLevel,
+      readinessLevel: readinessLevel
     });
     
-    // Changed navigation to go to personal info page instead of next steps
+    // Navigate to personal info page
     navigate("/personal-info");
   };
 
