@@ -5,14 +5,16 @@ interface NavigationButtonsProps {
   onBack: () => void;
   onNext: () => void;
   nextButtonText?: string;
-  disabled?: boolean;  // Added disabled prop
+  disabled?: boolean;
+  isNextSubmit?: boolean;  // Added isNextSubmit prop
 }
 
 export const NavigationButtons = ({ 
   onBack, 
   onNext, 
   nextButtonText = "Next",
-  disabled = false  // Added with default value
+  disabled = false,
+  isNextSubmit = false  // Added with default value
 }: NavigationButtonsProps) => {
   return (
     <div className="flex gap-4">
@@ -26,9 +28,9 @@ export const NavigationButtons = ({
         Back
       </Button>
       <Button 
-        type="submit" 
+        type={isNextSubmit ? "submit" : "button"}  // Use submit type if isNextSubmit is true
         className="w-full"
-        onClick={onNext}
+        onClick={isNextSubmit ? undefined : onNext}  // Don't use onClick for submit buttons
         disabled={disabled}
       >
         {nextButtonText}
