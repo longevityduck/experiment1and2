@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
@@ -12,30 +11,47 @@ const ConfidenceAssessment = () => {
   const navigate = useNavigate();
   const [confidenceLevel, setConfidenceLevel] = useState<number[]>([5]);
   const [readinessLevel, setReadinessLevel] = useState<number[]>([5]);
+  const [isResetting, setIsResetting] = useState(true);
   
   useEffect(() => {
     // Reset all responses when landing on this page
-    storage.resetAllResponses();
-    toast.success("Starting a new assessment", {
-      description: "Previous responses have been cleared"
-    });
+    const resetData = async () => {
+      setIsResetting(true);
+      try {
+        await storage.resetAllResponses();
+        toast.success("Starting a new assessment", {
+          description: "Previous responses have been cleared"
+        });
+      } catch (error) {
+        console.error("Error resetting responses:", error);
+        toast.error("Error resetting previous responses");
+      } finally {
+        setIsResetting(false);
+      }
+    };
     
-    // No need to load saved values anymore since we're resetting everything
+    resetData();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Save both levels
-    storage.saveCareerInfo({ 
-      confidenceLevel: confidenceLevel[0],
-      readinessLevel: readinessLevel[0]
-    });
-    
-    // Navigate to the personal info page instead of next-steps
-    navigate("/personal-info");
+    try {
+      // Save both levels
+      await storage.saveCareerInfo({ 
+        confidenceLevel: confidenceLevel[0],
+        readinessLevel: readinessLevel[0]
+      });
+      
+      // Navigate to the personal info page
+      navigate("/personal-info");
+    } catch (error) {
+      console.error("Error saving confidence assessment:", error);
+      toast.error("Error saving your assessment");
+    }
   };
 
+  // Rest of the component remains the same
   return (
     <>
       <ProgressIndicator />
@@ -53,6 +69,7 @@ const ConfidenceAssessment = () => {
                 max={10}
                 min={1}
                 step={1}
+                disabled={isResetting}
               />
               
               <div className="flex justify-between mt-2 text-sm text-gray-500">
@@ -84,6 +101,7 @@ const ConfidenceAssessment = () => {
                 max={10}
                 min={1}
                 step={1}
+                disabled={isResetting}
               />
               
               <div className="flex justify-between mt-2 text-sm text-gray-500">
@@ -97,8 +115,8 @@ const ConfidenceAssessment = () => {
             </div>
           </div>
 
-          <Button type="submit" className="w-full">
-            Continue
+          <Button type="submit" className="w-full" disabled={isResetting}>
+            {isResetting ? "Loading..." : "Continue"}
           </Button>
         </form>
       </FormContainer>

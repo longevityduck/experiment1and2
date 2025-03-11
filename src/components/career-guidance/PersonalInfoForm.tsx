@@ -16,33 +16,42 @@ const PersonalInfoForm = () => {
     industry: "",
     experience: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    // Save the data to storage
-    const personalInfo = {
-      age: formData.age,
-      occupation: formData.occupation,
-      industry: formData.industry,
-      experience: formData.experience,
-    };
+    try {
+      // Save the data to storage
+      const personalInfo = {
+        age: formData.age,
+        occupation: formData.occupation,
+        industry: formData.industry,
+        experience: formData.experience,
+      };
 
-    // Store the values in CareerInfo
-    storage.saveCareerInfo({
-      age: formData.age,
-      occupation: formData.occupation,
-      industry: formData.industry,
-      experience: formData.experience,
-    });
+      // Store the values in CareerInfo
+      await storage.saveCareerInfo({
+        age: formData.age,
+        occupation: formData.occupation,
+        industry: formData.industry,
+        experience: formData.experience,
+      });
 
-    // Navigate to career goals
-    navigate("/career-goals");
+      // Navigate to career goals
+      navigate("/career-goals");
+    } catch (error) {
+      console.error("Error saving personal info:", error);
+      toast.error("Failed to save your information");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -104,6 +113,7 @@ const PersonalInfoForm = () => {
         onNext={() => {}}
         nextButtonText="Continue"
         isNextSubmit={true}
+        disabled={isSubmitting}
       />
     </form>
   );
