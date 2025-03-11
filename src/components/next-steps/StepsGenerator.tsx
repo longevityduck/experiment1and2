@@ -184,6 +184,7 @@ const generateFallbackSteps = (careerInfo: any, skills: string[] = []): Step[] =
 
 const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) => {
   const { toast } = useToast();
+  const [hasAttemptedSupabase, setHasAttemptedSupabase] = useState(false);
 
   useEffect(() => {
     const generateSteps = async () => {
@@ -191,9 +192,15 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
         // Check if we already have saved steps
         const savedSteps = localStorage.getItem("userSteps");
         if (savedSteps) {
-          onStepsGenerated(JSON.parse(savedSteps));
-          setLoading(false);
-          return;
+          const parsedSteps = JSON.parse(savedSteps);
+          if (parsedSteps && Array.isArray(parsedSteps) && parsedSteps.length > 0) {
+            onStepsGenerated(parsedSteps);
+            setLoading(false);
+            return;
+          } else {
+            // If saved steps are invalid, remove them
+            localStorage.removeItem("userSteps");
+          }
         }
 
         // Gather all necessary information
@@ -211,6 +218,11 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
         const careerGoals = careerInfo.careerGoals || "";
         const skills = JSON.parse(localStorage.getItem("skills") || "[]");
 
+        // Add safety check before processing
+        if (!personalInfo.occupation || !personalInfo.industry) {
+          throw new Error("Missing required information");
+        }
+
         console.log('Sending request to career-advice function with:', {
           personalInfo,
           guidanceAnswers,
@@ -218,86 +230,108 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
           careerGoals
         });
 
-        try {
-          const { data, error } = await supabase.functions.invoke('career-advice', {
-            body: {
-              type: 'career-goal',
-              personalInfo,
-              guidanceAnswers,
-              clarificationAnswers,
-              careerGoals
-            }
-          });
-
-          if (error) {
-            console.error('Error generating steps from Supabase:', error);
-            throw error;
-          }
-
-          console.log('Received response from career-advice function:', data);
-
-          // Process the response from the LLM
-          const aiResponse = data.advice;
-          const steps: Partial<Step>[] = [];
-          let currentStep: Partial<Step> = {};
-          const stepLines = aiResponse.split('\n').filter(line => line.trim().length > 0);
-          let processingSteps = false;
+        // Only attempt Supabase once
+        if (!hasAttemptedSupabase) {
+          setHasAttemptedSupabase(true);
           
-          for (const line of stepLines) {
-            if (line.toLowerCase().includes('career goal:')) {
-              continue;
+          try {
+            // Set a timeout for the Supabase call to prevent indefinite waiting
+            const timeoutPromise = new Promise((_, reject) => {
+              setTimeout(() => reject(new Error("Request timed out")), 8000);
+            });
+            
+            // Try to get steps from Supabase with a timeout
+            const supabasePromise = supabase.functions.invoke('career-advice', {
+              body: {
+                type: 'career-goal',
+                personalInfo,
+                guidanceAnswers,
+                clarificationAnswers,
+                careerGoals
+              }
+            });
+            
+            // Race between the Supabase call and the timeout
+            const { data, error } = await Promise.race([
+              supabasePromise,
+              timeoutPromise.then(() => {
+                throw new Error("Request timed out");
+              })
+            ]) as any;
+
+            if (error) {
+              console.error('Error generating steps from Supabase:', error);
+              throw error;
+            }
+
+            console.log('Received response from career-advice function:', data);
+
+            // Process the response from the LLM
+            const aiResponse = data.advice;
+            const steps: Partial<Step>[] = [];
+            let currentStep: Partial<Step> = {};
+            const stepLines = aiResponse.split('\n').filter(line => line.trim().length > 0);
+            let processingSteps = false;
+            
+            for (const line of stepLines) {
+              if (line.toLowerCase().includes('career goal:')) {
+                continue;
+              }
+              
+              if (line.toLowerCase().startsWith('step:')) {
+                if (Object.keys(currentStep).length > 0) {
+                  steps.push(currentStep);
+                }
+                currentStep = {
+                  id: steps.length,
+                  content: line.replace(/^step:\s*/i, '').trim(),
+                  isEditing: false,
+                  isOriginal: true
+                };
+                processingSteps = true;
+              } else if (processingSteps && line.toLowerCase().startsWith('timeframe:')) {
+                const timeframeMatch = line.match(/(\d+)\s*months?/i) || line.match(/(\d+)\s*weeks?/i);
+                if (timeframeMatch) {
+                  const value = timeframeMatch[1];
+                  const unit = line.toLowerCase().includes('week') ? 'weeks' : 'months';
+                  currentStep.timeframe = `${value} ${unit}`;
+                } else {
+                  currentStep.timeframe = '3 months'; // Default fallback
+                }
+              } else if (processingSteps && line.toLowerCase().startsWith('explanation:')) {
+                currentStep.explanation = line.replace(/^explanation:\s*/i, '').trim();
+              }
             }
             
-            if (line.toLowerCase().startsWith('step:')) {
-              if (Object.keys(currentStep).length > 0) {
-                steps.push(currentStep);
-              }
-              currentStep = {
-                id: steps.length,
-                content: line.replace(/^step:\s*/i, '').trim(),
-                isEditing: false,
-                isOriginal: true
-              };
-              processingSteps = true;
-            } else if (processingSteps && line.toLowerCase().startsWith('timeframe:')) {
-              const timeframeMatch = line.match(/(\d+)\s*months?/i) || line.match(/(\d+)\s*weeks?/i);
-              if (timeframeMatch) {
-                const value = timeframeMatch[1];
-                const unit = line.toLowerCase().includes('week') ? 'weeks' : 'months';
-                currentStep.timeframe = `${value} ${unit}`;
-              } else {
-                currentStep.timeframe = '3 months'; // Default fallback
-              }
-            } else if (processingSteps && line.toLowerCase().startsWith('explanation:')) {
-              currentStep.explanation = line.replace(/^explanation:\s*/i, '').trim();
+            if (Object.keys(currentStep).length > 0) {
+              steps.push(currentStep);
             }
-          }
-          
-          if (Object.keys(currentStep).length > 0) {
-            steps.push(currentStep);
-          }
 
-          // Format the steps for display
-          const formattedSteps = steps.map((step, index) => ({
-            id: index,
-            content: step.content || '',
-            timeframe: step.timeframe || '3 months',
-            explanation: step.explanation || 'This step was generated based on your career goals and preferences.',
-            isEditing: false,
-            isOriginal: true,
-          }));
+            // Format the steps for display
+            const formattedSteps = steps.map((step, index) => ({
+              id: index,
+              content: step.content || '',
+              timeframe: step.timeframe || '3 months',
+              explanation: step.explanation || 'This step was generated based on your career goals and preferences.',
+              isEditing: false,
+              isOriginal: true,
+            }));
 
-          if (formattedSteps.length === 0) {
-            throw new Error('No steps were generated');
+            if (formattedSteps.length === 0) {
+              throw new Error('No steps were generated');
+            }
+
+            onStepsGenerated(formattedSteps);
+            localStorage.setItem("userSteps", JSON.stringify(formattedSteps));
+            setLoading(false);
+            return;
+          } catch (supabaseError) {
+            console.error("Error with Supabase function, using local generation:", supabaseError);
+            throw supabaseError; // Continue to fallback
           }
-
-          onStepsGenerated(formattedSteps);
-          localStorage.setItem("userSteps", JSON.stringify(formattedSteps));
-          setLoading(false);
-          return;
-        } catch (supabaseError) {
-          console.error("Error with Supabase function, using local generation:", supabaseError);
-          throw supabaseError; // Continue to fallback
+        } else {
+          // Skip Supabase attempt if we've already tried
+          throw new Error("Using local generation due to previous Supabase failure");
         }
 
       } catch (error) {
@@ -320,7 +354,7 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
     };
 
     generateSteps();
-  }, [onStepsGenerated, setLoading, toast]);
+  }, [onStepsGenerated, setLoading, toast, hasAttemptedSupabase]);
 
   return null;
 };

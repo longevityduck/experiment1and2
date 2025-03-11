@@ -18,6 +18,7 @@ const NextSteps = () => {
   const [steps, setSteps] = useState<Step[]>([]);
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
+  const [loadingTimeout, setLoadingTimeout] = useState<NodeJS.Timeout | null>(null);
   const [editingContent, setEditingContent] = useState("");
   const [editingTimeframe, setEditingTimeframe] = useState("");
   const navigate = useNavigate();
@@ -44,7 +45,29 @@ const NextSteps = () => {
       });
       navigate("/career-confidence-assessment");
     }
-  }, [navigate, toast]);
+
+    // Set a timeout to ensure loading doesn't get stuck
+    const timeout = setTimeout(() => {
+      // If still loading after 15 seconds, trigger fallback generation
+      if (loading) {
+        toast({
+          title: "Taking longer than expected",
+          description: "Using locally generated steps instead.",
+          variant: "default",
+        });
+        setLoading(false);
+      }
+    }, 15000);
+    
+    setLoadingTimeout(timeout);
+
+    return () => {
+      // Clear the timeout when component unmounts
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+      }
+    };
+  }, [navigate, toast, loading, loadingTimeout]);
 
   const handleCommitSteps = async () => {
     try {

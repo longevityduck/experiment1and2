@@ -15,6 +15,10 @@ serve(async (req) => {
   }
 
   try {
+    if (!openAIApiKey) {
+      throw new Error('OPENAI_API_KEY environment variable is not set');
+    }
+
     const requestData = await req.json();
     console.log('Received request:', requestData);
 
@@ -24,6 +28,11 @@ serve(async (req) => {
 
     if (requestData.type === 'career-goal') {
       const { personalInfo, guidanceAnswers, clarificationAnswers, careerGoals } = requestData;
+      
+      // Validate essential inputs
+      if (!personalInfo || !personalInfo.occupation || !personalInfo.industry) {
+        throw new Error('Personal information is incomplete');
+      }
       
       const prompt = `Based on the following detailed information, create a highly personalized career development plan following SMART goal principles that is specific to this individual's unique situation:
 
@@ -66,38 +75,49 @@ Ensure each step:
 
       console.log('Sending prompt to OpenAI:', prompt);
 
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a highly specialized career development expert who creates personalized, actionable career plans. Your advice must be extremely specific to the individual, their industry, and their career stage. Never provide generic steps - each recommendation should clearly reference the person\'s specific situation, industry terminology, and career context. Ensure all steps are measurable with concrete metrics, directly relevant to their stated goals, and include realistic timeframes.'
-            },
-            { role: 'user', content: prompt }
-          ],
-          temperature: 0.3, // Lower temperature for more precise, focused output
-          max_tokens: 2000, // Increased max tokens for more comprehensive steps
-        }),
-      });
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 second timeout
+        
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openAIApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are a highly specialized career development expert who creates personalized, actionable career plans. Your advice must be extremely specific to the individual, their industry, and their career stage. Never provide generic steps - each recommendation should clearly reference the person\'s specific situation, industry terminology, and career context. Ensure all steps are measurable with concrete metrics, directly relevant to their stated goals, and include realistic timeframes.'
+              },
+              { role: 'user', content: prompt }
+            ],
+            temperature: 0.3, // Lower temperature for more precise, focused output
+            max_tokens: 2000, // Increased max tokens for more comprehensive steps
+          }),
+          signal: controller.signal,
+        });
+        
+        clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        console.error('OpenAI API error:', response.statusText);
-        throw new Error(`OpenAI API error: ${response.statusText}`);
+        if (!response.ok) {
+          console.error('OpenAI API error:', response.statusText);
+          throw new Error(`OpenAI API error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('OpenAI response:', data);
+
+        return new Response(
+          JSON.stringify({ advice: data.choices[0].message.content }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (openAIError) {
+        console.error('Error calling OpenAI:', openAIError);
+        throw new Error(`OpenAI error: ${openAIError.message}`);
       }
-
-      const data = await response.json();
-      console.log('OpenAI response:', data);
-
-      return new Response(
-        JSON.stringify({ advice: data.choices[0].message.content }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
     }
 
     if (requestData.type === 'industry-suggestions') {
@@ -109,32 +129,43 @@ Ensure each step:
 
       const prompt = `Given the occupation "${occupation}", suggest 5 relevant industries where this occupation is commonly found. Format each suggestion on a new line with a number prefix (e.g., "1. Technology").`;
 
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4',
-          messages: [
-            { role: 'system', content: 'You are a career advisor helping to suggest relevant industries for different occupations.' },
-            { role: 'user', content: prompt }
-          ],
-          temperature: 0.7,
-          max_tokens: 200,
-        }),
-      });
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+        
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openAIApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'gpt-4',
+            messages: [
+              { role: 'system', content: 'You are a career advisor helping to suggest relevant industries for different occupations.' },
+              { role: 'user', content: prompt }
+            ],
+            temperature: 0.7,
+            max_tokens: 200,
+          }),
+          signal: controller.signal,
+        });
+        
+        clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.statusText}`);
+        if (!response.ok) {
+          throw new Error(`OpenAI API error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return new Response(
+          JSON.stringify({ advice: data.choices[0].message.content }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (openAIError) {
+        console.error('Error calling OpenAI:', openAIError);
+        throw new Error(`OpenAI error: ${openAIError.message}`);
       }
-
-      const data = await response.json();
-      return new Response(
-        JSON.stringify({ advice: data.choices[0].message.content }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
     }
 
     if (requestData.type === 'career-advice') {
@@ -144,32 +175,43 @@ ${Object.entries(requestData).filter(([key]) => key !== 'type').map(([key, value
 
 Provide brief career advice focusing on potential growth opportunities and skill development areas.`;
 
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4',
-          messages: [
-            { role: 'system', content: 'You are a career advisor providing concise, actionable advice.' },
-            { role: 'user', content: prompt }
-          ],
-          temperature: 0.7,
-          max_tokens: 300,
-        }),
-      });
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+        
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openAIApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'gpt-4',
+            messages: [
+              { role: 'system', content: 'You are a career advisor providing concise, actionable advice.' },
+              { role: 'user', content: prompt }
+            ],
+            temperature: 0.7,
+            max_tokens: 300,
+          }),
+          signal: controller.signal,
+        });
+        
+        clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.statusText}`);
+        if (!response.ok) {
+          throw new Error(`OpenAI API error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return new Response(
+          JSON.stringify({ advice: data.choices[0].message.content }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (openAIError) {
+        console.error('Error calling OpenAI:', openAIError);
+        throw new Error(`OpenAI error: ${openAIError.message}`);
       }
-
-      const data = await response.json();
-      return new Response(
-        JSON.stringify({ advice: data.choices[0].message.content }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
     }
 
     throw new Error('Invalid request type');
