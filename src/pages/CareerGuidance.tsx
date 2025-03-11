@@ -75,17 +75,25 @@ const CareerGuidance = () => {
 
   useEffect(() => {
     const savedInfo = storage.getCareerInfo();
+    
+    // Initialize answers if they exist
     if (savedInfo.guidanceAnswers) {
       setAnswers(savedInfo.guidanceAnswers);
+      
       // Find the first unanswered question
       const firstUnanswered = questions.findIndex(
         (q) => !savedInfo.guidanceAnswers[q.id]
       );
-      setCurrentQuestionIndex(firstUnanswered === -1 ? questions.length - 1 : firstUnanswered);
-    } else {
-      // Initialize currentQuestionIndex to 0 when no saved answers
-      setCurrentQuestionIndex(0);
+      
+      // Fix: Always start with the first question if coming from career goals page with "not sure"
+      // We check if guidanceAnswers exists but is empty (new navigation)
+      if (Object.keys(savedInfo.guidanceAnswers).length === 0) {
+        setCurrentQuestionIndex(0);
+      } else {
+        setCurrentQuestionIndex(firstUnanswered === -1 ? questions.length - 1 : firstUnanswered);
+      }
     }
+    // Default is already 0 from the useState initialization
   }, []);
 
   const handleNext = () => {
