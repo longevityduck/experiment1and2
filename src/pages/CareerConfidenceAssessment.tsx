@@ -24,8 +24,8 @@ type FeelingOption =
 const CareerConfidenceAssessment = () => {
   const navigate = useNavigate();
   const [careerGoal, setCareerGoal] = useState("");
-  const [confidenceLevel, setConfidenceLevel] = useState<number>(5);
-  const [readinessLevel, setReadinessLevel] = useState<number>(5);
+  const [confidenceLevel, setConfidenceLevel] = useState<number>(5); // Always initialized to 5
+  const [readinessLevel, setReadinessLevel] = useState<number>(5);   // Always initialized to 5
   const [selectedFeelings, setSelectedFeelings] = useState<FeelingOption[]>([]);
   const [otherText, setOtherText] = useState("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -41,13 +41,9 @@ const CareerConfidenceAssessment = () => {
       toast.error("Please complete previous steps first");
     }
     
-    // Load saved values if they exist
-    if (careerInfo.confidenceLevel) {
-      setConfidenceLevel(careerInfo.confidenceLevel);
-    }
-    if (careerInfo.readinessLevel) {
-      setReadinessLevel(careerInfo.readinessLevel);
-    }
+    // Removed loading of saved confidenceLevel and readinessLevel
+    // We always start with 5 for both sliders
+    
     if (careerInfo.feelingAboutCareerGoal) {
       const feelings = careerInfo.feelingAboutCareerGoal.split(", ") as FeelingOption[];
       setSelectedFeelings(feelings);
