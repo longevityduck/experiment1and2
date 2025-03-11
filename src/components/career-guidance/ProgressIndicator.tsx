@@ -2,13 +2,14 @@
 import { useLocation } from "react-router-dom";
 
 const routes = [
-  { path: "/personal-info", step: 1, label: "Personal Info" },
-  { path: "/career-goals", step: 2, label: "Career Goals" },
-  { path: "/career-guidance", step: 3, label: "Career Guidance" },
-  { path: "/what-role", step: 4, label: "Role Selection" },
-  { path: "/career-goal-suggestion", step: 5, label: "Goal Suggestion" },
-  { path: "/entrepreneurship-resources", step: 6, label: "Resources" },
-  { path: "/success", step: 7, label: "Success" },
+  { path: "/confidence-assessment", step: 1, label: "Confidence Assessment" },
+  { path: "/personal-info", step: 2, label: "Personal Info" },
+  { path: "/career-goals", step: 3, label: "Career Goals" },
+  { path: "/career-guidance", step: 4, label: "Career Guidance" },
+  { path: "/what-role", step: 5, label: "Role Selection" },
+  { path: "/career-goal-suggestion", step: 6, label: "Goal Suggestion" },
+  { path: "/entrepreneurship-resources", step: 7, label: "Resources" },
+  { path: "/success", step: 8, label: "Success" },
 ];
 
 export const ProgressIndicator = () => {
