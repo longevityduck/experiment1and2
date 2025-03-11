@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -27,7 +27,7 @@ const CareerConfidenceAssessment = () => {
   const [careerGoal, setCareerGoal] = useState("");
   const [confidenceLevel, setConfidenceLevel] = useState<number>(5);
   const [readinessLevel, setReadinessLevel] = useState<number>(5);
-  const [selectedFeeling, setSelectedFeeling] = useState<FeelingOption | null>(null);
+  const [selectedFeelings, setSelectedFeelings] = useState<FeelingOption[]>([]);
   const [otherText, setOtherText] = useState("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
@@ -53,15 +53,25 @@ const CareerConfidenceAssessment = () => {
     "Other"
   ];
 
+  const handleFeelingToggle = (feeling: FeelingOption) => {
+    setSelectedFeelings(prev => {
+      if (prev.includes(feeling)) {
+        return prev.filter(f => f !== feeling);
+      } else {
+        return [...prev, feeling];
+      }
+    });
+  };
+
   const handleSubmit = () => {
-    if (!selectedFeeling) {
-      toast.error("Please select how you feel about your career goal");
+    if (selectedFeelings.length === 0) {
+      toast.error("Please select at least one feeling about your career goal");
       return;
     }
     
     // Save all the assessment data
     storage.saveCareerInfo({
-      feelingAboutCareerGoal: selectedFeeling,
+      feelingAboutCareerGoal: selectedFeelings.join(", "),
       customFeeling: otherText,
       confidenceLevel: confidenceLevel,
       readinessLevel: readinessLevel
@@ -140,15 +150,17 @@ const CareerConfidenceAssessment = () => {
             <div>
               <h2 className="text-lg font-medium mb-4">
                 How has defining a career goal changed the way you feel about your next career steps?
+                <span className="text-sm text-gray-500 block mt-1">(Select all that apply)</span>
               </h2>
-              <RadioGroup
-                value={selectedFeeling || ""}
-                onValueChange={(value) => setSelectedFeeling(value as FeelingOption)}
-                className="space-y-3"
-              >
+              <div className="space-y-3">
                 {feelingOptions.map((option) => (
                   <div key={option} className="flex items-start space-x-2">
-                    <RadioGroupItem value={option} id={option} className="mt-1" />
+                    <Checkbox 
+                      id={option}
+                      checked={selectedFeelings.includes(option)}
+                      onCheckedChange={() => handleFeelingToggle(option)}
+                      className="mt-1"
+                    />
                     <Label htmlFor={option} className="leading-tight cursor-pointer">
                       {option === "More assured and certain" && "Feeling more assured and certain about the direction to take."}
                       {option === "Renewed drive and energy" && "A renewed sense of drive and energy to take action toward career goals."}
@@ -162,9 +174,9 @@ const CareerConfidenceAssessment = () => {
                     </Label>
                   </div>
                 ))}
-              </RadioGroup>
+              </div>
 
-              {selectedFeeling === "Other" && (
+              {selectedFeelings.includes("Other") && (
                 <Textarea
                   value={otherText}
                   onChange={(e) => setOtherText(e.target.value)}
