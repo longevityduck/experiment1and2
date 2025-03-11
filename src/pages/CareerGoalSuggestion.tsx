@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,7 @@ import { storage } from "@/utils/storage";
 import { supabase } from "@/integrations/supabase/client";
 
 // Enhanced fallback goal with specific examples based on common career paths
-const generateFallbackGoal = (personalInfo = {}, guidanceAnswers = {}) => {
+const generateFallbackGoal = (personalInfo: Record<string, any> = {}, guidanceAnswers: Record<number, string> = {}) => {
   const reason = guidanceAnswers[2] || 'grow professionally';
   const timeframe = guidanceAnswers[3]?.includes('5 years') ? '5 years' : '3-5 years';
   const industry = personalInfo.industry || 'your current industry';
