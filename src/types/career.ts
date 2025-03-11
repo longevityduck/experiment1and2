@@ -17,4 +17,5 @@ export interface CareerInfo {
   guidanceAnswers?: Record<number, string>;
   clarificationAnswers?: Record<string, string>;
   desiredJob?: string;
+  confidenceLevel?: number;
 }
