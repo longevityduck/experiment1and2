@@ -107,7 +107,7 @@ const NextSteps = () => {
               
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-medium">
-                  SMART Action Steps
+                  Action Steps
                 </h3>
                 <Button 
                   variant="outline" 
@@ -122,8 +122,8 @@ const NextSteps = () => {
               </div>
               
               <p className="text-sm text-gray-600 mb-6">
-                These <strong>S</strong>pecific, <strong>M</strong>easurable, <strong>A</strong>chievable, <strong>R</strong>elevant, 
-                and <strong>T</strong>ime-bound steps are tailored to your career goal and personal situation. 
+                These personalized action steps are tailored to your career goal and personal situation. 
+                Each step is designed to be clear, measurable, and achievable within the specified timeframe.
                 You can edit, reorder, or add new steps as needed.
               </p>
               
