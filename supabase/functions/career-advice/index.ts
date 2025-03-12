@@ -23,9 +23,10 @@ serve(async (req) => {
     }
 
     if (requestData.type === 'career-goal') {
-      const { personalInfo, guidanceAnswers, clarificationAnswers, careerGoals } = requestData;
+      const { personalInfo, guidanceAnswers, clarificationAnswers, careerGoals, skills = [] } = requestData;
       
-      const prompt = `Based on the following information, create a personalized career development plan following SMART goal principles (Specific, Measurable, Achievable, Relevant, Time-bound):
+      // Create a detailed prompt that leverages all available information
+      const prompt = `Based on the following information, create a personalized career development plan following a framework of steps that are specific, measurable, achievable, relevant, and time-bound:
 
 Personal Information:
 ${Object.entries(personalInfo || {}).map(([key, value]) => `${key}: ${value}`).join('\n')}
@@ -39,7 +40,10 @@ ${Object.entries(clarificationAnswers || {}).map(([key, value]) => `${key}: ${va
 Career Goals:
 ${careerGoals}
 
-First, provide a single career goal statement that follows SMART principles (specific, measurable, achievable, relevant, and time-bound).
+Key Skills:
+${skills.length > 0 ? skills.join(', ') : 'No specific skills provided'}
+
+First, provide a single career goal statement that is specific, measurable, achievable, relevant, and time-bound.
 Format: "Career Goal: [Your goal statement here]"
 
 Then, provide 5-7 actionable steps to achieve this goal. For each step:
@@ -60,11 +64,11 @@ Make timeframes realistic and varied between steps.
 Ensure explanations are personalized and specific to the user's situation.
 Steps should build on each other in a logical progression.
 Include specific metrics and milestones in each step.
-Reference industry-specific skills, certifications, or networking opportunities where applicable.
-Do not explicitly label SMART components in the output.`;
+Reference industry-specific skills, certifications, or networking opportunities where applicable.`;
 
       console.log('Sending prompt to OpenAI:', prompt);
 
+      // Use GPT-4o for better career advice generation
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -76,7 +80,7 @@ Do not explicitly label SMART components in the output.`;
           messages: [
             {
               role: 'system',
-              content: 'You are a career development expert who creates personalized, actionable career plans. Your advice should follow SMART goal principles while maintaining a natural, conversational tone. Ensure all steps are highly specific, measurable with concrete metrics, achievable yet challenging, relevant to the person\'s situation, and time-bound with realistic deadlines.'
+              content: 'You are a career development expert who creates personalized, actionable career plans. Your advice should be specific, measurable, achievable, relevant, and time-bound while maintaining a natural, conversational tone. Ensure all steps have concrete metrics, realistic timeframes, and are tailored to the person\'s unique situation.'
             },
             { role: 'user', content: prompt }
           ],

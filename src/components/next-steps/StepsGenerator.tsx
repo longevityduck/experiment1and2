@@ -85,6 +85,14 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
   useEffect(() => {
     const generateSteps = async () => {
       try {
+        // Check if we already have saved steps
+        const savedSteps = localStorage.getItem("userSteps");
+        if (savedSteps) {
+          onStepsGenerated(JSON.parse(savedSteps));
+          setLoading(false);
+          return;
+        }
+
         // Set a timeout to use local generation if the API takes too long
         const timeout = setTimeout(() => {
           console.log("API call timeout - using local generation");
@@ -98,21 +106,12 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
           
           toast({
             title: "Using local recommendations",
-            description: "We generated SMART career steps based on your information.",
+            description: "We generated career steps based on your information.",
             variant: "default",
           });
         }, 15000); // 15 second timeout
         
         setTimeoutId(timeout as unknown as number);
-
-        // Check if we already have saved steps
-        const savedSteps = localStorage.getItem("userSteps");
-        if (savedSteps) {
-          clearTimeout(timeout);
-          onStepsGenerated(JSON.parse(savedSteps));
-          setLoading(false);
-          return;
-        }
 
         // Gather all necessary information
         const careerInfo = storage.getCareerInfo();
@@ -139,95 +138,96 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
           personalInfo,
           guidanceAnswers,
           clarificationAnswers,
-          careerGoals
+          careerGoals,
+          skills
         });
 
-        try {
-          const { data, error } = await supabase.functions.invoke('career-advice', {
-            body: {
-              type: 'career-goal',
-              personalInfo,
-              guidanceAnswers,
-              clarificationAnswers,
-              careerGoals
-            }
-          });
-
-          if (error) {
-            console.error('Error generating steps from Supabase:', error);
-            throw error;
+        const { data, error } = await supabase.functions.invoke('career-advice', {
+          body: {
+            type: 'career-goal',
+            personalInfo,
+            guidanceAnswers,
+            clarificationAnswers,
+            careerGoals,
+            skills
           }
+        });
 
-          clearTimeout(timeout);
-          console.log('Received response from career-advice function:', data);
-
-          // Process the response from the LLM
-          const aiResponse = data.advice;
-          const steps: Partial<Step>[] = [];
-          let currentStep: Partial<Step> = {};
-          const stepLines = aiResponse.split('\n').filter(line => line.trim().length > 0);
-          let processingSteps = false;
-          
-          for (const line of stepLines) {
-            if (line.toLowerCase().includes('career goal:')) {
-              continue;
-            }
-            
-            if (line.toLowerCase().startsWith('step:')) {
-              if (Object.keys(currentStep).length > 0) {
-                steps.push(currentStep);
-              }
-              currentStep = {
-                id: steps.length,
-                content: line.replace(/^step:\s*/i, '').trim(),
-                isEditing: false,
-                isOriginal: true
-              };
-              processingSteps = true;
-            } else if (processingSteps && line.toLowerCase().startsWith('timeframe:')) {
-              const timeframeMatch = line.match(/(\d+)\s*months?/i) || line.match(/(\d+)\s*weeks?/i);
-              if (timeframeMatch) {
-                const value = timeframeMatch[1];
-                const unit = line.toLowerCase().includes('week') ? 'weeks' : 'months';
-                currentStep.timeframe = `${value} ${unit}`;
-              } else {
-                currentStep.timeframe = '3 months'; // Default fallback
-              }
-            } else if (processingSteps && line.toLowerCase().startsWith('explanation:')) {
-              currentStep.explanation = line.replace(/^explanation:\s*/i, '').trim();
-            }
-          }
-          
-          if (Object.keys(currentStep).length > 0) {
-            steps.push(currentStep);
-          }
-
-          // Format the steps for display
-          const formattedSteps = steps.map((step, index) => ({
-            id: index,
-            content: step.content || '',
-            timeframe: step.timeframe || '3 months',
-            explanation: step.explanation || 'This step was generated based on your career goals and preferences.',
-            isEditing: false,
-            isOriginal: true,
-          }));
-
-          if (formattedSteps.length === 0) {
-            throw new Error('No steps were generated');
-          }
-
-          onStepsGenerated(formattedSteps);
-          localStorage.setItem("userSteps", JSON.stringify(formattedSteps));
-          setLoading(false);
-          return;
-        } catch (supabaseError) {
-          console.error("Error with Supabase function, using local generation:", supabaseError);
-          throw supabaseError; // Continue to fallback
+        if (error) {
+          console.error('Error generating steps from Supabase:', error);
+          throw error;
         }
+
+        clearTimeout(timeout);
+        console.log('Received response from career-advice function:', data);
+
+        // Process the response from OpenAI
+        const aiResponse = data.advice;
+        const steps: Partial<Step>[] = [];
+        let currentStep: Partial<Step> = {};
+        const stepLines = aiResponse.split('\n').filter(line => line.trim().length > 0);
+        let processingSteps = false;
+        
+        for (const line of stepLines) {
+          if (line.toLowerCase().includes('career goal:')) {
+            continue;
+          }
+          
+          if (line.toLowerCase().startsWith('step:')) {
+            if (Object.keys(currentStep).length > 0) {
+              steps.push(currentStep);
+            }
+            currentStep = {
+              id: steps.length,
+              content: line.replace(/^step:\s*/i, '').trim(),
+              isEditing: false,
+              isOriginal: true
+            };
+            processingSteps = true;
+          } else if (processingSteps && line.toLowerCase().startsWith('timeframe:')) {
+            const timeframeMatch = line.match(/(\d+)\s*months?/i) || line.match(/(\d+)\s*weeks?/i);
+            if (timeframeMatch) {
+              const value = timeframeMatch[1];
+              const unit = line.toLowerCase().includes('week') ? 'weeks' : 'months';
+              currentStep.timeframe = `${value} ${unit}`;
+            } else {
+              currentStep.timeframe = '3 months'; // Default fallback
+            }
+          } else if (processingSteps && line.toLowerCase().startsWith('explanation:')) {
+            currentStep.explanation = line.replace(/^explanation:\s*/i, '').trim();
+          }
+        }
+        
+        if (Object.keys(currentStep).length > 0) {
+          steps.push(currentStep);
+        }
+
+        // Format the steps for display
+        const formattedSteps = steps.map((step, index) => ({
+          id: index,
+          content: step.content || '',
+          timeframe: step.timeframe || '3 months',
+          explanation: step.explanation || 'This step was generated based on your career goals and preferences.',
+          isEditing: false,
+          isOriginal: true,
+        }));
+
+        if (formattedSteps.length === 0) {
+          throw new Error('No steps were generated');
+        }
+
+        onStepsGenerated(formattedSteps);
+        localStorage.setItem("userSteps", JSON.stringify(formattedSteps));
+        setLoading(false);
+        
+        toast({
+          title: "Career Plan Generated",
+          description: "Your personalized career steps have been created using AI.",
+          variant: "default",
+        });
 
       } catch (error) {
         console.error("Error generating steps:", error);
-        setLoading(false);
         
         if (timeoutId) {
           clearTimeout(timeoutId);
@@ -239,13 +239,14 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
           variant: "default",
         });
 
-        // Fall back to local generation if the LLM call fails
+        // Fall back to local generation if the OpenAI call fails
         const careerInfo = storage.getCareerInfo();
         const skills = JSON.parse(localStorage.getItem("skills") || "[]");
         const fallbackSteps = generateFallbackSteps(careerInfo, skills);
 
         onStepsGenerated(fallbackSteps);
         localStorage.setItem("userSteps", JSON.stringify(fallbackSteps));
+        setLoading(false);
       }
     };
 
