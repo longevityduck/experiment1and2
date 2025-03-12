@@ -7,8 +7,7 @@ const LoadingState = () => {
       <Loader2 className="h-8 w-8 animate-spin text-primary" />
       <p className="text-gray-600">Generating your personalized career plan with AI...</p>
       <p className="text-sm text-gray-500 max-w-md text-center">
-        Creating specific, measurable, achievable steps 
-        tailored to your career goals and experience level.
+        Creating personalized, achievable steps tailored to your career goals and experience level.
       </p>
     </div>
   );
