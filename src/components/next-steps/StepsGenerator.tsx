@@ -16,29 +16,30 @@ const generateFallbackSteps = (careerInfo: any, skills: string[] = []): Step[] =
   const occupation = careerInfo.occupation || 'your field';
   const experience = parseInt(careerInfo.experience || '0', 10);
   const skillsList = skills.length > 0 ? skills : ['professional', 'technical', 'communication'];
+  const careerGoal = careerInfo.careerGoals || 'career advancement';
   
   const steps: Step[] = [
     {
       id: 0,
-      content: `Complete an advanced certification in ${industry} with 85% or higher score`,
+      content: `Complete an advanced "${industry}" certification with a score of 85% or higher within 90 days`,
       timeframe: "3 months",
-      explanation: "Professional certifications demonstrate your commitment to growth and validate your expertise to potential employers. This specific certification will address key skill gaps in your profile.",
+      explanation: `A recognized certification in ${industry} demonstrates measurable expertise to employers and addresses specific skill gaps in your profile. This aligns directly with your goal of ${careerGoal}.`,
       isOriginal: true,
       isEditing: false
     },
     {
       id: 1,
-      content: `Build a portfolio showcasing 5-7 projects demonstrating your ${skillsList[0] || 'professional'} skills`,
+      content: `Create a portfolio with 5-7 projects showcasing your ${skillsList[0] || 'professional'} skills, with each project demonstrating a different competency`,
       timeframe: "4 months",
-      explanation: "A well-curated portfolio with specific examples provides tangible evidence of your capabilities and helps you stand out among competitors in job applications.",
+      explanation: `A quantifiable portfolio with concrete examples provides evidence of your capabilities in ${occupation} and helps you stand out in competitive job applications. This directly supports your progression toward ${careerGoal}.`,
       isOriginal: true,
       isEditing: false
     },
     {
       id: 2,
-      content: `Connect with and have informational interviews with 10 professionals in ${occupation}`,
+      content: `Connect with and conduct informational interviews with 10 professionals in ${occupation} roles at companies you admire`,
       timeframe: "2 months",
-      explanation: "Professional networking with specific outreach goals is crucial for career advancement and can lead to mentorship opportunities and job referrals. Setting a concrete target ensures consistent effort.",
+      explanation: `Building a specific network with measurable outreach goals creates tangible opportunities for mentorship and job referrals. Setting a numeric target ensures consistent effort toward achieving ${careerGoal}.`,
       isOriginal: true,
       isEditing: false
     }
@@ -48,27 +49,27 @@ const generateFallbackSteps = (careerInfo: any, skills: string[] = []): Step[] =
   if (experience < 3) {
     steps.push({
       id: 3,
-      content: `Complete 2 specialized online courses in ${industry} and implement learnings in 1 real-world project`,
+      content: `Complete 2 specialized online courses in ${industry} and implement learnings in 1 real-world project with documented outcomes`,
       timeframe: "3 months",
-      explanation: "Early career professionals benefit greatly from structured learning combined with practical application to build foundational skills quickly. The specific project will demonstrate your application of knowledge.",
+      explanation: `Early career professionals benefit from combining structured learning with practical application. This step provides quantifiable progress through course completion and a tangible project that demonstrates your growing expertise in ${industry}.`,
       isOriginal: true,
       isEditing: false
     });
   } else if (experience >= 3 && experience < 7) {
     steps.push({
       id: 3,
-      content: `Lead a project team of 3-5 people to deliver 1 significant initiative with measurable business impact`,
+      content: `Lead a cross-functional project team of 3-5 people to deliver a significant initiative that demonstrates a 15% improvement in efficiency or revenue`,
       timeframe: "6 months",
-      explanation: "Mid-career professionals should focus on developing leadership skills through tangible projects to prepare for senior roles. This specific leadership experience will strengthen your resume.",
+      explanation: `Mid-career professionals need leadership experience with measurable business impact. This project will strengthen your resume with quantifiable results and prepare you for senior roles in ${occupation}.`,
       isOriginal: true,
       isEditing: false
     });
   } else {
     steps.push({
       id: 3,
-      content: `Mentor 2-3 junior professionals in ${occupation} with documented growth metrics`,
+      content: `Mentor 2-3 junior professionals in ${occupation} with documented growth metrics and track their improvement in 3 key skill areas`,
       timeframe: "4 months",
-      explanation: "Experienced professionals can solidify their expertise and enhance their reputation through structured mentoring programs with measurable outcomes for mentees.",
+      explanation: `Experienced professionals enhance their leadership reputation through structured mentoring with measurable outcomes. This demonstrates your expertise while building your influence in ${industry}, directly supporting your goal of ${careerGoal}.`,
       isOriginal: true,
       isEditing: false
     });
@@ -79,13 +80,35 @@ const generateFallbackSteps = (careerInfo: any, skills: string[] = []): Step[] =
 
 const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) => {
   const { toast } = useToast();
+  const [timeoutId, setTimeoutId] = useState<number | null>(null);
 
   useEffect(() => {
     const generateSteps = async () => {
       try {
+        // Set a timeout to use local generation if the API takes too long
+        const timeout = setTimeout(() => {
+          console.log("API call timeout - using local generation");
+          const careerInfo = storage.getCareerInfo();
+          const skills = JSON.parse(localStorage.getItem("skills") || "[]");
+          const fallbackSteps = generateFallbackSteps(careerInfo, skills);
+          
+          onStepsGenerated(fallbackSteps);
+          localStorage.setItem("userSteps", JSON.stringify(fallbackSteps));
+          setLoading(false);
+          
+          toast({
+            title: "Using local recommendations",
+            description: "We generated SMART career steps based on your information.",
+            variant: "default",
+          });
+        }, 15000); // 15 second timeout
+        
+        setTimeoutId(timeout as unknown as number);
+
         // Check if we already have saved steps
         const savedSteps = localStorage.getItem("userSteps");
         if (savedSteps) {
+          clearTimeout(timeout);
           onStepsGenerated(JSON.parse(savedSteps));
           setLoading(false);
           return;
@@ -93,6 +116,12 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
 
         // Gather all necessary information
         const careerInfo = storage.getCareerInfo();
+        
+        // Validate required data
+        if (!careerInfo.careerGoals || !careerInfo.occupation || !careerInfo.industry) {
+          throw new Error("Missing required career information");
+        }
+        
         const personalInfo = {
           age: careerInfo.age,
           occupation: careerInfo.occupation,
@@ -129,6 +158,7 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
             throw error;
           }
 
+          clearTimeout(timeout);
           console.log('Received response from career-advice function:', data);
 
           // Process the response from the LLM
@@ -198,6 +228,11 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
       } catch (error) {
         console.error("Error generating steps:", error);
         setLoading(false);
+        
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        
         toast({
           title: "Using local recommendations",
           description: "We're generating career steps based on your information.",
@@ -215,6 +250,12 @@ const StepsGenerator = ({ onStepsGenerated, setLoading }: StepsGeneratorProps) =
     };
 
     generateSteps();
+    
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [onStepsGenerated, setLoading, toast]);
 
   return null;

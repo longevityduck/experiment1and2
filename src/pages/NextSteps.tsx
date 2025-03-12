@@ -11,12 +11,15 @@ import LoadingState from "@/components/next-steps/LoadingState";
 import ActionButtons from "@/components/next-steps/ActionButtons";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { RefreshCcw } from "lucide-react";
 
 const NextSteps = () => {
   const [steps, setSteps] = useState<Step[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingContent, setEditingContent] = useState("");
   const [editingTimeframe, setEditingTimeframe] = useState("");
+  const [regenerating, setRegenerating] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -63,6 +66,28 @@ const NextSteps = () => {
       setLoading(false);
     }
   };
+  
+  const handleRegenerateSteps = () => {
+    setRegenerating(true);
+    setLoading(true);
+    
+    // Clear existing steps
+    localStorage.removeItem("userSteps");
+    
+    // Re-initialize with empty steps
+    setSteps([]);
+    
+    // Show toast
+    toast({
+      title: "Regenerating Steps",
+      description: "Creating new SMART career steps tailored to your goals...",
+    });
+    
+    // Set a timeout to ensure the loading state is shown
+    setTimeout(() => {
+      setRegenerating(false);
+    }, 1500);
+  };
 
   return (
     <>
@@ -80,13 +105,26 @@ const NextSteps = () => {
                 </p>
               </div>
               
-              <h3 className="text-lg font-medium mb-4">
-                Action Steps to Achieve Your Goal
-              </h3>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium">
+                  SMART Action Steps
+                </h3>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleRegenerateSteps}
+                  disabled={regenerating}
+                  className="flex items-center gap-1"
+                >
+                  <RefreshCcw className="h-3.5 w-3.5 mr-1" />
+                  Regenerate Steps
+                </Button>
+              </div>
               
               <p className="text-sm text-gray-600 mb-6">
-                These steps are tailored to your career goal and personal situation. You can edit, reorder, 
-                or add new steps as needed. Drag to reorder steps by priority.
+                These <strong>S</strong>pecific, <strong>M</strong>easurable, <strong>A</strong>chievable, <strong>R</strong>elevant, 
+                and <strong>T</strong>ime-bound steps are tailored to your career goal and personal situation. 
+                You can edit, reorder, or add new steps as needed.
               </p>
               
               <StepsList 
@@ -102,10 +140,15 @@ const NextSteps = () => {
             </>
           )}
           
-          <StepsGenerator 
+          {!loading && regenerating && <StepsGenerator 
             onStepsGenerated={setSteps}
             setLoading={setLoading}
-          />
+          />}
+          
+          {loading && !regenerating && <StepsGenerator 
+            onStepsGenerated={setSteps}
+            setLoading={setLoading}
+          />}
         </div>
       </FormContainer>
     </>
