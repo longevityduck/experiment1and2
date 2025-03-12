@@ -1,4 +1,3 @@
-
 import { Step } from "@/types/steps";
 import { supabase } from "@/integrations/supabase/client";
 import { storage } from "@/utils/storage";
@@ -20,30 +19,34 @@ export async function generateStepsWithAI(): Promise<Step[]> {
     skills
   });
 
-  const { data, error } = await supabase.functions.invoke('career-advice', {
-    body: {
-      type: 'career-goal',
-      personalInfo: {
-        age: careerInfo.age,
-        occupation: careerInfo.occupation,
-        industry: careerInfo.industry,
-        experience: careerInfo.experience
-      },
-      guidanceAnswers: careerInfo.guidanceAnswers || {},
-      clarificationAnswers: careerInfo.clarificationAnswers || {},
-      careerGoals: careerInfo.careerGoals || "",
-      skills
+  try {
+    const { data, error } = await supabase.functions.invoke('career-advice', {
+      body: {
+        type: 'career-goal',
+        personalInfo: {
+          age: careerInfo.age,
+          occupation: careerInfo.occupation,
+          industry: careerInfo.industry,
+          experience: careerInfo.experience
+        },
+        guidanceAnswers: careerInfo.guidanceAnswers || {},
+        clarificationAnswers: careerInfo.clarificationAnswers || {},
+        careerGoals: careerInfo.careerGoals || "",
+        skills
+      }
+    });
+
+    if (error) {
+      console.error('Error generating steps from OpenAI:', error);
+      throw error;
     }
-  });
 
-  if (error) {
-    console.error('Error generating steps from OpenAI:', error);
-    throw error;
+    console.log('Received response from career-advice function:', data);
+    return processAIResponse(data.advice);
+  } catch (error) {
+    console.error('Failed to generate steps using API, falling back to local generation:', error);
+    return generateLocalFallbackSteps(careerInfo);
   }
-
-  console.log('Received response from career-advice function:', data);
-
-  return processAIResponse(data.advice);
 }
 
 export function processAIResponse(aiResponse: string): Step[] {
@@ -92,4 +95,56 @@ export function processAIResponse(aiResponse: string): Step[] {
 
 export function saveSteps(steps: Step[]): void {
   localStorage.setItem("userSteps", JSON.stringify(steps));
+}
+
+function generateLocalFallbackSteps(careerInfo: any): Step[] {
+  console.log("Using local fallback to generate steps");
+  const goal = careerInfo.careerGoals || "Advancing in your career";
+  const occupation = careerInfo.occupation || "professional";
+  const industry = careerInfo.industry || "your industry";
+  
+  const steps: Step[] = [
+    {
+      id: 0,
+      content: `Complete a skills assessment to identify strengths and areas for improvement as a ${occupation}`,
+      timeframe: "1 month",
+      explanation: "Understanding your current skill level helps create a targeted development plan.",
+      isEditing: false,
+      isOriginal: true
+    },
+    {
+      id: 1,
+      content: `Research certification options that would increase your marketability in ${industry}`,
+      timeframe: "2 months",
+      explanation: "Industry-recognized certifications can significantly boost your credentials and visibility to employers.",
+      isEditing: false,
+      isOriginal: true
+    },
+    {
+      id: 2,
+      content: "Develop a professional network by attending at least 2 industry events or webinars",
+      timeframe: "3 months",
+      explanation: "Building professional relationships is critical for finding new opportunities and gaining industry insights.",
+      isEditing: false,
+      isOriginal: true
+    },
+    {
+      id: 3,
+      content: `Create or update your portfolio highlighting your best work and achievements as a ${occupation}`,
+      timeframe: "2 months",
+      explanation: "A strong portfolio demonstrates your capabilities and experience to potential employers or clients.",
+      isEditing: false,
+      isOriginal: true
+    },
+    {
+      id: 4,
+      content: "Set up informational interviews with 3-5 senior professionals in your desired role",
+      timeframe: "4 months",
+      explanation: "These conversations provide valuable insights about career paths and help you build connections.",
+      isEditing: false,
+      isOriginal: true
+    }
+  ];
+  
+  return steps;
 }

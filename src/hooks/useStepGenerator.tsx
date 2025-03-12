@@ -28,7 +28,7 @@ export function useStepGenerator({ onStepsGenerated, setLoading }: UseStepGenera
         
         toast({
           title: "Career Plan Generated",
-          description: "Your personalized career steps have been created using AI.",
+          description: "Your personalized career steps have been created.",
           variant: "default",
         });
 
