@@ -16,50 +16,35 @@ const WhatRole = () => {
 
   useEffect(() => {
     const loadSavedJob = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          // If no user is logged in, try to get from local storage as fallback
-          const savedInfo = storage.getCareerInfo();
-          if (savedInfo.desiredJob) {
-            setJob(savedInfo.desiredJob);
-          }
-          return;
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        // If no user is logged in, try to get from local storage as fallback
+        const savedInfo = storage.getCareerInfo();
+        if (savedInfo.desiredJob) {
+          setJob(savedInfo.desiredJob);
         }
+        return;
+      }
 
-        const { data, error } = await supabase
-          .from('career_guidance')
-          .select('desired_job')
-          .eq('user_id', user.id)
-          .maybeSingle() as { data: Pick<CareerGuidanceRow, 'desired_job'> | null, error: any };
+      const { data, error } = await supabase
+        .from('career_guidance')
+        .select('desired_job')
+        .eq('user_id', user.id)
+        .single() as { data: Pick<CareerGuidanceRow, 'desired_job'> | null, error: any };
 
-        if (error) {
-          console.error('Error loading job data:', error);
-          return;
-        }
+      if (error) {
+        console.error('Error loading job data:', error);
+        return;
+      }
 
-        if (data?.desired_job) {
-          setJob(data.desired_job);
-        }
-      } catch (error) {
-        console.error('Error in loadSavedJob:', error);
+      if (data?.desired_job) {
+        setJob(data.desired_job);
       }
     };
 
     loadSavedJob();
   }, []);
-
-  // Save job as user types
-  useEffect(() => {
-    if (!job) return;
-    
-    const saveTimeout = setTimeout(() => {
-      storage.saveCareerInfo({ desiredJob: job });
-    }, 1000);
-    
-    return () => clearTimeout(saveTimeout);
-  }, [job]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +65,7 @@ const WhatRole = () => {
           .from('career_guidance')
           .select('id')
           .eq('user_id', user.id)
-          .maybeSingle() as { data: { id: string } | null, error: any };
+          .single() as { data: { id: string } | null, error: any };
 
         if (data) {
           // Update existing record
@@ -100,10 +85,10 @@ const WhatRole = () => {
 
           if (insertError) throw insertError;
         }
+      } else {
+        // Fallback to local storage if no user is logged in
+        storage.saveCareerInfo({ desiredJob: job });
       }
-      
-      // Always save to CareerInfo
-      storage.saveCareerInfo({ desiredJob: job });
 
       navigate("/career-goal-suggestion");
     } catch (error) {

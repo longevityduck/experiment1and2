@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,34 +18,9 @@ const PersonalInfoForm = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Load any existing data when component mounts
-  useEffect(() => {
-    const existingData = storage.getCareerInfo();
-    if (existingData) {
-      setFormData({
-        age: existingData.age || "",
-        occupation: existingData.occupation || "",
-        industry: existingData.industry || "",
-        experience: existingData.experience || "",
-      });
-    }
-  }, []);
-
-  // Save data on field change after a small delay
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => {
-      const newData = { ...prev, [name]: value };
-      
-      // Save to storage after user stops typing
-      const saveTimeout = setTimeout(() => {
-        storage.saveCareerInfo({
-          [name]: value,
-        });
-      }, 1000);
-      
-      return newData;
-    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -53,6 +28,14 @@ const PersonalInfoForm = () => {
     setIsSubmitting(true);
 
     try {
+      // Save the data to storage
+      const personalInfo = {
+        age: formData.age,
+        occupation: formData.occupation,
+        industry: formData.industry,
+        experience: formData.experience,
+      };
+
       // Store the values in CareerInfo
       await storage.saveCareerInfo({
         age: formData.age,
