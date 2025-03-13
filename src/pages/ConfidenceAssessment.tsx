@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ProgressIndicator } from "@/components/career-guidance/ProgressIndicator";
@@ -14,6 +15,17 @@ const ConfidenceAssessment = () => {
   const [isResetting, setIsResetting] = useState(true);
   
   useEffect(() => {
+    // First try to load any existing data from Supabase
+    const loadInitialUserData = async () => {
+      try {
+        await storage.loadUserData();
+      } catch (error) {
+        console.error("Error loading initial user data:", error);
+      }
+    };
+    
+    loadInitialUserData();
+    
     // Reset all responses when landing on this page
     const resetData = async () => {
       setIsResetting(true);
