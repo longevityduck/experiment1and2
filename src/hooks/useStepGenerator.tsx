@@ -23,7 +23,10 @@ export function useStepGenerator({ onStepsGenerated, setLoading }: UseStepGenera
         }
 
         onStepsGenerated(formattedSteps);
-        saveSteps(formattedSteps);
+        
+        // Save steps to both localStorage and Supabase
+        await saveSteps(formattedSteps);
+        
         setLoading(false);
         
         toast({

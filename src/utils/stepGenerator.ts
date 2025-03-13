@@ -93,8 +93,9 @@ export function processAIResponse(aiResponse: string): Step[] {
   }));
 }
 
-export function saveSteps(steps: Step[]): void {
-  localStorage.setItem("userSteps", JSON.stringify(steps));
+export async function saveSteps(steps: Step[]): Promise<void> {
+  // Use the new storage utility function to save steps to both localStorage and Supabase
+  await storage.saveSteps(steps);
 }
 
 function generateLocalFallbackSteps(careerInfo: any): Step[] {
