@@ -1,8 +1,9 @@
-# Welcome to your Lovable project
+
+# Welcome to CareerExperiment
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/f8e3e121-a955-4a54-8ef8-c23568a65571
+**URL**: https://careerexperiment.com
 
 ## How can I edit this code?
 
@@ -52,7 +53,7 @@ npm run dev
 
 ## What technologies are used for this project?
 
-This project is built with .
+This project is built with:
 
 - Vite
 - TypeScript
